@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#e2231a">
+<title>HJ,KJRC — Firebase Друзья</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:#111;color:#fff;-webkit-font-smoothing:antialiased}
+button,input{touch-action:manipulation;font-family:inherit}
+button{cursor:pointer;user-select:none}
+.header{background:#1a1a1a;border-bottom:3px solid #e2231a;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:100}
+.logo{font-size:22px;font-weight:bold;color:#e2231a;letter-spacing:1px}
+.header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.user{color:#aaa;font-size:14px;cursor:pointer}
+.user:hover{color:#fff}
+.wallet{background:#2a2a2a;border:2px solid #ffc107;border-radius:10px;padding:6px 12px;font-weight:bold;color:#ffc107;font-size:14px;display:flex;align-items:center;gap:6px}
+.wallet .amount{color:#fff}
+.container{max-width:1000px;margin:0 auto;padding:16px}
+.hidden{display:none!important}
+.login-screen{text-align:center;padding:60px 20px}
+.login-screen h1{font-size:clamp(32px,8vw,48px);color:#e2231a;margin-bottom:10px}
+.login-screen p{color:#aaa;margin-bottom:30px}
+.btn{background:#e2231a;color:#fff;border:none;padding:12px 20px;border-radius:8px;font-weight:bold;font-size:15px;cursor:pointer;transition:transform .1s,background .15s;min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{background:#ff3b30}
+.btn:active{transform:scale(.96)}
+.btn.secondary{background:#333}
+.btn.secondary:hover{background:#444}
+.btn.gold{background:#ffc107;color:#000}
+.btn.gold:hover{background:#ffca28}
+.btn.green{background:#4caf50}
+.btn.green:hover{background:#66bb6a}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-top:20px}
+.card{background:#1e1e1e;border:1px solid #333;border-radius:12px;padding:14px;position:relative;transition:.15s}
+.card:hover{border-color:#555;transform:translateY(-2px)}
+.card h3{color:#e2231a;margin:0 0 6px;font-size:15px}
+.card p{color:#bbb;min-height:32px;font-size:13px;margin:6px 0}
+.card .reward{position:absolute;top:10px;right:10px;color:#ffc107;font-weight:bold;font-size:12px}
+.card .btn{width:100%;padding:10px}
+.game-area{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:16px;margin-top:16px}
+.game-header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.game-header h2{margin:0;color:#e2231a;font-size:20px}
+.game{margin-top:12px}
+input[type=number],input[type=text]{padding:10px 12px;border-radius:8px;border:1px solid #555;background:#222;color:#fff;width:180px;max-width:100%;font-size:16px;margin:4px 6px 4px 0}
+.message{margin:10px 0;color:#ddd;font-size:15px}
+canvas{background:#222;border-radius:8px;display:block;margin:12px auto;max-width:100%;height:auto}
+.money-popup{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#ffc107;color:#000;padding:12px 24px;border-radius:12px;font-weight:bold;font-size:16px;z-index:99999;box-shadow:0 6px 20px rgba(0,0,0,.5);animation:pop 1.5s ease-out;pointer-events:none;max-width:90vw;text-align:center}
+@keyframes pop{0%{transform:translate(-50%,-20px);opacity:0}15%{transform:translate(-50%,0);opacity:1}85%{opacity:1}100%{transform:translate(-50%,-20px);opacity:0}}
+.shop-bar{margin:16px 0;background:#1e1e1e;border:2px solid #ffc107;border-radius:12px;padding:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9998;display:flex;align-items:center;justify-content:center;padding:14px;overflow-y:auto}
+.modal-box{background:#1a1a1a;border:3px solid #ffc107;border-radius:14px;padding:18px;max-width:min(560px,95vw);width:100%;max-height:95vh;overflow-y:auto}
+.modal-box h2{margin-top:0;color:#ffc107;text-align:center;font-size:20px}
+/* НИК */
+.nick-input-row{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;justify-content:center}
+.nick-input-row input{flex:1;min-width:160px;max-width:280px;margin:0}
+.nick-preview{text-align:center;font-size:20px;font-weight:bold;padding:14px;background:#1a1a1a;border:2px dashed #ffc107;border-radius:10px;margin:10px 0;min-height:52px;display:flex;align-items:center;justify-content:center;color:#fff}
+.nick-hint{text-align:center;font-size:12px;color:#888;margin:6px 0}
+.nick-bad{color:#e2231a!important;border-color:#e2231a!important}
+.nick-good{color:#4caf50!important;border-color:#4caf50!important}
+/* ДРУЗЬЯ */
+.friend-item{display:flex;align-items:center;gap:10px;padding:10px;background:#222;border:2px solid #333;border-radius:10px;margin-bottom:8px}
+.friend-item.online{border-color:#4caf50}
+.friend-avatar{width:48px;height:48px;border-radius:50%;border:3px solid #666;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.friend-avatar.online{border-color:#4caf50;box-shadow:0 0 10px rgba(76,175,80,.6)}
+.friend-info{flex:1;min-width:0}
+.friend-name{font-weight:bold;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.friend-status{font-size:12px;margin-top:2px}
+.friend-actions{display:flex;gap:6px;flex-shrink:0}
+.friend-badge{position:absolute;top:-4px;right:-4px;background:#e2231a;color:#fff;font-size:10px;font-weight:bold;padding:2px 6px;border-radius:8px;min-width:16px;text-align:center}
+.friend-toast{position:fixed;bottom:20px;right:20px;background:#1a1a1a;border:2px solid #4caf50;border-radius:12px;padding:12px 16px;color:#fff;font-size:14px;z-index:99999;box-shadow:0 6px 20px rgba(0,0,0,.6);max-width:280px}
+.request-item{display:flex;align-items:center;gap:10px;padding:10px;background:#2a1a1a;border:2px solid #e2231a;border-radius:10px;margin-bottom:8px}
+.request-item .info{flex:1}
+.request-item .name{font-weight:bold;font-size:14px}
+.request-item .sub{font-size:12px;color:#aaa}
+.fb-status{position:fixed;bottom:10px;left:10px;font-size:11px;padding:4px 10px;border-radius:8px;background:#222;color:#aaa;z-index:9999}
+.fb-status.online{background:#1b5e20;color:#c8e6c9}
+.fb-status.offline{background:#b71c1c;color:#ffcdd2}
+.fb-status.waiting{background:#ff6f00;color:#fff}
+.tabs{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap}
+.tab{padding:8px 14px;background:#222;border:2px solid #444;border-radius:8px;color:#fff;cursor:pointer;font-weight:bold;font-size:13px}
+.tab.active{background:#e2231a;border-color:#e2231a}
+@media(max-width:420px){
+  .logo{font-size:16px}
+  .cards{grid-template-columns:1fr 1fr;gap:8px}
+  .friend-avatar{width:40px;height:40px;font-size:22px}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">HJ,KJRC</div>
+  <div class="header-right">
+    <div class="user" id="userLabel" title="Клик — сменить ник">Не в сети</div>
+    <div class="wallet"><span>💰</span><span>ДЕНГИ:</span><span class="amount" id="moneyLabel">0</span></div>
+    <button class="btn gold" id="friendsBtn" style="position:relative">
+      👥 Друзья<span class="friend-badge" id="friendsBadge" style="display:none">0</span>
+    </button>
+  </div>
+</header>
+
+<div class="fb-status offline" id="fbStatus">🔥 Firebase: подключение...</div>
+
+<main class="container">
+  <div id="loginScreen" class="login-screen">
+    <h1>HJ,KJRC</h1>
+    <p>Играй как гость — настоящие друзья онлайн</p>
+    <button class="btn" onclick="loginAsGuest()">Играть</button>
+  </div>
+
+  <div id="hub" class="hidden">
+    <h2>Добро пожаловать, <span id="guestName">Гость</span>!</h2>
+    <div class="shop-bar">
+      <div>💰 Баланс: <b id="moneyHub" style="color:#ffc107">0 ДЕНЕГ</b></div>
+      <div>
+        <button class="btn gold" onclick="openNickModal()">✏️ Ник</button>
+        <button class="btn gold" onclick="openFriends()">👥 Друзья</button>
+      </div>
+    </div>
+    <p style="color:#aaa;">Выбери игру (пока 5 штук — можно добавить все 35):</p>
+    <div class="cards" id="cardsList"></div>
+  </div>
+
+  <div id="gameArea" class="game-area hidden">
+    <div class="game-header">
+      <h2 id="gameTitle"></h2>
+      <button class="btn secondary" onclick="closeGame()">Назад</button>
+    </div>
+
+    <div id="clickerGame" class="game hidden">
+      <p class="message">Очки: <b id="clickScore">0</b></p>
+      <button class="btn" onclick="clickerClick()">Кликни</button>
+    </div>
+    <div id="guessGame" class="game hidden">
+      <p class="message" id="guessMsg">Число 1–100</p>
+      <input type="number" id="guessInput" min="1" max="100">
+      <button class="btn" onclick="guessNumber()">Проверить</button>
+    </div>
+    <div id="snakeGame" class="game hidden">
+      <p class="message">Счёт: <b id="snakeScore">0</b></p>
+      <canvas id="snakeCanvas" width="360" height="360"></canvas>
+      <p class="message">Стрелки</p>
+    </div>
+    <div id="memoryGame" class="game hidden">
+      <p class="message" id="memMsg">Ходы: 0</p>
+      <div class="memory-grid" id="memGrid" style="display:grid;grid-template-columns:repeat(4,80px);gap:10px;justify-content:center;margin:16px auto;width:max-content"></div>
+    </div>
+    <div id="mathGame" class="game hidden">
+      <p class="message">Очки: <b id="mathScore">0</b></p>
+      <p class="message" style="font-size:32px" id="mathQ">?</p>
+      <input type="number" id="mathInput">
+      <button class="btn" onclick="mathAnswer()">ОК</button>
+      <button class="btn secondary" onclick="startMath()">Старт</button>
+    </div>
+  </div>
+</main>
+
+<!-- НИК -->
+<div id="nickModal" class="modal-bg hidden">
+  <div class="modal-box" style="max-width:420px">
+    <h2>✏️ Свой ник</h2>
+    <p class="nick-hint">От 2 до 15 символов. Буквы, цифры, _, пробел</p>
+    <div class="nick-input-row">
+      <input type="text" id="nickInput" maxlength="15" placeholder="Введи ник"
+             oninput="updateNickPreview()" onkeydown="if(event.key==='Enter')saveNick()">
+    </div>
+    <div class="nick-preview" id="nickPreview">Предпросмотр</div>
+    <p class="nick-hint" id="nickStatus"></p>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px">
+      <button class="btn gold" onclick="saveNick()">💾 Сохранить</button>
+      <button class="btn secondary" onclick="randomNick()">🎲 Случайный</button>
+      <button class="btn secondary" onclick="closeNickModal()">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<!-- ДРУЗЬЯ -->
+<div id="friendsModal" class="modal-bg hidden">
+  <div class="modal-box" style="max-width:560px">
+    <h2>👥 Настоящие друзья</h2>
+
+    <div class="tabs">
+      <button class="tab active" id="tabFriends" onclick="switchFriendTab('friends')">Мои друзья</button>
+      <button class="tab" id="tabRequests" onclick="switchFriendTab('requests')">
+        Запросы <span id="reqCount" style="background:#e2231a;border-radius:8px;padding:1px 6px;font-size:11px;display:none">0</span>
+      </button>
+      <button class="tab" id="tabSearch" onclick="switchFriendTab('search')">Найти игрока</button>
+    </div>
+
+    <!-- ПОИСК -->
+    <div id="paneSearch">
+      <p class="nick-hint">Введи ник игрока, которому хочешь отправить запрос</p>
+      <div class="nick-input-row">
+        <input type="text" id="searchInput" placeholder="Ник игрока" maxlength="15"
+               onkeydown="if(event.key==='Enter')searchPlayer()">
+        <button class="btn" onclick="searchPlayer()">🔍 Найти</button>
+      </div>
+      <div id="searchResults"></div>
+    </div>
+
+    <!-- ЗАПРОСЫ -->
+    <div id="paneRequests" class="hidden">
+      <div id="requestsList"></div>
+    </div>
+
+    <!-- ДРУЗЬЯ -->
+    <div id="paneFriends">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#888;padding:0 4px;margin-bottom:8px">
+        <span>Всего: <b id="friendsTotal" style="color:#ffc107">0</b></span>
+        <span>Онлайн: <b id="friendsOnline" style="color:#4caf50">0</b></span>
+      </div>
+      <div id="friendsList"></div>
+    </div>
+
+    <div style="text-align:center;margin-top:16px">
+      <button class="btn secondary" onclick="closeFriends()">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+<script>
+// ============================================================
+// 1. FIREBASE CONFIG — ЗАМЕНИ НА СВОЙ ИЗ КОНСОЛИ FIREBASE!
+// ============================================================
+const firebaseConfig = {
+  apiKey: "ВСТАВЬ_СВОЙ_API_KEY",
+  authDomain: "ВСТАВЬ.firebaseapp.com",
+  databaseURL: "https://ВСТАВЬ-default-rtdb.firebaseio.com",
+  projectId: "ВСТАВЬ",
+  storageBucket: "ВСТАВЬ.appspot.com",
+  messagingSenderId: "ВСТАВЬ",
+  appId: "ВСТАВЬ"
+};
+
+// ============ ИНИЦИАЛИЗАЦИЯ FIREBASE ============
+let db = null, auth = null;
+let MY_UID = null;
+let fbReady = false;
+
+try {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.database();
+  auth = firebase.auth();
+  setFbStatus('waiting', '🔥 Firebase: вход...');
+  
+  auth.signInAnonymously().then(user => {
+    MY_UID = user.uid;
+    fbReady = true;
+    setFbStatus('online', '🔥 Онлайн · ' + MY_UID.slice(0, 8));
+    console.log('Firebase UID:', MY_UID);
+    onFirebaseReady();
+  }).catch(err => {
+    setFbStatus('offline', '❌ Ошибка входа: ' + err.message);
+    console.error(err);
+  });
+} catch(e) {
+  setFbStatus('offline', '❌ Ошибка Firebase: ' + e.message);
+  console.error(e);
+}
+
+function setFbStatus(state, text) {
+  const el = document.getElementById('fbStatus');
+  if(!el) return;
+  el.className = 'fb-status ' + state;
+  el.textContent = text;
+}
+
+// ============ ДЕНЬГИ ============
+let MONEY = 0;
+const MONEY_KEY = 'HJ_KJRC_MONEY';
+function loadMoney(){ try{ MONEY = parseInt(localStorage.getItem(MONEY_KEY)) || 0; }catch(e){ MONEY = 0; } updateMoneyUI(); }
+function saveMoney(){ try{ localStorage.setItem(MONEY_KEY, MONEY); }catch(e){} }
+function updateMoneyUI(){
+  const l=document.getElementById('moneyLabel'); if(l) l.textContent=MONEY;
+  const h=document.getElementById('moneyHub'); if(h) h.textContent=MONEY+' ДЕНЕГ';
+}
+function addMoney(n, why){
+  if(n<=0) return;
+  MONEY += n; saveMoney(); updateMoneyUI();
+  showMoneyPopup('+'+n+' 💰'+(why?' ('+why+')':''));
+}
+function showMoneyPopup(t){
+  const p = document.createElement('div');
+  p.className = 'money-popup'; p.textContent = t;
+  document.body.appendChild(p);
+  setTimeout(()=>p.remove(), 1500);
+}
+
+// ============ НИК ============
+const NICK_KEY = 'HJ_KJRC_NICK';
+let NICK = 'Гость';
+function loadNick(){ try{ NICK = localStorage.getItem(NICK_KEY) || 'Гость'; }catch(e){ NICK = 'Гость'; } }
+function saveNickStorage(){ try{ localStorage.setItem(NICK_KEY, NICK); }catch(e){} }
+function getNick(){ return NICK; }
+function validateNick(n){
+  n = (n||'').trim();
+  if(n.length < 2) return { ok:false, msg:'Минимум 2 символа' };
+  if(n.length > 15) return { ok:false, msg:'Максимум 15' };
+  if(!/^[A-Za-zА-Яа-яЁё0-9_ ]+$/.test(n)) return { ok:false, msg:'Буквы, цифры, _ и пробел' };
+  return { ok:true, msg:'Ок', value:n };
+}
+function openNickModal(){
+  document.getElementById('nickModal').classList.remove('hidden');
+  document.getElementById('nickInput').value = NICK;
+  updateNickPreview();
+  setTimeout(()=>document.getElementById('nickInput').focus(), 100);
+}
+function closeNickModal(){ document.getElementById('nickModal').classList.add('hidden'); }
+function updateNickPreview(){
+  const v = document.getElementById('nickInput').value;
+  const prev = document.getElementById('nickPreview');
+  const stat = document.getElementById('nickStatus');
+  prev.textContent = v || 'Предпросмотр';
+  prev.classList.remove('nick-bad','nick-good');
+  const r = validateNick(v);
+  if(r.ok){ prev.classList.add('nick-good'); stat.textContent = '✅ ' + r.msg; stat.style.color = '#4caf50'; }
+  else { prev.classList.add('nick-bad'); stat.textContent = '❌ ' + r.msg; stat.style.color = '#e2231a'; }
+}
+function saveNick(){
+  const v = document.getElementById('nickInput').value;
+  const r = validateNick(v);
+  if(!r.ok){ showMoneyPopup('❌ ' + r.msg); return; }
+  NICK = r.value;
+  saveNickStorage();
+  updateHeaderUser();
+  pushMyProfile();
+  closeNickModal();
+  showMoneyPopup('✏️ Ник: ' + NICK);
+}
+function randomNick(){
+  const adj = ['Быстрый','Сильный','Тёмный','Ледяной','Огненный','Грозный','Дикий','Хитрый','Смелый','Ловкий'];
+  const noun = ['Тигр','Волк','Дракон','Феникс','Ястреб','Лев','Медведь','Кот','Лис','Ворон'];
+  const n = adj[Math.floor(Math.random()*adj.length)] + noun[Math.floor(Math.random()*noun.length)] + (Math.floor(Math.random()*99)+1);
+  document.getElementById('nickInput').value = n;
+  updateNickPreview();
+}
+function updateHeaderUser(){
+  const u = document.getElementById('userLabel');
+  if(u) u.textContent = NICK;
+  const g = document.getElementById('guestName');
+  if(g) g.textContent = NICK;
+}
+document.addEventListener('click', e=>{
+  if(e.target && e.target.id === 'userLabel') openNickModal();
+});
+
+// ============ ПРОФИЛЬ В FIREBASE ============
+function pushMyProfile(){
+  if(!fbReady || !MY_UID) return;
+  db.ref('players/' + MY_UID).set({
+    name: NICK,
+    uid: MY_UID,
+    lastSeen: Date.now()
+  }).catch(e=>console.warn('pushMyProfile', e));
+  db.ref('status/' + MY_UID).set({
+    online: true,
+    name: NICK,
+    lastSeen: Date.now()
+  }).catch(e=>console.warn('status', e));
+}
+
+// ============ FRIENDS (Firebase) ============
+let myFriends = {};        // { uid: {name, since, gifts} }
+let myRequests = {};       // { fromUid: {name, time} }
+let friendStatusCache = {};// { uid: {online, lastSeen, name} }
+let friendListeners = {};  // активные ref'ы
+
+function onFirebaseReady(){
+  updateHeaderUser();
+  pushMyProfile();
+
+  // Периодическое обновление статуса
+  setInterval(() => {
+    if(!fbReady || !MY_UID) return;
+    db.ref('status/' + MY_UID).update({ lastSeen: Date.now(), online: true });
+  }, 30000);
+
+  // При закрытии — оффлайн
+  window.addEventListener('beforeunload', () => {
+    if(fbReady && MY_UID) db.ref('status/' + MY_UID).update({ online: false });
+  });
+
+  // Слушаем запросы ко мне
+  db.ref('requests/' + MY_UID).on('value', snap => {
+    myRequests = snap.val() || {};
+    renderRequests();
+    updateFriendsBadge();
+  });
+
+  // Слушаем моих друзей
+  db.ref('friends/' + MY_UID).on('value', snap => {
+    myFriends = snap.val() || {};
+    // Подписки на статусы друзей
+    Object.keys(myFriends).forEach(uid => listenFriendStatus(uid));
+    // Отписка от удалённых
+    Object.keys(friendListeners).forEach(uid => {
+      if(!myFriends[uid]){
+        friendListeners[uid].off();
+        delete friendListeners[uid];
+        delete friendStatusCache[uid];
+      }
+    });
+    renderFriends();
+    updateFriendsBadge();
+  });
+}
+
+function listenFriendStatus(uid){
+  if(friendListeners[uid]) return;
+  const ref = db.ref('status/' + uid);
+  friendListeners[uid] = ref;
+  ref.on('value', snap => {
+    const s = snap.val() || {};
+    const isOnline = s.online && (Date.now() - (s.lastSeen || 0) < 120000);
+    friendStatusCache[uid] = { online: !!isOnline, lastSeen: s.lastSeen || 0, name: s.name || '' };
+    renderFriends();
+  });
+}
+
+// ПОИСК игрока
+function searchPlayer(){
+  if(!fbReady){ showMoneyPopup('⏳ Подключение к Firebase...'); return; }
+  const name = (document.getElementById('searchInput').value || '').trim();
+  if(name.length < 2){ showMoneyPopup('❌ Минимум 2 символа'); return; }
+  const box = document.getElementById('searchResults');
+  box.innerHTML = '<p class="nick-hint">Поиск...</p>';
+
+  db.ref('players').orderByChild('name').equalTo(name).once('value').then(snap => {
+    if(!snap.exists()){
+      box.innerHTML = '<p class="nick-hint" style="color:#e2231a">❌ Игрок не найден</p>';
+      return;
+    }
+    let html = '';
+    snap.forEach(child => {
+      const uid = child.key;
+      const data = child.val();
+      if(uid === MY_UID){
+        html += '<div class="friend-item"><div class="friend-avatar">👤</div><div class="friend-info"><div class="friend-name">' + escapeHtml(data.name) + '</div><div class="friend-status" style="color:#ffc107">Это ты</div></div></div>';
+        return;
+      }
+      if(myFriends[uid]){
+        html += '<div class="friend-item online"><div class="friend-avatar">✅</div><div class="friend-info"><div class="friend-name">' + escapeHtml(data.name) + '</div><div class="friend-status" style="color:#4caf50">Уже в друзьях</div></div></div>';
+        return;
+      }
+      html += '<div class="friend-item"><div class="friend-avatar">👤</div><div class="friend-info"><div class="friend-name">' + escapeHtml(data.name) + '</div><div class="friend-status" style="color:#aaa">Найден</div></div><div class="friend-actions"><button class="btn green" style="padding:6px 12px;font-size:13px" onclick="sendFriendRequest(\'' + uid + '\',\'' + escapeHtml(data.name) + '\')">➕ В друзья</button></div></div>';
+    });
+    box.innerHTML = html;
+  }).catch(err => {
+    box.innerHTML = '<p class="nick-hint" style="color:#e2231a">Ошибка: ' + err.message + '</p>';
+  });
+}
+
+// ОТПРАВКА запроса в друзья
+function sendFriendRequest(targetUid, targetName){
+  if(!fbReady) return;
+  if(!targetUid || targetUid === MY_UID){ showMoneyPopup('❌ Нельзя'); return; }
+  db.ref('requests/' + targetUid + '/' + MY_UID).set({
+    name: NICK,
+    time: Date.now()
+  }).then(() => {
+    showMoneyPopup('📩 Запрос отправлен: ' + targetName);
+  }).catch(e => showMoneyPopup('❌ Ошибка: ' + e.message));
+}
+
+// ПРИНЯТЬ запрос
+function acceptRequest(fromUid){
+  if(!fbReady) return;
+  const fromName = (myRequests[fromUid] && myRequests[fromUid].name) || 'Друг';
+  const now = Date.now();
+  Promise.all([
+    db.ref('friends/' + MY_UID + '/' + fromUid).set({ name: fromName, since: now, gifts: 0 }),
+    db.ref('friends/' + fromUid + '/' + MY_UID).set({ name: NICK, since: now, gifts: 0 }),
+    db.ref('requests/' + MY_UID + '/' + fromUid).remove()
+  ]).then(() => {
+    showMoneyPopup('✅ Теперь вы друзья: ' + fromName);
+  }).catch(e => showMoneyPopup('❌ ' + e.message));
+}
+
+// ОТКЛОНИТЬ
+function declineRequest(fromUid){
+  if(!fbReady) return;
+  db.ref('requests/' + MY_UID + '/' + fromUid).remove()
+    .then(() => showMoneyPopup('Отклонено'));
+}
+
+// УДАЛИТЬ друга (у обоих)
+function removeFriend(friendUid){
+  if(!fbReady) return;
+  if(!confirm('Удалить друга?')) return;
+  Promise.all([
+    db.ref('friends/' + MY_UID + '/' + friendUid).remove(),
+    db.ref('friends/' + friendUid + '/' + MY_UID).remove()
+  ]).then(() => showMoneyPopup('🗑 Удалён'));
+}
+
+// ПОДАРОК (простая запись + деньги локально)
+function giftFriend(friendUid){
+  const amount = 25;
+  if(MONEY < amount){ showMoneyPopup('❌ Нужно ' + amount + ' ДЕНЕГ'); return; }
+  if(!fbReady) return;
+  MONEY -= amount; saveMoney(); updateMoneyUI();
+  const f = myFriends[friendUid];
+  showMoneyPopup('🎁 Отправлено ' + amount + ' 💰 для ' + (f ? f.name : 'друг'));
+
+  // Пишем событие в Firebase — друг прочитает
+  db.ref('gifts/' + friendUid).push({
+    from: MY_UID,
+    fromName: NICK,
+    amount: amount,
+    time: Date.now()
+  });
+
+  // Бонус обратно (за хороший поступок)
+  setTimeout(() => {
+    const back = amount + Math.floor(Math.random()*30);
+    addMoney(back, 'ответный подарок');
+  }, 5000);
+}
+
+// ============ РЕНДЕР ============
+function updateFriendsBadge(){
+  const badge = document.getElementById('friendsBadge');
+  if(!badge) return;
+  const cnt = Object.keys(myRequests).length;
+  if(cnt > 0){ badge.style.display = 'inline-block'; badge.textContent = cnt; }
+  else badge.style.display = 'none';
+  const rc = document.getElementById('reqCount');
+  if(rc){
+    if(cnt > 0){ rc.style.display = 'inline-block'; rc.textContent = cnt; }
+    else rc.style.display = 'none';
+  }
+}
+
+function renderFriends(){
+  const list = document.getElementById('friendsList');
+  const total = document.getElementById('friendsTotal');
+  const onl = document.getElementById('friendsOnline');
+  if(!list) return;
+
+  const uids = Object.keys(myFriends);
+  let onlineCount = 0;
+  uids.forEach(uid => { if(friendStatusCache[uid] && friendStatusCache[uid].online) onlineCount++; });
+  if(total) total.textContent = uids.length;
+  if(onl) onl.textContent = onlineCount;
+
+  if(!uids.length){
+    list.innerHTML = '<p class="nick-hint">Пока нет друзей. Используй вкладку «Найти игрока».</p>';
+    return;
+  }
+
+  uids.sort((a,b) => {
+    const oa = friendStatusCache[a] && friendStatusCache[a].online ? 0 : 1;
+    const ob = friendStatusCache[b] && friendStatusCache[b].online ? 0 : 1;
+    return oa - ob;
+  });
+
+  let html = '';
+  uids.forEach(uid => {
+    const f = myFriends[uid];
+    const st = friendStatusCache[uid] || {};
+    const isOn = !!st.online;
+    const statusText = isOn ? '🟢 В сети' : '⚫ Не в сети';
+    const statusColor = isOn ? '#4caf50' : '#666';
+    html += '<div class="friend-item ' + (isOn?'online':'') + '">'
+      + '<div class="friend-avatar ' + (isOn?'online':'') + '">' + (isOn?'😀':'💤') + '</div>'
+      + '<div class="friend-info">'
+        + '<div class="friend-name">' + escapeHtml(f.name || 'Друг') + '</div>'
+        + '<div class="friend-status" style="color:' + statusColor + '">' + statusText + '</div>'
+      + '</div>'
+      + '<div class="friend-actions">'
+        + '<button class="btn gold" style="padding:6px 10px;font-size:12px" onclick="giftFriend(\'' + uid + '\')" ' + (isOn?'':'disabled') + '>🎁</button>'
+        + '<button class="btn secondary" style="padding:6px 10px;font-size:12px" onclick="removeFriend(\'' + uid + '\')">🗑</button>'
+      + '</div>'
+    + '</div>';
+  });
+  list.innerHTML = html;
+}
+
+function renderRequests(){
+  const list = document.getElementById('requestsList');
+  if(!list) return;
+  const uids = Object.keys(myRequests);
+  if(!uids.length){
+    list.innerHTML = '<p class="nick-hint">Запросов нет.</p>';
+    return;
+  }
+  let html = '';
+  uids.forEach(uid => {
+    const r = myRequests[uid];
+    html += '<div class="request-item">'
+      + '<div class="friend-avatar">📩</div>'
+      + '<div class="info">'
+        + '<div class="name">' + escapeHtml(r.name || 'Игрок') + '</div>'
+        + '<div class="sub">Хочет добавить в друзья</div>'
+      + '</div>'
+      + '<div class="friend-actions">'
+        + '<button class="btn green" style="padding:6px 10px;font-size:12px" onclick="acceptRequest(\'' + uid + '\')">✅</button>'
+        + '<button class="btn secondary" style="padding:6px 10px;font-size:12px" onclick="declineRequest(\'' + uid + '\')">❌</button>'
+      + '</div>'
+    + '</div>';
+  });
+  list.innerHTML = html;
+}
+
+function switchFriendTab(tab){
+  ['friends','requests','search'].forEach(t => {
+    const tabEl = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+    const pane = document.getElementById('pane' + t.charAt(0).toUpperCase() + t.slice(1));
+    if(tabEl) tabEl.classList.toggle('active', t === tab);
+    if(pane) pane.classList.toggle('hidden', t !== tab);
+  });
+}
+
+function openFriends(){
+  document.getElementById('friendsModal').classList.remove('hidden');
+  renderFriends();
+  renderRequests();
+}
+function closeFriends(){ document.getElementById('friendsModal').classList.add('hidden'); }
+
+function escapeHtml(s){
+  return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ============ ИГРЫ (5 базовых) ============
+const GAMES = [
+  ['clicker','🖱️ Кликер','Кликай','+1'],
+  ['guess','🔢 Угадай число','1–100','+20'],
+  ['snake','🐍 Змейка','Стрелки','+1'],
+  ['memory','🧠 Память','Пары','+40'],
+  ['math','➕ Счёт','Примеры','+2']
+];
+const titles = Object.fromEntries(GAMES.map(([id,t]) => [id, t.replace(/^[^\s]+\s/, '')]));
+
+function loginAsGuest(){
+  loadNick();
+  updateHeaderUser();
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('hub').classList.remove('hidden');
+  loadMoney();
+  buildCards();
+  // Отправить профиль в Firebase, когда готов
+  if(fbReady) pushMyProfile();
+}
+
+function buildCards(){
+  const list = document.getElementById('cardsList');
+  list.innerHTML = '';
+  GAMES.forEach(([id,title,desc,reward]) => {
+    const c = document.createElement('div');
+    c.className = 'card';
+    c.innerHTML = '<div class="reward">' + reward + '</div><h3>' + title + '</h3><p>' + desc + '</p>'
+                + '<button class="btn" onclick="openGame(\'' + id + '\')">Играть</button>';
+    list.appendChild(c);
+  });
+}
+
+function openGame(id){
+  document.getElementById('hub').classList.add('hidden');
+  document.getElementById('gameArea').classList.remove('hidden');
+  document.getElementById('gameTitle').textContent = titles[id] || id;
+  document.querySelectorAll('.game').forEach(el => el.classList.add('hidden'));
+  const el = document.getElementById(id + 'Game');
+  if(el) el.classList.remove('hidden');
+  if(id === 'clicker') resetClicker();
+  if(id === 'guess') resetGuess();
+  if(id === 'snake') startSnake();
+  if(id === 'memory') resetMemory();
+  if(id === 'math') { document.getElementById('mathScore').textContent = 0; }
+}
+function closeGame(){
+  document.getElementById('gameArea').classList.add('hidden');
+  document.getElementById('hub').classList.remove('hidden');
+}
+
+// Кликер
+let clickScore = 0;
+function clickerClick(){ clickScore++; document.getElementById('clickScore').textContent = clickScore; if(clickScore % 25 === 0) addMoney(1, 'кликер'); }
+function resetClicker(){ clickScore = 0; document.getElementById('clickScore').textContent = 0; }
+
+// Угадай число
+let secret = Math.floor(Math.random()*100)+1, attempts = 0;
+function guessNumber(){
+  const v = parseInt(document.getElementById('guessInput').value);
+  const m = document.getElementById('guessMsg');
+  if(!v || v < 1 || v > 100){ m.textContent = '1–100'; return; }
+  attempts++;
+  if(v === secret){ m.textContent = '🎉 Угадал! Попыток: ' + attempts; addMoney(20, 'число'); }
+  else if(v < secret) m.textContent = '📈 Больше (' + attempts + ')';
+  else m.textContent = '📉 Меньше (' + attempts + ')';
+}
+function resetGuess(){ secret = Math.floor(Math.random()*100)+1; attempts = 0; document.getElementById('guessInput').value = ''; document.getElementById('guessMsg').textContent = 'Число 1–100'; }
+
+// Змейка
+let snakeInterval = null, snake, snakeDir, snakeFood, snakeScore, snakeAlive;
+function startSnake(){
+  const canvas = document.getElementById('snakeCanvas');
+  const ctx = canvas.getContext('2d');
+  const cell = 24, size = 15;
+  snake = [{x:7,y:7}]; snakeDir = {x:1,y:0}; snakeScore = 0; snakeAlive = true;
+  function rndF(){ while(true){ const f = {x:Math.floor(Math.random()*size), y:Math.floor(Math.random()*size)}; if(!snake.some(s => s.x===f.x && s.y===f.y)) return f; } }
+  snakeFood = rndF();
+  document.getElementById('snakeScore').textContent = 0;
+  if(snakeInterval) clearInterval(snakeInterval);
+  function draw(){
+    ctx.fillStyle = '#222'; ctx.fillRect(0,0,360,360);
+    ctx.fillStyle = '#e2231a'; ctx.fillRect(snakeFood.x*cell+2, snakeFood.y*cell+2, cell-4, cell-4);
+    snake.forEach((s,i) => { ctx.fillStyle = i===0?'#8bc34a':'#4caf50'; ctx.fillRect(s.x*cell+2, s.y*cell+2, cell-4, cell-4); });
+    if(!snakeAlive){
+      ctx.fillStyle = 'rgba(0,0,0,.7)'; ctx.fillRect(0,0,360,360);
+      ctx.fillStyle = '#fff'; ctx.font = '24px Arial'; ctx.textAlign = 'center';
+      ctx.fillText('Игра окончена', 180, 170); ctx.font = '18px Arial';
+      ctx.fillText('Счёт: ' + snakeScore, 180, 200);
+    }
+  }
+  function step(){
+    if(!snakeAlive) return;
+    const h = {x:snake[0].x + snakeDir.x, y:snake[0].y + snakeDir.y};
+    if(h.x<0 || h.y<0 || h.x>=size || h.y>=size || snake.some(s => s.x===h.x && s.y===h.y)){ snakeAlive = false; draw(); return; }
+    snake.unshift(h);
+    if(h.x === snakeFood.x && h.y === snakeFood.y){ snakeScore++; document.getElementById('snakeScore').textContent = snakeScore; snakeFood = rndF(); addMoney(1, 'яблоко'); }
+    else snake.pop();
+    draw();
+  }
+  draw();
+  snakeInterval = setInterval(step, 130);
+}
+document.addEventListener('keydown', e => {
+  if(!document.getElementById('snakeGame').classList.contains('hidden') && snakeDir){
+    if(e.key==='ArrowUp' && snakeDir.y===0) snakeDir = {x:0, y:-1};
+    else if(e.key==='ArrowDown' && snakeDir.y===0) snakeDir = {x:0, y:1};
+    else if(e.key==='ArrowLeft' && snakeDir.x===0) snakeDir = {x:-1, y:0};
+    else if(e.key==='ArrowRight' && snakeDir.x===0) snakeDir = {x:1, y:0};
+  }
+});
+
+// Память
+let memCards = [], memOpen = [], memMoves = 0, memLock = false, memPaid = false;
+const memSymbols = ['🍎','🍌','🍇','🍓','🍒','🥝','🍍','🥥'];
+function resetMemory(){
+  memCards = [...memSymbols, ...memSymbols].sort(() => Math.random() - 0.5);
+  memOpen = []; memMoves = 0; memLock = false; memPaid = false;
+  document.getElementById('memMsg').textContent = 'Ходы: 0';
+  const g = document.getElementById('memGrid'); g.innerHTML = '';
+  memCards.forEach(s => {
+    const b = document.createElement('button');
+    b.className = 'mem-card'; b.dataset.sym = s; b.textContent = '?';
+    b.style.cssText = 'width:80px;height:80px;font-size:34px;background:#333;border:none;border-radius:8px;cursor:pointer;color:#fff';
+    b.onclick = () => memFlip(b);
+    g.appendChild(b);
+  });
+}
+function memFlip(btn){
+  if(memLock || btn.classList.contains('open') || btn.classList.contains('done')) return;
+  btn.textContent = btn.dataset.sym; btn.classList.add('open'); btn.style.background = '#e2231a';
+  memOpen.push(btn);
+  if(memOpen.length === 2){
+    memMoves++; document.getElementById('memMsg').textContent = 'Ходы: ' + memMoves;
+    if(memOpen[0].dataset.sym === memOpen[1].dataset.sym){
+      memOpen.forEach(b => { b.classList.remove('open'); b.classList.add('done'); b.style.background = '#2e7d32'; });
+      memOpen = [];
+      if([...document.querySelectorAll('.mem-card')].every(b => b.classList.contains('done'))){
+        document.getElementById('memMsg').textContent = '🏆 Ходов: ' + memMoves;
+        if(!memPaid){ memPaid = true; addMoney(40, 'память'); }
+      }
+    } else {
+      memLock = true;
+      const p = [...memOpen];
+      setTimeout(() => { p.forEach(b => { b.textContent = '?'; b.classList.remove('open'); b.style.background = '#333'; }); memOpen = []; memLock = false; }, 700);
+    }
+  }
+}
+
+// Счёт
+let mathScore = 0, mathAns = 0;
+function startMath(){
+  mathScore = 0;
+  document.getElementById('mathScore').textContent = 0;
+  nextMathQ();
+}
+function nextMathQ(){
+  const a = Math.floor(Math.random()*10)+1, b = Math.floor(Math.random()*10)+1;
+  mathAns = a + b;
+  document.getElementById('mathQ').textContent = a + ' + ' + b + ' = ?';
+  document.getElementById('mathInput').value = '';
+  document.getElementById('mathInput').focus();
+}
+function mathAnswer(){
+  if(+document.getElementById('mathInput').value === mathAns){
+    mathScore++;
+    document.getElementById('mathScore').textContent = mathScore;
+    addMoney(2, 'счёт');
+  }
+  nextMathQ();
+}
+
+// ============ СТАРТ ============
+window.addEventListener('load', () => {
+  loadMoney();
+  loadNick();
+  updateHeaderUser();
+  document.getElementById('friendsBtn').onclick = openFriends;
+});
+</script>
+
+</body>
+</html>
