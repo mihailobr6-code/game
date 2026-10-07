@@ -3,147 +3,203 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roblox Web — Мини-игры, валюта и чат с ботами</title>
+<title>Roblox Web — Мини-игры и чат с ботами</title>
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: #1a1a2e; color: #fff; }
-  header { background: #0f0f1a; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #00b894; flex-wrap: wrap; gap: 10px; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #1a1a2e;
+    color: #fff;
+  }
+  header {
+    background: #0f0f1a;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #00b894;
+  }
   .logo { font-size: 24px; font-weight: bold; color: #00b894; }
-  .header-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  .user { background: #16213e; padding: 8px 15px; border-radius: 20px; cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
-  .user:hover { background: #1a4a7a; border-color: #00b894; transform: scale(1.05); }
-  .money { background: linear-gradient(135deg, #f1c40f, #e67e22); color: #000; padding: 8px 18px; border-radius: 20px; font-weight: bold; font-size: 16px; box-shadow: 0 0 15px rgba(241,196,15,0.5); transition: transform 0.2s; }
-  .money.bump { transform: scale(1.15); }
-  .reset-btn, .nick-btn, .items-btn { color: white; border: none; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
-  .reset-btn { background: #e94560; }
-  .nick-btn { background: #00b894; color: #000; }
-  .items-btn { background: #9b59b6; }
-  .reset-btn:hover, .nick-btn:hover, .items-btn:hover { transform: scale(1.05); filter: brightness(1.15); }
-  nav { display: flex; gap: 10px; padding: 10px 20px; background: #16213e; flex-wrap: wrap; border-bottom: 2px solid #0f3460; }
-  .nav-btn { background: #0f3460; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 13px; }
+  .user { background: #16213e; padding: 8px 15px; border-radius: 20px; }
+  nav {
+    display: flex;
+    gap: 10px;
+    padding: 10px 20px;
+    background: #16213e;
+    flex-wrap: wrap;
+    border-bottom: 2px solid #0f3460;
+  }
+  .nav-btn {
+    background: #0f3460;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+  }
   .nav-btn:hover { background: #1a4a7a; }
   .nav-btn.active { background: #00b894; color: #000; }
-  main { padding: 20px; max-width: 1200px; margin: 0 auto; }
+  main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
   section { display: none; animation: fadeIn 0.3s; }
   section.active { display: block; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes flash { 0%,100% { background: #16213e; } 50% { background: #00b894; } }
-  section.flash { animation: flash 0.6s 2; }
   h1 { color: #00b894; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 20px; }
-  .card { background: #16213e; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 2px solid #0f3460; transition: transform 0.2s, border-color 0.2s; }
-  .card:hover { transform: translateY(-5px); border-color: #00b894; }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+  .card {
+    background: #16213e;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    border: 2px solid #0f3460;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    border-color: #00b894;
+  }
   .card h3 { margin-top: 0; color: #00b894; }
-  .card .price { color: #f1c40f; font-weight: bold; font-size: 18px; margin: 8px 0; }
-  .btn { background: #00b894; color: #000; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin: 5px; transition: 0.2s; }
+  .btn {
+    background: #00b894;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 5px;
+    transition: 0.2s;
+  }
   .btn:hover { background: #00d1a0; }
-  .btn:disabled { background: #555; color: #999; cursor: not-allowed; }
   .btn-secondary { background: #e94560; color: white; }
   .btn-secondary:hover { background: #ff5a75; }
-  .btn-gold { background: linear-gradient(135deg, #f1c40f, #e67e22); color: #000; }
-  .btn-purple { background: #9b59b6; color: white; }
-  .btn-blue { background: #3498db; color: white; }
-  .btn-green { background: linear-gradient(135deg, #00b894, #00d1a0); color: #000; font-weight: bold; }
-  .game-area { background: #16213e; border-radius: 15px; padding: 20px; margin-top: 20px; }
+  .game-area {
+    background: #16213e;
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 20px;
+  }
   .score { font-size: 24px; margin: 10px 0; color: #00b894; font-weight: bold; }
-  .input-num { padding: 10px; border-radius: 8px; border: none; background: #1a1a2e; color: white; font-size: 18px; width: 150px; text-align: center; }
+  .input-num {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background: #1a1a2e;
+    color: white;
+    font-size: 18px;
+    width: 150px;
+    text-align: center;
+  }
   .hint { color: #f1c40f; font-weight: bold; margin: 10px 0; font-size: 18px; }
-  .ttt-grid { display: grid; grid-template-columns: repeat(3, 100px); gap: 5px; justify-content: center; margin: 20px auto; }
-  .ttt-cell { width: 100px; height: 100px; background: #0f3460; border: none; border-radius: 10px; font-size: 40px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: 0.2s; }
+
+  /* Крестики-нолики */
+  .ttt-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    gap: 5px;
+    justify-content: center;
+    margin: 20px auto;
+  }
+  .ttt-cell {
+    width: 100px;
+    height: 100px;
+    background: #0f3460;
+    border: none;
+    border-radius: 10px;
+    font-size: 40px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: 0.2s;
+  }
   .ttt-cell:hover { background: #1a4a7a; }
   .ttt-cell.win { background: #00b894; color: #000; }
 
-  /* ЗМЕЙКА */
-  #snakeCanvas { background: #0f3460; border-radius: 15px; display: block; margin: 15px auto; border: 3px solid #00b894; max-width: 100%; }
-
-  /* ПАМЯТЬ */
-  .memory-grid { display: grid; grid-template-columns: repeat(4, 80px); gap: 8px; justify-content: center; margin: 20px auto; }
-  .memory-card { width: 80px; height: 80px; background: #0f3460; border: 2px solid #1a4a7a; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 34px; transition: 0.3s; user-select: none; }
-  .memory-card:hover { background: #1a4a7a; transform: scale(1.05); }
-  .memory-card.flipped { background: #00b894; border-color: #00d1a0; }
-  .memory-card.matched { background: #f1c40f; border-color: #e67e22; cursor: default; animation: pop 0.4s; }
-  @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-
-  /* КНБ */
-  .rps-row { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin: 20px 0; }
-  .rps-btn { width: 110px; height: 110px; background: #0f3460; border: 3px solid #1a4a7a; border-radius: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 55px; transition: 0.2s; }
-  .rps-btn:hover { background: #1a4a7a; transform: scale(1.1); border-color: #00b894; }
-  .rps-btn.selected { background: #00b894; border-color: #00d1a0; }
-  .rps-result { display: flex; justify-content: center; align-items: center; gap: 30px; margin: 20px 0; flex-wrap: wrap; }
-  .rps-choice { font-size: 80px; min-width: 100px; text-align: center; }
-  .rps-vs { font-size: 30px; color: #e94560; font-weight: bold; }
-  .rps-score { display: flex; justify-content: center; gap: 40px; font-size: 22px; font-weight: bold; margin: 15px 0; }
-  .rps-score .you { color: #00b894; }
-  .rps-score .bot { color: #e94560; }
-  .rps-status { font-size: 22px; font-weight: bold; margin: 15px 0; min-height: 30px; }
-
-  .chat-container { display: flex; flex-direction: column; height: 500px; background: #16213e; border-radius: 0 0 15px 15px; overflow: hidden; }
-  .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-  .message { max-width: 80%; padding: 10px 15px; border-radius: 15px; word-wrap: break-word; animation: fadeIn 0.2s; }
-  .message.user { background: #00b894; color: #000; align-self: flex-end; border-bottom-right-radius: 3px; }
-  .message.bot { background: #2d4059; color: #fff; align-self: flex-start; border-bottom-left-radius: 3px; }
-  .message.thanks { background: linear-gradient(135deg, #f1c40f, #e67e22); color: #000; font-weight: bold; box-shadow: 0 0 20px rgba(241,196,15,0.6); }
-  .message.gift-note { background: #9b59b6; color: white; align-self: flex-end; border-bottom-right-radius: 3px; font-size: 13px; font-style: italic; opacity: 0.9; }
-  .chat-input-area { display: flex; padding: 10px; background: #0f0f1a; gap: 10px; }
-  .chat-input-area input { flex: 1; padding: 10px; border-radius: 8px; border: none; outline: none; background: #1a1a2e; color: white; font-size: 16px; }
-  .bot-select { margin-bottom: 10px; padding: 8px; border-radius: 8px; background: #0f3460; color: white; border: none; width: 100%; max-width: 300px; font-size: 16px; }
-  .inventory { background: #0f3460; padding: 15px; border-radius: 10px; margin-top: 15px; }
-  .inventory h3 { margin-top: 0; color: #f1c40f; }
-  .inventory-items { display: flex; gap: 10px; flex-wrap: wrap; }
-  .inv-item { background: #1a1a2e; padding: 8px 12px; border-radius: 8px; border: 1px solid #f1c40f; }
-  .float-money { position: fixed; color: #f1c40f; font-weight: bold; font-size: 22px; pointer-events: none; animation: floatUp 1s ease-out forwards; z-index: 9999; text-shadow: 0 0 8px #000; }
-  @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-60px); } }
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
-  .modal-overlay.show { display: flex; }
-  .modal { background: #16213e; padding: 25px 30px; border-radius: 15px; border: 2px solid #e94560; max-width: 450px; width: 100%; text-align: center; animation: fadeIn 0.2s; max-height: 85vh; overflow-y: auto; }
-  .modal h2 { color: #e94560; margin-top: 0; }
-  .modal.nick-modal { border-color: #00b894; } .modal.nick-modal h2 { color: #00b894; }
-  .modal.items-modal { border-color: #9b59b6; } .modal.items-modal h2 { color: #9b59b6; }
-  .modal.friends-modal { border-color: #3498db; } .modal.friends-modal h2 { color: #3498db; }
-  .modal.gift-modal { border-color: #00b894; } .modal.gift-modal h2 { color: #00b894; }
-  .modal p { font-size: 16px; }
-  .modal input { width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #0f3460; background: #1a1a2e; color: white; font-size: 16px; margin: 8px 0; outline: none; text-align: center; }
-  .modal input:focus { border-color: #00b894; }
-  .modal textarea { width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #0f3460; background: #1a1a2e; color: white; font-size: 15px; margin: 8px 0; outline: none; font-family: inherit; resize: vertical; min-height: 70px; }
-  .modal textarea:focus { border-color: #00b894; }
-  .modal label { display: block; text-align: left; font-size: 14px; color: #00b894; font-weight: bold; margin-top: 10px; }
-  .modal-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
-  .friends-list { display: flex; flex-direction: column; gap: 10px; margin: 15px 0; max-height: 300px; overflow-y: auto; }
-  .friend-card { display: flex; align-items: center; justify-content: space-between; background: #0f3460; padding: 12px 15px; border-radius: 10px; gap: 10px; transition: 0.2s; }
-  .friend-card:hover { background: #1a4a7a; }
-  .friend-info { display: flex; align-items: center; gap: 10px; text-align: left; flex: 1; }
-  .friend-avatar { font-size: 32px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #16213e; border-radius: 50%; border: 2px solid #3498db; }
-  .friend-name { font-weight: bold; font-size: 16px; }
-  .friend-status { font-size: 12px; color: #00b894; }
-  .friend-status.offline { color: #888; }
-  .friend-btns { display: flex; gap: 5px; flex-wrap: wrap; }
-  .friend-btns .btn { padding: 6px 12px; font-size: 13px; margin: 0; }
-  .add-friend-box { background: #0f3460; padding: 15px; border-radius: 10px; margin-top: 15px; text-align: left; }
-  .add-friend-box h3 { margin-top: 0; color: #3498db; }
-  .add-friend-row { display: flex; gap: 8px; margin-top: 10px; }
-  .add-friend-row input { flex: 1; padding: 10px; border-radius: 8px; border: 2px solid #16213e; background: #1a1a2e; color: white; font-size: 15px; outline: none; }
-  .add-friend-row input:focus { border-color: #3498db; }
-  .online-players { margin-top: 15px; text-align: left; }
-  .online-players h3 { color: #3498db; margin-bottom: 10px; }
-  .players-grid { display: flex; flex-direction: column; gap: 8px; }
-  .player-row { display: flex; align-items: center; justify-content: space-between; background: #0f3460; padding: 10px 12px; border-radius: 8px; gap: 10px; }
-  .quick-amounts { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 10px 0; }
-  .quick-amounts button { background: #0f3460; color: #f1c40f; border: 2px solid #f1c40f; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-  .quick-amounts button:hover { background: #f1c40f; color: #000; transform: scale(1.05); }
-  .controls { color: #888; font-size: 14px; }
+  /* Чат */
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+    background: #16213e;
+    border-radius: 0 0 15px 15px;
+    overflow: hidden;
+  }
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .message {
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 15px;
+    word-wrap: break-word;
+    animation: fadeIn 0.2s;
+  }
+  .message.user {
+    background: #00b894;
+    color: #000;
+    align-self: flex-end;
+    border-bottom-right-radius: 3px;
+  }
+  .message.bot {
+    background: #2d4059;
+    color: #fff;
+    align-self: flex-start;
+    border-bottom-left-radius: 3px;
+  }
+  .chat-input-area {
+    display: flex;
+    padding: 10px;
+    background: #0f0f1a;
+    gap: 10px;
+  }
+  .chat-input-area input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    background: #1a1a2e;
+    color: white;
+    font-size: 16px;
+  }
+  .bot-select {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 8px;
+    background: #0f3460;
+    color: white;
+    border: none;
+    width: 100%;
+    max-width: 300px;
+    font-size: 16px;
+  }
 </style>
 </head>
 <body>
 
 <header>
   <div class="logo">🎮 ROBLOX WEB</div>
-  <div class="header-right">
-    <div class="money" id="moneyDisplay">💰 0 ДЕНЕГ</div>
-    <button class="nick-btn" id="nickBtn">✏️ Сменить ник</button>
-    <button class="reset-btn" id="resetMoneyBtn">🔄 Сброс денег</button>
-    <button class="items-btn" id="resetItemsBtn">🗑️ Сброс предметов</button>
-    <div class="user" id="userDisplay" title="Кликни, чтобы сменить ник">👤 Игрок123</div>
-  </div>
+  <div class="user">👤 Игрок123</div>
 </header>
 
 <nav>
@@ -151,49 +207,52 @@
   <button class="nav-btn" data-section="clicker">🖱️ Кликер</button>
   <button class="nav-btn" data-section="guess">🔢 Угадай число</button>
   <button class="nav-btn" data-section="ttt">❌⭕ Крестики-нолики</button>
-  <button class="nav-btn" data-section="snake">🐍 Змейка</button>
-  <button class="nav-btn" data-section="memory">🎴 Найди пару</button>
-  <button class="nav-btn" data-section="rps">✊✋✌️ КНБ</button>
-  <button class="nav-btn" data-section="shop">🛒 Магазин</button>
-  <button class="nav-btn" data-section="friends">👥 Друзья</button>
-  <button class="nav-btn" data-section="chat">💬 Чат</button>
+  <button class="nav-btn" data-section="chat">💬 Чат с ботами</button>
 </nav>
 
 <main>
   <!-- ГЛАВНАЯ -->
   <section id="home" class="active">
-    <h1>Добро пожаловать, <span id="homeNick">Игрок123</span>!</h1>
-    <p>Играй в игры, зарабатывай 💰 ДЕНЬГИ и покупай крутые вещи в магазине!</p>
+    <h1>Добро пожаловать в Roblox Web!</h1>
+    <p>Выбери игру или зайди в чат с ботами.</p>
     <div class="cards">
-      <div class="card"><h3>🖱️ Кликер</h3><p>Кликай и получай ДЕНЬГИ!</p><button class="btn" onclick="showSection('clicker')">Играть</button></div>
-      <div class="card"><h3>🔢 Угадай число</h3><p>Угадай число 1-100.</p><button class="btn" onclick="showSection('guess')">Играть</button></div>
-      <div class="card"><h3>❌⭕ Крестики-нолики</h3><p>Победи бота.</p><button class="btn" onclick="showSection('ttt')">Играть</button></div>
-      <div class="card"><h3>🐍 Змейка</h3><p>Собирай яблоки, не врезайся!</p><button class="btn" onclick="showSection('snake')">Играть</button></div>
-      <div class="card"><h3>🎴 Найди пару</h3><p>Открывай карточки, ищи пары.</p><button class="btn" onclick="showSection('memory')">Играть</button></div>
-      <div class="card"><h3>✊✋✌️ КНБ</h3><p>Камень-ножницы-бумага против бота.</p><button class="btn" onclick="showSection('rps')">Играть</button></div>
+      <div class="card">
+        <h3>🖱️ Кликер</h3>
+        <p>Кликай и набирай очки!</p>
+        <button class="btn" onclick="showSection('clicker')">Играть</button>
+      </div>
+      <div class="card">
+        <h3>🔢 Угадай число</h3>
+        <p>Угадай число от 1 до 100.</p>
+        <button class="btn" onclick="showSection('guess')">Играть</button>
+      </div>
+      <div class="card">
+        <h3>❌⭕ Крестики-нолики</h3>
+        <p>Сыграй против бота.</p>
+        <button class="btn" onclick="showSection('ttt')">Играть</button>
+      </div>
     </div>
     <div style="margin-top:20px;">
-      <button class="btn btn-gold" onclick="showSection('shop')">🛒 Магазин</button>
-      <button class="btn btn-blue" onclick="showSection('friends')">👥 Друзья</button>
-      <button class="btn" onclick="showSection('chat')">💬 Чат с ботами</button>
+      <button class="btn" onclick="showSection('chat')">💬 Перейти в чат с ботами</button>
     </div>
   </section>
 
+  <!-- КЛИКЕР -->
   <section id="clicker">
     <h1>🖱️ Кликер</h1>
     <div class="game-area">
       <div class="score">Очки: <span id="clickScore">0</span></div>
-      <p>Каждый клик = 1 очко и <b style="color:#f1c40f">💰 1 ДЕНЬГА</b></p>
       <button class="btn" id="clickBtn" style="font-size:24px; padding:20px 40px;">Кликни меня!</button>
-      <p>За каждые 10 очков — бонус +5 ДЕНЕГ!</p>
+      <p>Каждый клик даёт 1 очко.</p>
       <button class="btn btn-secondary" onclick="showSection('home')">Назад в меню</button>
     </div>
   </section>
 
+  <!-- УГАДАЙ ЧИСЛО -->
   <section id="guess">
     <h1>🔢 Угадай число</h1>
     <div class="game-area">
-      <p>Я загадал число от 1 до 100. Награда до <b style="color:#f1c40f">💰 200 ДЕНЕГ</b>!</p>
+      <p>Я загадал число от 1 до 100. Попробуй угадать!</p>
       <input type="number" id="guessInput" class="input-num" min="1" max="100" placeholder="Число">
       <button class="btn" id="guessBtn">Проверить</button>
       <button class="btn btn-secondary" id="newGuessBtn">Новая игра</button>
@@ -203,10 +262,10 @@
     </div>
   </section>
 
+  <!-- КРЕСТИКИ-НОЛИКИ -->
   <section id="ttt">
     <h1>❌⭕ Крестики-нолики</h1>
     <div class="game-area">
-      <p>Победа = <b style="color:#f1c40f">💰 30 ДЕНЕГ</b> | Ничья = 💰 10 ДЕНЕГ</p>
       <div id="tttStatus" style="font-size:20px; margin-bottom:10px;">Твой ход (X)</div>
       <div class="ttt-grid" id="tttGrid"></div>
       <button class="btn btn-secondary" id="tttRestart">Начать заново</button>
@@ -214,96 +273,7 @@
     </div>
   </section>
 
-  <!-- ЗМЕЙКА -->
-  <section id="snake">
-    <h1>🐍 Змейка</h1>
-    <div class="game-area" style="text-align:center;">
-      <p>Управление: <b>стрелки</b> или <b>WASD</b>. Каждое яблоко = <b style="color:#f1c40f">💰 10 ДЕНЕГ</b>!</p>
-      <div class="score">Счёт: <span id="snakeScore">0</span> | Рекорд: <span id="snakeBest">0</span></div>
-      <canvas id="snakeCanvas" width="400" height="400"></canvas>
-      <div style="margin-top:10px;">
-        <button class="btn" id="snakeStart">▶️ Старт</button>
-        <button class="btn btn-secondary" id="snakeReset">🔄 Заново</button>
-      </div>
-      <p class="controls">Стены опасны! Яблоки дают деньги и рост.</p>
-      <button class="btn btn-secondary" onclick="showSection('home')">Назад в меню</button>
-    </div>
-  </section>
-
-  <!-- НАЙДИ ПАРУ -->
-  <section id="memory">
-    <h1>🎴 Найди пару</h1>
-    <div class="game-area" style="text-align:center;">
-      <p>Открывай карточки и находи одинаковые. Чем меньше ходов — тем больше награда!</p>
-      <div class="score">Ходы: <span id="memMoves">0</span> | Найдено: <span id="memFound">0</span>/8</div>
-      <div class="memory-grid" id="memoryGrid"></div>
-      <div class="hint" id="memHint"></div>
-      <button class="btn" id="memRestart">🔄 Начать заново</button>
-      <button class="btn btn-secondary" onclick="showSection('home')">Назад в меню</button>
-    </div>
-  </section>
-
-  <!-- КНБ -->
-  <section id="rps">
-    <h1>✊✋✌️ Камень-Ножницы-Бумага</h1>
-    <div class="game-area" style="text-align:center;">
-      <p>Побеждай бота! Победа = <b style="color:#f1c40f">💰 20 ДЕНЕГ</b>, серия из 3 побед = бонус +50!</p>
-      <div class="rps-score">
-        <div class="you">Ты: <span id="rpsYou">0</span></div>
-        <div class="bot">Бот: <span id="rpsBot">0</span></div>
-        <div style="color:#f1c40f;">Серия: <span id="rpsStreak">0</span></div>
-      </div>
-      <div class="rps-result">
-        <div class="rps-choice" id="rpsYouChoice">❔</div>
-        <div class="rps-vs">VS</div>
-        <div class="rps-choice" id="rpsBotChoice">❔</div>
-      </div>
-      <div class="rps-status" id="rpsStatus">Выбирай!</div>
-      <div class="rps-row">
-        <button class="rps-btn" data-choice="rock">✊</button>
-        <button class="rps-btn" data-choice="paper">✋</button>
-        <button class="rps-btn" data-choice="scissors">✌️</button>
-      </div>
-      <button class="btn btn-secondary" id="rpsReset">🔄 Сбросить счёт</button>
-      <button class="btn btn-secondary" onclick="showSection('home')">Назад в меню</button>
-    </div>
-  </section>
-
-  <section id="shop">
-    <h1>🛒 Магазин</h1>
-    <p>Трать заработанные ДЕНЬГИ на крутые вещи!</p>
-    <div class="cards" id="shopCards"></div>
-    <div class="inventory">
-      <h3>🎒 Мой инвентарь</h3>
-      <div class="inventory-items" id="inventoryItems"><span style="color:#888;">Пока пусто...</span></div>
-      <button class="btn btn-purple" style="margin-top:15px;" onclick="openItemsModal()">🗑️ Сбросить все предметы</button>
-    </div>
-    <button class="btn btn-secondary" style="margin-top:15px;" onclick="showSection('home')">Назад в меню</button>
-  </section>
-
-  <section id="friends">
-    <h1>👥 Друзья</h1>
-    <div class="game-area">
-      <p>У тебя <b style="color:#3498db" id="friendsCount">0</b> друзей</p>
-      <div class="add-friend-box">
-        <h3>➕ Добавить друга по нику</h3>
-        <div class="add-friend-row">
-          <input type="text" id="friendNickInput" placeholder="Введи ник друга..." maxlength="20">
-          <button class="btn btn-blue" id="addFriendBtn">Добавить</button>
-        </div>
-      </div>
-      <div class="online-players">
-        <h3>🌐 Игроки онлайн (боты)</h3>
-        <div class="players-grid" id="onlinePlayers"></div>
-      </div>
-      <div class="online-players" style="margin-top:20px;">
-        <h3>👥 Мои друзья</h3>
-        <div class="friends-list" id="friendsList"><p style="color:#888; text-align:center;">Пока нет друзей...</p></div>
-      </div>
-      <button class="btn btn-secondary" style="margin-top:15px;" onclick="showSection('home')">Назад в меню</button>
-    </div>
-  </section>
-
+  <!-- ЧАТ С БОТАМИ -->
   <section id="chat">
     <h1>💬 Чат с ботами</h1>
     <div class="game-area" style="padding:0; overflow:hidden;">
@@ -328,465 +298,7 @@
   </section>
 </main>
 
-<!-- МОДАЛКИ -->
-<div class="modal-overlay" id="resetModal">
-  <div class="modal">
-    <h2>🔄 Сбросить деньги?</h2>
-    <p>Ты потеряешь все <b style="color:#f1c40f">💰 ДЕНЬГИ</b> (станет 0).</p>
-    <div class="modal-buttons">
-      <button class="btn btn-secondary" id="confirmReset">Да, сбросить</button>
-      <button class="btn" id="cancelReset">Отмена</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="nickModal">
-  <div class="modal nick-modal">
-    <h2>✏️ Сменить ник</h2>
-    <p>Введи новый ник (2-20 символов):</p>
-    <input type="text" id="nickInput" maxlength="20" placeholder="Новый ник...">
-    <div class="modal-buttons">
-      <button class="btn" id="confirmNick">Сохранить</button>
-      <button class="btn btn-secondary" id="cancelNick">Отмена</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="itemsModal">
-  <div class="modal items-modal">
-    <h2>🗑️ Сбросить предметы?</h2>
-    <p>Ты потеряешь все купленные вещи из <b>инвентаря</b>.</p>
-    <div class="modal-buttons">
-      <button class="btn btn-purple" id="confirmItems">Да, сбросить</button>
-      <button class="btn" id="cancelItems">Отмена</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="friendModal">
-  <div class="modal friends-modal">
-    <h2 id="friendModalTitle">👤 Профиль</h2>
-    <div style="font-size:70px; margin:10px 0;" id="friendModalAvatar">🤖</div>
-    <p id="friendModalInfo" style="font-size:15px;"></p>
-    <div class="modal-buttons">
-      <button class="btn btn-green" id="friendGiftBtn">💸 Подарить деньги</button>
-      <button class="btn btn-blue" id="friendMessageBtn">💬 Написать</button>
-      <button class="btn btn-secondary" id="friendRemoveBtn">❌ Удалить</button>
-      <button class="btn" id="friendCloseBtn">Закрыть</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="giftModal">
-  <div class="modal gift-modal">
-    <h2>💸 Подарить деньги</h2>
-    <p id="giftTargetText">Кому: <b>Робо</b></p>
-    <p style="color:#f1c40f; font-size:15px; margin:5px 0;">У тебя: 💰 <b id="giftYourMoney">0</b></p>
-    <label for="giftAmount">💰 Сумма подарка:</label>
-    <input type="number" id="giftAmount" min="1" placeholder="Сумма...">
-    <div class="quick-amounts">
-      <button data-amount="10">10</button>
-      <button data-amount="50">50</button>
-      <button data-amount="100">100</button>
-      <button data-amount="500">500</button>
-      <button data-amount="1000">1000</button>
-    </div>
-    <label for="giftMessage">💬 Сообщение боту:</label>
-    <textarea id="giftMessage" maxlength="200" placeholder="Напиши что-нибудь боту..."></textarea>
-    <div class="modal-buttons">
-      <button class="btn btn-green" id="confirmGift">💸 Подарить</button>
-      <button class="btn btn-secondary" id="cancelGift">Отмена</button>
-    </div>
-  </div>
-</div>
-
 <script>
-  // ================= УТИЛИТЫ =================
-  function randomPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-
-  // ================= НИК =================
-  let nickname = localStorage.getItem('roblox_nick') || 'Игрок123';
-  const userDisplay = document.getElementById('userDisplay');
-  const homeNick = document.getElementById('homeNick');
-  const nickModal = document.getElementById('nickModal');
-  const nickInput = document.getElementById('nickInput');
-
-  function updateNickUI() {
-    userDisplay.textContent = `👤 ${nickname}`;
-    homeNick.textContent = nickname;
-    localStorage.setItem('roblox_nick', nickname);
-  }
-
-  function openNickModal() {
-    nickInput.value = nickname;
-    nickModal.classList.add('show');
-    setTimeout(() => nickInput.focus(), 100);
-  }
-
-  function saveNick() {
-    const newNick = nickInput.value.trim();
-    if (newNick.length < 2 || newNick.length > 20) {
-      nickInput.style.borderColor = '#e94560';
-      setTimeout(() => nickInput.style.borderColor = '#00b894', 800);
-      return;
-    }
-    nickname = newNick;
-    updateNickUI();
-    nickModal.classList.remove('show');
-    showNotification(`✏️ Ник: ${nickname}`, '#00b894');
-  }
-
-  document.getElementById('nickBtn').addEventListener('click', openNickModal);
-  userDisplay.addEventListener('click', openNickModal);
-  document.getElementById('cancelNick').addEventListener('click', () => nickModal.classList.remove('show'));
-  document.getElementById('confirmNick').addEventListener('click', saveNick);
-  nickInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') saveNick(); });
-  nickModal.addEventListener('click', (e) => { if (e.target === nickModal) nickModal.classList.remove('show'); });
-  updateNickUI();
-
-  // ================= ВАЛЮТА =================
-  let money = parseInt(localStorage.getItem('roblox_money') || '0');
-  let inventory = JSON.parse(localStorage.getItem('roblox_inventory') || '[]');
-  const moneyDisplay = document.getElementById('moneyDisplay');
-
-  function updateMoneyUI() {
-    moneyDisplay.textContent = `💰 ${money} ДЕНЕГ`;
-    localStorage.setItem('roblox_money', money);
-  }
-
-  function addMoney(amount, x, y) {
-    money += amount;
-    updateMoneyUI();
-    moneyDisplay.classList.add('bump');
-    setTimeout(() => moneyDisplay.classList.remove('bump'), 200);
-    if (x !== undefined && y !== undefined) {
-      const floater = document.createElement('div');
-      floater.className = 'float-money';
-      floater.textContent = `+${amount} 💰`;
-      floater.style.left = x + 'px';
-      floater.style.top = y + 'px';
-      document.body.appendChild(floater);
-      setTimeout(() => floater.remove(), 1000);
-    }
-  }
-
-  function spendMoney(amount) {
-    if (money >= amount) { money -= amount; updateMoneyUI(); return true; }
-    return false;
-  }
-
-  function showNotification(text, color = '#f1c40f') {
-    const notif = document.createElement('div');
-    notif.className = 'float-money';
-    notif.textContent = text;
-    notif.style.left = (window.innerWidth / 2 - 120) + 'px';
-    notif.style.top = '100px';
-    notif.style.color = color;
-    notif.style.fontSize = '18px';
-    notif.style.whiteSpace = 'nowrap';
-    document.body.appendChild(notif);
-    setTimeout(() => notif.remove(), 1400);
-  }
-
-  updateMoneyUI();
-
-  // ================= СБРОС =================
-  document.getElementById('resetMoneyBtn').addEventListener('click', () => document.getElementById('resetModal').classList.add('show'));
-  document.getElementById('cancelReset').addEventListener('click', () => document.getElementById('resetModal').classList.remove('show'));
-  document.getElementById('confirmReset').addEventListener('click', () => {
-    money = 0; updateMoneyUI();
-    document.getElementById('resetModal').classList.remove('show');
-    showNotification('💰 Деньги сброшены!', '#e94560');
-  });
-
-  document.getElementById('resetItemsBtn').addEventListener('click', () => document.getElementById('itemsModal').classList.add('show'));
-  document.getElementById('cancelItems').addEventListener('click', () => document.getElementById('itemsModal').classList.remove('show'));
-  document.getElementById('confirmItems').addEventListener('click', () => {
-    inventory = [];
-    localStorage.setItem('roblox_inventory', JSON.stringify(inventory));
-    document.getElementById('itemsModal').classList.remove('show');
-    renderShop();
-    showNotification('🗑️ Предметы сброшены!', '#9b59b6');
-  });
-
-  // ================= ДРУЗЬЯ =================
-  let friends = JSON.parse(localStorage.getItem('roblox_friends') || '[]');
-  const allBots = {
-    robo: { name: 'Робо', avatar: '🤖', status: 'онлайн', description: 'Дружелюбный робот-помощник' },
-    noob: { name: 'Нуб', avatar: '😎', status: 'онлайн', description: 'Весёлый новичок' },
-    pro: { name: 'Про', avatar: '🏆', status: 'онлайн', description: 'Опытный игрок' }
-  };
-
-  const friendsList = document.getElementById('friendsList');
-  const onlinePlayers = document.getElementById('onlinePlayers');
-  const friendsCount = document.getElementById('friendsCount');
-
-  function isFriend(id) { return friends.some(f => f.id === id); }
-
-  function renderFriends() {
-    friendsCount.textContent = friends.length;
-    friendsList.innerHTML = '';
-    if (friends.length === 0) {
-      friendsList.innerHTML = '<p style="color:#888; text-align:center;">Пока нет друзей...</p>';
-    } else {
-      friends.forEach(friend => {
-        const card = document.createElement('div');
-        card.className = 'friend-card';
-        const isOnline = friend.status === 'онлайн';
-        card.innerHTML = `
-          <div class="friend-info">
-            <div class="friend-avatar">${friend.avatar}</div>
-            <div>
-              <div class="friend-name">${friend.name}</div>
-              <div class="friend-status ${isOnline ? '' : 'offline'}">${isOnline ? '🟢 онлайн' : '⚫ оффлайн'}</div>
-            </div>
-          </div>
-          <div class="friend-btns">
-            <button class="btn btn-green" data-action="gift" data-id="${friend.id}" title="Подарить">💸</button>
-            <button class="btn btn-blue" data-action="profile" data-id="${friend.id}" title="Профиль">👤</button>
-            <button class="btn btn-secondary" data-action="remove" data-id="${friend.id}" title="Удалить">❌</button>
-          </div>
-        `;
-        friendsList.appendChild(card);
-      });
-      friendsList.querySelectorAll('button').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = btn.dataset.id, action = btn.dataset.action;
-          if (action === 'remove') removeFriend(id);
-          else if (action === 'profile') openFriendProfile(id);
-          else if (action === 'gift') openGiftModal(id);
-        });
-      });
-    }
-
-    onlinePlayers.innerHTML = '';
-    Object.keys(allBots).forEach(id => {
-      const bot = allBots[id];
-      const already = isFriend(id);
-      const row = document.createElement('div');
-      row.className = 'player-row';
-      row.innerHTML = `
-        <div class="friend-info">
-          <div class="friend-avatar">${bot.avatar}</div>
-          <div>
-            <div class="friend-name">${bot.name}</div>
-            <div class="friend-status">🟢 онлайн</div>
-          </div>
-        </div>
-        <button class="btn btn-blue" data-action="${already ? 'remove' : 'add'}" data-id="${id}">
-          ${already ? '❌ Удалить' : '➕ Добавить'}
-        </button>
-      `;
-      const btn = row.querySelector('button');
-      btn.addEventListener('click', () => {
-        if (btn.dataset.action === 'add') addBotFriend(id);
-        else removeFriend(id);
-      });
-      onlinePlayers.appendChild(row);
-    });
-  }
-
-  function addBotFriend(id) {
-    if (isFriend(id)) return;
-    const bot = allBots[id];
-    friends.push({ id, name: bot.name, avatar: bot.avatar, status: bot.status, description: bot.description, isBot: true });
-    saveFriends(); renderFriends();
-    showNotification(`➕ ${bot.name} теперь твой друг!`, '#3498db');
-  }
-
-  function addFriendByNick() {
-    const input = document.getElementById('friendNickInput');
-    const nick = input.value.trim();
-    if (nick.length < 2) { showNotification('❌ Ник слишком короткий!', '#e94560'); return; }
-    if (nick.toLowerCase() === nickname.toLowerCase()) { showNotification('❌ Нельзя добавить себя!', '#e94560'); return; }
-    if (friends.some(f => f.name.toLowerCase() === nick.toLowerCase())) { showNotification('❌ Уже в друзьях!', '#e94560'); return; }
-    const avatars = ['👦', '👧', '🧑', '👨', '👩', '🧔', '👱', '🧙', '🥷', '🧛'];
-    friends.push({ id: 'player_' + Date.now(), name: nick, avatar: randomPick(avatars), status: Math.random() > 0.5 ? 'онлайн' : 'оффлайн', description: 'Игрок Roblox Web', isBot: false });
-    saveFriends(); renderFriends();
-    input.value = '';
-    showNotification(`➕ ${nick} теперь твой друг!`, '#3498db');
-  }
-
-  function removeFriend(id) {
-    const friend = friends.find(f => f.id === id);
-    if (!friend) return;
-    if (!confirm(`Удалить ${friend.name} из друзей?`)) return;
-    friends = friends.filter(f => f.id !== id);
-    saveFriends(); renderFriends();
-    showNotification(`❌ ${friend.name} удалён из друзей`, '#e94560');
-  }
-
-  function saveFriends() { localStorage.setItem('roblox_friends', JSON.stringify(friends)); }
-
-  const friendModal = document.getElementById('friendModal');
-  let currentFriendId = null;
-
-  function openFriendProfile(id) {
-    const friend = friends.find(f => f.id === id);
-    if (!friend) return;
-    currentFriendId = id;
-    document.getElementById('friendModalTitle').textContent = `👤 ${friend.name}`;
-    document.getElementById('friendModalAvatar').textContent = friend.avatar;
-    document.getElementById('friendModalInfo').innerHTML = `<b>Статус:</b> ${friend.status}<br><b>Описание:</b> ${friend.description || '—'}<br><b>Тип:</b> ${friend.isBot ? 'Бот' : 'Игрок'}`;
-    document.getElementById('friendMessageBtn').style.display = (friend.isBot && allBots[friend.id]) ? '' : 'none';
-    friendModal.classList.add('show');
-  }
-
-  document.getElementById('friendCloseBtn').addEventListener('click', () => friendModal.classList.remove('show'));
-  document.getElementById('friendRemoveBtn').addEventListener('click', () => {
-    if (currentFriendId) { friendModal.classList.remove('show'); removeFriend(currentFriendId); }
-  });
-  document.getElementById('friendGiftBtn').addEventListener('click', () => {
-    if (currentFriendId) { friendModal.classList.remove('show'); openGiftModal(currentFriendId); }
-  });
-  document.getElementById('friendMessageBtn').addEventListener('click', () => {
-    if (!currentFriendId || !allBots[currentFriendId]) return;
-    friendModal.classList.remove('show');
-    showSection('chat');
-    document.getElementById('botSelect').value = currentFriendId;
-    document.getElementById('chatInput').focus();
-  });
-  friendModal.addEventListener('click', (e) => { if (e.target === friendModal) friendModal.classList.remove('show'); });
-
-  document.getElementById('addFriendBtn').addEventListener('click', addFriendByNick);
-  document.getElementById('friendNickInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') addFriendByNick(); });
-
-  // ================= ПОДАРОК =================
-  const giftModal = document.getElementById('giftModal');
-  const giftAmount = document.getElementById('giftAmount');
-  const giftMessage = document.getElementById('giftMessage');
-  let giftTargetId = null;
-
-  function openGiftModal(friendId) {
-    const friend = friends.find(f => f.id === friendId);
-    if (!friend) return;
-    giftTargetId = friendId;
-    document.getElementById('giftTargetText').innerHTML = `Кому: <b>${friend.avatar} ${friend.name}</b>`;
-    document.getElementById('giftYourMoney').textContent = money;
-    giftAmount.value = ''; giftMessage.value = '';
-    giftModal.classList.add('show');
-    setTimeout(() => giftAmount.focus(), 100);
-  }
-
-  document.getElementById('cancelGift').addEventListener('click', () => giftModal.classList.remove('show'));
-  giftModal.addEventListener('click', (e) => { if (e.target === giftModal) giftModal.classList.remove('show'); });
-
-  document.querySelectorAll('.quick-amounts button').forEach(btn => {
-    btn.addEventListener('click', () => { giftAmount.value = btn.dataset.amount; });
-  });
-
-  document.getElementById('confirmGift').addEventListener('click', () => {
-    const amount = parseInt(giftAmount.value);
-    const message = giftMessage.value.trim();
-    if (isNaN(amount) || amount <= 0) { showNotification('❌ Введи сумму больше 0!', '#e94560'); return; }
-    if (amount > money) { showNotification(`❌ Не хватает! У тебя ${money} 💰`, '#e94560'); return; }
-
-    const friend = friends.find(f => f.id === giftTargetId);
-    if (!friend) return;
-
-    money -= amount; updateMoneyUI();
-    giftModal.classList.remove('show');
-
-    const notif = document.createElement('div');
-    notif.className = 'float-money';
-    notif.textContent = `💸 -${amount} 💰`;
-    notif.style.left = (window.innerWidth / 2 - 60) + 'px';
-    notif.style.top = '100px';
-    notif.style.color = '#e94560';
-    document.body.appendChild(notif);
-    setTimeout(() => notif.remove(), 1200);
-
-    if (friend.isBot && allBots[friend.id]) {
-      setTimeout(() => {
-        addGiftNote(`💸 Подарил ${amount} 💰 ${friend.name}${message ? ' — "' + message + '"' : ''}`);
-        if (message) {
-          setTimeout(() => {
-            addMessage(message, 'user');
-            setTimeout(() => addMessage(getReplyToGift(friend.id, message), 'bot', friend.id), 500);
-          }, 300);
-        }
-        setTimeout(() => {
-          addThanksMessage(getThanksMessage(friend.id, amount), friend.id);
-          const chatSection = document.getElementById('chat');
-          if (!chatSection.classList.contains('active')) { showSection('chat'); document.getElementById('botSelect').value = friend.id; }
-          else if (document.getElementById('botSelect').value !== friend.id && document.getElementById('botSelect').value !== 'all') { document.getElementById('botSelect').value = friend.id; }
-          chatSection.classList.add('flash');
-          setTimeout(() => chatSection.classList.remove('flash'), 1300);
-          showNotification(`💬 ${friend.avatar} ${friend.name} написал тебе!`, '#00b894');
-        }, message ? 1200 : 700);
-      }, 200);
-    } else {
-      showNotification(`💸 Ты подарил ${friend.name} ${amount} 💰!`, '#00b894');
-    }
-  });
-
-  giftAmount.addEventListener('keypress', (e) => { if (e.key === 'Enter') giftMessage.focus(); });
-
-  function getThanksMessage(botKey, amount) {
-    const thanks = {
-      robo: [`Бип-буп! Спасибо за ${amount} 💰, ${nickname}! 🤖❤️`, `Спасибо за ${amount} 💰! Сохранил в память! 🤖`, `Принято ${amount} 💰. Уровень дружбы повышен! 📈🤖`],
-      noob: [`Вау, ${amount} 💰! Спасибо, ${nickname}! 🎉😎`, `Ничоси! ${amount} 💰! Ты лучший! 🔥`, `Спасибо за ${amount} 💰! 🎩😎`],
-      pro: [`Принято ${amount} 💰. Уважение, ${nickname}. 🏆`, `${amount} 💰. Щедро. Уважаю! 🤝`, `Спасибо, ${nickname}. ${amount} 💰 — достойно. 🏆`]
-    };
-    return randomPick(thanks[botKey] || thanks.robo);
-  }
-
-  function addThanksMessage(text, botKey) {
-    const bot = bots[botKey];
-    const msg = document.createElement('div');
-    msg.classList.add('message', 'bot', 'thanks');
-    msg.textContent = `${bot.avatar} ${bot.name}: ${text}`;
-    document.getElementById('chatMessages').appendChild(msg);
-    scrollChat();
-  }
-
-  function addGiftNote(text) {
-    const msg = document.createElement('div');
-    msg.classList.add('message', 'gift-note');
-    msg.textContent = text;
-    document.getElementById('chatMessages').appendChild(msg);
-    scrollChat();
-  }
-
-  function getReplyToGift(botKey, userText) {
-    const lower = userText.toLowerCase();
-    const replies = {
-      robo: {
-        'привет': [`Привет, ${nickname}! И спасибо за подарок! 🤖`, `Приветствую, ${nickname}! 💰`],
-        'спасибо': ['Всегда пожалуйста! 🤖', 'Не за что! 🤖💙'],
-        'друг': [`Ты настоящий друг, ${nickname}! 💙`, `Дружба с тобой — ценно! 🤖`],
-        'люблю': ['Бип-буп... Я тоже тебя люблю! ❤️🤖', '01001100 01001111 01010110 01000101 ❤️'],
-        'деньги': ['Спасибо за деньги! Сохраню в банке роботов! 🏦', 'Деньги 💰 — топливо для роботов!']
-      },
-      noob: {
-        'привет': [`Хай, ${nickname}! И спасибо за подарок! 😎`, `Йоу! Спасибо за 💰! 😎`],
-        'спасибо': ['Не за что, братан! 😎', 'Та без проблем! 🤜🤛'],
-        'друг': [`Ты лучший друг, ${nickname}! 💙`, `Друзья навек! 🤜🤛`],
-        'люблю': ['Вау... Я тоже, ${nickname}! ❤️😎', 'Люблю-люблю! 💖😎'],
-        'деньги': ['Деньги?! Спасибо! Пойду куплю шляпу! 🎩', 'О да, деньги! 💰']
-      },
-      pro: {
-        'привет': [`Приветствую, ${nickname}. Благодарю. 🏆`, `Привет, ${nickname}. Щедрый ход. 🏆`],
-        'спасибо': ['Обращайся, ${nickname}. 🤝', 'Не за что. Мы — команда. 🏆'],
-        'друг': [`Ты достоин быть моим другом, ${nickname}. 💙`, `Дружба с тобой — честь. 🏆`],
-        'люблю': ['Взаимно, ${nickname}. Уважение. ❤️🏆', 'Приятно слышать. ❤️'],
-        'деньги': ['Деньги приняты. Вложу в тренировки. 🏆', 'Инвестиция в меня — мудрый ход. 💰🏆']
-      }
-    };
-    const botReplies = replies[botKey] || replies.robo;
-    for (let key in botReplies) {
-      if (lower.includes(key)) return randomPick(botReplies[key]);
-    }
-    const defaults = {
-      robo: [`Спасибо за "${userText}" и за подарок! 🤖`, `Принято! И спасибо за щедрость! 💰`],
-      noob: [`Лол, "${userText}"! И спасибо за денежки! 😎`, `Круто сказано! Спасибо! 🔥`],
-      pro: [`"${userText}" — достойно. Благодарю. 🏆`, `"${userText}". Запомнил. И спасибо. 🏆`]
-    };
-    return randomPick(defaults[botKey] || defaults.robo);
-  }
-
-  renderFriends();
-
   // ================= НАВИГАЦИЯ =================
   const sections = document.querySelectorAll('main section');
   const navBtns = document.querySelectorAll('.nav-btn');
@@ -794,73 +306,72 @@
   function showSection(id) {
     sections.forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    navBtns.forEach(btn => { btn.classList.toggle('active', btn.dataset.section === id); });
+    navBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.section === id);
+    });
     if (id === 'chat') scrollChat();
-    if (id === 'shop') renderShop();
-    if (id === 'friends') renderFriends();
-    if (id === 'memory' && !memoryInitialized) initMemory();
-    if (id === 'snake') drawSnake();
   }
 
-  navBtns.forEach(btn => { btn.addEventListener('click', () => showSection(btn.dataset.section)); });
+  navBtns.forEach(btn => {
+    btn.addEventListener('click', () => showSection(btn.dataset.section));
+  });
 
   // ================= КЛИКЕР =================
   let clickScore = 0;
-  document.getElementById('clickBtn').addEventListener('click', (e) => {
+  const clickScoreEl = document.getElementById('clickScore');
+  const clickBtn = document.getElementById('clickBtn');
+
+  clickBtn.addEventListener('click', () => {
     clickScore++;
-    document.getElementById('clickScore').textContent = clickScore;
-    addMoney(1, e.clientX - 30, e.clientY - 30);
-    if (clickScore % 10 === 0) {
-      addMoney(5);
-      showNotification('🎁 Бонус +5!', '#f1c40f');
-    }
+    clickScoreEl.textContent = clickScore;
   });
 
   // ================= УГАДАЙ ЧИСЛО =================
   let secretNumber = Math.floor(Math.random() * 100) + 1;
   let guessAttempts = 0;
-  let guessFinished = false;
+  const guessInput = document.getElementById('guessInput');
+  const guessBtn = document.getElementById('guessBtn');
+  const guessHint = document.getElementById('guessHint');
+  const guessAttemptsEl = document.getElementById('guessAttempts');
+  const newGuessBtn = document.getElementById('newGuessBtn');
 
   function newGuessGame() {
     secretNumber = Math.floor(Math.random() * 100) + 1;
-    guessAttempts = 0; guessFinished = false;
-    document.getElementById('guessAttempts').textContent = 0;
-    document.getElementById('guessHint').textContent = '';
-    document.getElementById('guessInput').value = '';
-    document.getElementById('guessInput').disabled = false;
-    document.getElementById('guessBtn').disabled = false;
-    document.getElementById('guessInput').focus();
+    guessAttempts = 0;
+    guessAttemptsEl.textContent = 0;
+    guessHint.textContent = '';
+    guessInput.value = '';
+    guessInput.disabled = false;
+    guessBtn.disabled = false;
+    guessInput.focus();
   }
 
-  document.getElementById('guessBtn').addEventListener('click', () => {
-    if (guessFinished) return;
-    const input = document.getElementById('guessInput');
-    const val = parseInt(input.value);
-    if (isNaN(val) || val < 1 || val > 100) { document.getElementById('guessHint').textContent = 'Введи число от 1 до 100!'; return; }
-    guessAttempts++;
-    document.getElementById('guessAttempts').textContent = guessAttempts;
-    if (val === secretNumber) {
-      let reward = 50;
-      if (guessAttempts === 1) reward = 200;
-      else if (guessAttempts <= 3) reward = 150;
-      else if (guessAttempts <= 5) reward = 100;
-      else if (guessAttempts <= 8) reward = 70;
-      document.getElementById('guessHint').textContent = `🎉 Угадал! Число ${secretNumber}. Награда: 💰 ${reward}!`;
-      addMoney(reward, window.innerWidth / 2 - 30, 200);
-      input.disabled = true;
-      document.getElementById('guessBtn').disabled = true;
-      guessFinished = true;
-    } else if (val < secretNumber) {
-      document.getElementById('guessHint').textContent = randomPick(['📈 Больше!', '📈 Мало! Попробуй выше!', '📈 Число выше!']);
-    } else {
-      document.getElementById('guessHint').textContent = randomPick(['📉 Меньше!', '📉 Много! Попробуй ниже!', '📉 Число ниже!']);
+  guessBtn.addEventListener('click', () => {
+    const val = parseInt(guessInput.value);
+    if (isNaN(val) || val < 1 || val > 100) {
+      guessHint.textContent = 'Введи число от 1 до 100!';
+      return;
     }
-    input.value = '';
-    input.focus();
+    guessAttempts++;
+    guessAttemptsEl.textContent = guessAttempts;
+
+    if (val === secretNumber) {
+      guessHint.textContent = `🎉 Угадал! Это число ${secretNumber}. Попыток: ${guessAttempts}`;
+      guessInput.disabled = true;
+      guessBtn.disabled = true;
+    } else if (val < secretNumber) {
+      guessHint.textContent = '📈 Больше!';
+    } else {
+      guessHint.textContent = '📉 Меньше!';
+    }
+    guessInput.value = '';
+    guessInput.focus();
   });
 
-  document.getElementById('newGuessBtn').addEventListener('click', newGuessGame);
-  document.getElementById('guessInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('guessBtn').click(); });
+  newGuessBtn.addEventListener('click', newGuessGame);
+  guessInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') guessBtn.click();
+  });
   newGuessGame();
 
   // ================= КРЕСТИКИ-НОЛИКИ =================
@@ -869,12 +380,17 @@
   let tttBoard = ['', '', '', '', '', '', '', '', ''];
   let tttCurrent = 'X';
   let tttActive = true;
-  let tttRewarded = false;
-  const winPatterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+  const winPatterns = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ];
 
   function initTTT() {
     tttBoard = ['', '', '', '', '', '', '', '', ''];
-    tttCurrent = 'X'; tttActive = true; tttRewarded = false;
+    tttCurrent = 'X';
+    tttActive = true;
     tttStatus.textContent = 'Твой ход (X)';
     renderTTT();
   }
@@ -885,6 +401,7 @@
       const cell = document.createElement('button');
       cell.className = 'ttt-cell';
       cell.textContent = val;
+      cell.dataset.index = i;
       cell.addEventListener('click', () => handleTTTClick(i));
       tttGrid.appendChild(cell);
     });
@@ -894,18 +411,19 @@
     if (!tttActive || tttBoard[i] !== '' || tttCurrent !== 'X') return;
     tttBoard[i] = 'X';
     renderTTT();
+
     if (checkTTTWin('X')) {
-      tttStatus.textContent = '🎉 Ты победил! +30 ДЕНЕГ';
-      tttActive = false; highlightWin('X');
-      if (!tttRewarded) { addMoney(30, window.innerWidth / 2 - 30, 200); tttRewarded = true; }
+      tttStatus.textContent = '🎉 Ты победил!';
+      tttActive = false;
+      highlightWin('X');
       return;
     }
     if (tttBoard.every(c => c !== '')) {
-      tttStatus.textContent = '🤝 Ничья! +10 ДЕНЕГ';
+      tttStatus.textContent = '🤝 Ничья!';
       tttActive = false;
-      if (!tttRewarded) { addMoney(10, window.innerWidth / 2 - 30, 200); tttRewarded = true; }
       return;
     }
+
     tttCurrent = 'O';
     tttStatus.textContent = 'Ход бота...';
     setTimeout(botTTTMove, 500);
@@ -913,24 +431,32 @@
 
   function botTTTMove() {
     if (!tttActive) return;
+
     let move = findWinningMove('O');
     if (move === -1) move = findWinningMove('X');
     if (move === -1 && tttBoard[4] === '') move = 4;
     if (move === -1) {
       const empty = tttBoard.map((v, i) => v === '' ? i : -1).filter(i => i !== -1);
-      if (empty.length > 0) move = randomPick(empty);
+      if (empty.length > 0) move = empty[Math.floor(Math.random() * empty.length)];
     }
+
     if (move !== -1) {
       tttBoard[move] = 'O';
       renderTTT();
-      if (checkTTTWin('O')) { tttStatus.textContent = '🤖 Бот победил!'; tttActive = false; highlightWin('O'); return; }
-      if (tttBoard.every(c => c !== '')) {
-        tttStatus.textContent = '🤝 Ничья! +10 ДЕНЕГ';
+
+      if (checkTTTWin('O')) {
+        tttStatus.textContent = '🤖 Бот победил!';
         tttActive = false;
-        if (!tttRewarded) { addMoney(10, window.innerWidth / 2 - 30, 200); tttRewarded = true; }
+        highlightWin('O');
+        return;
+      }
+      if (tttBoard.every(c => c !== '')) {
+        tttStatus.textContent = '🤝 Ничья!';
+        tttActive = false;
         return;
       }
     }
+
     tttCurrent = 'X';
     tttStatus.textContent = 'Твой ход (X)';
   }
@@ -939,456 +465,87 @@
     for (let pattern of winPatterns) {
       const [a,b,c] = pattern;
       const vals = [tttBoard[a], tttBoard[b], tttBoard[c]];
-      if (vals.filter(v => v === player).length === 2 && vals.includes('')) return pattern[vals.indexOf('')];
+      if (vals.filter(v => v === player).length === 2 && vals.includes('')) {
+        return pattern[vals.indexOf('')];
+      }
     }
     return -1;
   }
 
-  function checkTTTWin(player) { return winPatterns.some(p => p.every(i => tttBoard[i] === player)); }
+  function checkTTTWin(player) {
+    return winPatterns.some(pattern => pattern.every(i => tttBoard[i] === player));
+  }
 
   function highlightWin(player) {
-    winPatterns.forEach(p => {
-      if (p.every(i => tttBoard[i] === player)) p.forEach(i => tttGrid.children[i]?.classList.add('win'));
+    winPatterns.forEach(pattern => {
+      if (pattern.every(i => tttBoard[i] === player)) {
+        pattern.forEach(i => {
+          const cell = tttGrid.children[i];
+          if (cell) cell.classList.add('win');
+        });
+      }
     });
   }
 
   document.getElementById('tttRestart').addEventListener('click', initTTT);
   initTTT();
 
-  // ================= 🐍 ЗМЕЙКА =================
-  const snakeCanvas = document.getElementById('snakeCanvas');
-  const snakeCtx = snakeCanvas.getContext('2d');
-  const CELL = 20;
-  const COLS = snakeCanvas.width / CELL;
-  const ROWS = snakeCanvas.height / CELL;
-
-  let snake = [];
-  let snakeDir = { x: 1, y: 0 };
-  let nextDir = { x: 1, y: 0 };
-  let snakeFood = { x: 5, y: 5 };
-  let snakeScore = 0;
-  let snakeBest = parseInt(localStorage.getItem('roblox_snake_best') || '0');
-  let snakeRunning = false;
-  let snakeLoopId = null;
-  let snakeSpeed = 130;
-
-  document.getElementById('snakeBest').textContent = snakeBest;
-
-  function resetSnake() {
-    snake = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
-    snakeDir = { x: 1, y: 0 };
-    nextDir = { x: 1, y: 0 };
-    snakeScore = 0;
-    document.getElementById('snakeScore').textContent = 0;
-    placeSnakeFood();
-    snakeRunning = false;
-    if (snakeLoopId) { clearInterval(snakeLoopId); snakeLoopId = null; }
-    drawSnake();
-  }
-
-  function placeSnakeFood() {
-    do {
-      snakeFood = { x: Math.floor(Math.random() * COLS), y: Math.floor(Math.random() * ROWS) };
-    } while (snake.some(s => s.x === snakeFood.x && s.y === snakeFood.y));
-  }
-
-  function drawSnake() {
-    snakeCtx.fillStyle = '#0f3460';
-    snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
-
-    // Сетка
-    snakeCtx.strokeStyle = 'rgba(255,255,255,0.04)';
-    for (let i = 0; i <= COLS; i++) {
-      snakeCtx.beginPath(); snakeCtx.moveTo(i * CELL, 0); snakeCtx.lineTo(i * CELL, snakeCanvas.height); snakeCtx.stroke();
-    }
-    for (let i = 0; i <= ROWS; i++) {
-      snakeCtx.beginPath(); snakeCtx.moveTo(0, i * CELL); snakeCtx.lineTo(snakeCanvas.width, i * CELL); snakeCtx.stroke();
-    }
-
-    // Еда
-    snakeCtx.font = '18px Arial';
-    snakeCtx.textAlign = 'center';
-    snakeCtx.textBaseline = 'middle';
-    snakeCtx.fillText('🍎', snakeFood.x * CELL + CELL / 2, snakeFood.y * CELL + CELL / 2);
-
-    // Змейка
-    snake.forEach((seg, i) => {
-      snakeCtx.fillStyle = i === 0 ? '#00d1a0' : '#00b894';
-      snakeCtx.beginPath();
-      snakeCtx.roundRect(seg.x * CELL + 2, seg.y * CELL + 2, CELL - 4, CELL - 4, 5);
-      snakeCtx.fill();
-    });
-
-    // Глазки
-    if (snake.length > 0) {
-      const head = snake[0];
-      snakeCtx.fillStyle = '#000';
-      snakeCtx.beginPath();
-      snakeCtx.arc(head.x * CELL + 7, head.y * CELL + 7, 2, 0, Math.PI * 2);
-      snakeCtx.arc(head.x * CELL + 13, head.y * CELL + 7, 2, 0, Math.PI * 2);
-      snakeCtx.fill();
-    }
-
-    if (!snakeRunning && snakeScore === 0) {
-      snakeCtx.fillStyle = 'rgba(0,0,0,0.6)';
-      snakeCtx.fillRect(0, snakeCanvas.height / 2 - 40, snakeCanvas.width, 80);
-      snakeCtx.fillStyle = '#fff';
-      snakeCtx.font = 'bold 24px Arial';
-      snakeCtx.fillText('Нажми "Старт"', snakeCanvas.width / 2, snakeCanvas.height / 2);
-    }
-  }
-
-  function startSnake() {
-    if (snakeRunning) return;
-    if (snakeScore === 0) resetSnake();
-    snakeRunning = true;
-    if (snakeLoopId) clearInterval(snakeLoopId);
-    snakeLoopId = setInterval(snakeTick, snakeSpeed);
-  }
-
-  function snakeTick() {
-    snakeDir = { ...nextDir };
-    const head = { x: snake[0].x + snakeDir.x, y: snake[0].y + snakeDir.y };
-
-    if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) {
-      gameOverSnake(); return;
-    }
-    if (snake.some(s => s.x === head.x && s.y === head.y)) {
-      gameOverSnake(); return;
-    }
-
-    snake.unshift(head);
-
-    if (head.x === snakeFood.x && head.y === snakeFood.y) {
-      snakeScore++;
-      document.getElementById('snakeScore').textContent = snakeScore;
-      addMoney(10, window.innerWidth / 2 - 30, 200);
-      placeSnakeFood();
-      // Ускорение каждые 5 яблок
-      if (snakeScore % 5 === 0 && snakeSpeed > 60) {
-        snakeSpeed -= 10;
-        clearInterval(snakeLoopId);
-        snakeLoopId = setInterval(snakeTick, snakeSpeed);
-      }
-    } else {
-      snake.pop();
-    }
-    drawSnake();
-  }
-
-  function gameOverSnake() {
-    snakeRunning = false;
-    if (snakeLoopId) { clearInterval(snakeLoopId); snakeLoopId = null; }
-
-    if (snakeScore > snakeBest) {
-      snakeBest = snakeScore;
-      localStorage.setItem('roblox_snake_best', snakeBest);
-      document.getElementById('snakeBest').textContent = snakeBest;
-      showNotification(`🏆 Новый рекорд: ${snakeBest}!`, '#f1c40f');
-    }
-
-    snakeCtx.fillStyle = 'rgba(0,0,0,0.75)';
-    snakeCtx.fillRect(0, snakeCanvas.height / 2 - 60, snakeCanvas.width, 120);
-    snakeCtx.fillStyle = '#e94560';
-    snakeCtx.font = 'bold 28px Arial';
-    snakeCtx.fillText('Игра окончена!', snakeCanvas.width / 2, snakeCanvas.height / 2 - 15);
-    snakeCtx.fillStyle = '#fff';
-    snakeCtx.font = 'bold 20px Arial';
-    snakeCtx.fillText(`Счёт: ${snakeScore}`, snakeCanvas.width / 2, snakeCanvas.height / 2 + 20);
-    snakeCtx.fillStyle = '#f1c40f';
-    snakeCtx.font = '16px Arial';
-    snakeCtx.fillText('Нажми "Старт" чтобы сыграть снова', snakeCanvas.width / 2, snakeCanvas.height / 2 + 45);
-  }
-
-  document.getElementById('snakeStart').addEventListener('click', startSnake);
-  document.getElementById('snakeReset').addEventListener('click', () => {
-    snakeSpeed = 130;
-    resetSnake();
-  });
-
-  document.addEventListener('keydown', (e) => {
-    const snakeSection = document.getElementById('snake');
-    if (!snakeSection.classList.contains('active')) return;
-
-    const key = e.key.toLowerCase();
-    if (['arrowup', 'w'].includes(key) && snakeDir.y !== 1) { nextDir = { x: 0, y: -1 }; e.preventDefault(); }
-    else if (['arrowdown', 's'].includes(key) && snakeDir.y !== -1) { nextDir = { x: 0, y: 1 }; e.preventDefault(); }
-    else if (['arrowleft', 'a'].includes(key) && snakeDir.x !== 1) { nextDir = { x: -1, y: 0 }; e.preventDefault(); }
-    else if (['arrowright', 'd'].includes(key) && snakeDir.x !== -1) { nextDir = { x: 1, y: 0 }; e.preventDefault(); }
-  });
-
-  resetSnake();
-
-  // ================= 🎴 НАЙДИ ПАРУ =================
-  const memoryGrid = document.getElementById('memoryGrid');
-  const memoryEmojis = ['🍎', '🎮', '🚀', '⚽', '🎩', '👑', '🐉', '🏆'];
-  let memoryCards = [];
-  let memoryFlipped = [];
-  let memoryMoves = 0;
-  let memoryFound = 0;
-  let memoryLocked = false;
-  let memoryInitialized = false;
-
-  function initMemory() {
-    memoryInitialized = true;
-    memoryMoves = 0; memoryFound = 0;
-    memoryFlipped = []; memoryLocked = false;
-    document.getElementById('memMoves').textContent = 0;
-    document.getElementById('memFound').textContent = 0;
-    document.getElementById('memHint').textContent = '';
-
-    const deck = [...memoryEmojis, ...memoryEmojis];
-    for (let i = deck.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [deck[i], deck[j]] = [deck[j], deck[i]];
-    }
-    memoryCards = deck;
-
-    memoryGrid.innerHTML = '';
-    memoryCards.forEach((emoji, i) => {
-      const card = document.createElement('div');
-      card.className = 'memory-card';
-      card.dataset.index = i;
-      card.textContent = '';
-      card.addEventListener('click', () => handleMemoryClick(card, i));
-      memoryGrid.appendChild(card);
-    });
-  }
-
-  function handleMemoryClick(card, i) {
-    if (memoryLocked) return;
-    if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
-
-    card.classList.add('flipped');
-    card.textContent = memoryCards[i];
-    memoryFlipped.push({ card, i });
-
-    if (memoryFlipped.length === 2) {
-      memoryMoves++;
-      document.getElementById('memMoves').textContent = memoryMoves;
-      memoryLocked = true;
-
-      const [a, b] = memoryFlipped;
-      if (memoryCards[a.i] === memoryCards[b.i]) {
-        setTimeout(() => {
-          a.card.classList.add('matched');
-          b.card.classList.add('matched');
-          memoryFound++;
-          document.getElementById('memFound').textContent = memoryFound;
-          memoryFlipped = []; memoryLocked = false;
-          if (memoryFound === 8) finishMemory();
-        }, 400);
-      } else {
-        setTimeout(() => {
-          a.card.classList.remove('flipped'); a.card.textContent = '';
-          b.card.classList.remove('flipped'); b.card.textContent = '';
-          memoryFlipped = []; memoryLocked = false;
-        }, 800);
-      }
-    }
-  }
-
-  function finishMemory() {
-    let reward = 30;
-    if (memoryMoves <= 12) reward = 300;
-    else if (memoryMoves <= 16) reward = 200;
-    else if (memoryMoves <= 20) reward = 120;
-    else if (memoryMoves <= 25) reward = 80;
-    document.getElementById('memHint').textContent = `🎉 Победа! Ходов: ${memoryMoves}. Награда: 💰 ${reward}!`;
-    addMoney(reward, window.innerWidth / 2 - 30, 200);
-    showNotification(`🎴 Найди пару: +${reward} 💰!`, '#f1c40f');
-  }
-
-  document.getElementById('memRestart').addEventListener('click', initMemory);
-
-  // ================= ✊✋✌️ КНБ =================
-  let rpsYou = 0;
-  let rpsBot = 0;
-  let rpsStreak = 0;
-  let rpsActive = true;
-
-  const rpsEmoji = { rock: '✊', paper: '✋', scissors: '✌️' };
-  const rpsNames = { rock: 'Камень', paper: 'Бумага', scissors: 'Ножницы' };
-
-  function playRPS(playerChoice) {
-    if (!rpsActive) return;
-    rpsActive = false;
-
-    const choices = ['rock', 'paper', 'scissors'];
-    const botChoice = randomPick(choices);
-
-    document.getElementById('rpsYouChoice').textContent = rpsEmoji[playerChoice];
-    document.getElementById('rpsBotChoice').textContent = '❔';
-
-    document.querySelectorAll('.rps-btn').forEach(b => b.classList.remove('selected'));
-    document.querySelector(`[data-choice="${playerChoice}"]`).classList.add('selected');
-
-    setTimeout(() => {
-      document.getElementById('rpsBotChoice').textContent = rpsEmoji[botChoice];
-      const status = document.getElementById('rpsStatus');
-
-      let result;
-      if (playerChoice === botChoice) {
-        result = 'draw';
-        status.textContent = '🤝 Ничья!';
-        status.style.color = '#f1c40f';
-      } else if (
-        (playerChoice === 'rock' && botChoice === 'scissors') ||
-        (playerChoice === 'paper' && botChoice === 'rock') ||
-        (playerChoice === 'scissors' && botChoice === 'paper')
-      ) {
-        result = 'win';
-        rpsYou++; rpsStreak++;
-        document.getElementById('rpsYou').textContent = rpsYou;
-        document.getElementById('rpsStreak').textContent = rpsStreak;
-        addMoney(20, window.innerWidth / 2 - 30, 200);
-        status.textContent = `🎉 Победа! +20 💰`;
-        status.style.color = '#00b894';
-
-        if (rpsStreak > 0 && rpsStreak % 3 === 0) {
-          addMoney(50);
-          setTimeout(() => {
-            showNotification(`🔥 Серия ${rpsStreak}! Бонус +50 💰!`, '#f1c40f');
-          }, 500);
-        }
-      } else {
-        result = 'lose';
-        rpsBot++; rpsStreak = 0;
-        document.getElementById('rpsBot').textContent = rpsBot;
-        document.getElementById('rpsStreak').textContent = 0;
-        status.textContent = '😢 Проигрыш!';
-        status.style.color = '#e94560';
-      }
-
-      setTimeout(() => { rpsActive = true; }, 600);
-    }, 400);
-  }
-
-  document.querySelectorAll('.rps-btn').forEach(btn => {
-    btn.addEventListener('click', () => playRPS(btn.dataset.choice));
-  });
-
-  document.getElementById('rpsReset').addEventListener('click', () => {
-    rpsYou = 0; rpsBot = 0; rpsStreak = 0;
-    document.getElementById('rpsYou').textContent = 0;
-    document.getElementById('rpsBot').textContent = 0;
-    document.getElementById('rpsStreak').textContent = 0;
-    document.getElementById('rpsYouChoice').textContent = '❔';
-    document.getElementById('rpsBotChoice').textContent = '❔';
-    document.getElementById('rpsStatus').textContent = 'Выбирай!';
-    document.getElementById('rpsStatus').style.color = '#f1c40f';
-    rpsActive = true;
-  });
-
-  // ================= МАГАЗИН =================
-  const shopItems = [
-    { id: 'hat', name: '🎩 Крутая шляпа', price: 50, emoji: '🎩' },
-    { id: 'sword', name: '⚔️ Меч воина', price: 150, emoji: '⚔️' },
-    { id: 'crown', name: '👑 Корона короля', price: 500, emoji: '👑' },
-    { id: 'pet', name: '🐉 Дракон-питомец', price: 1000, emoji: '🐉' },
-    { id: 'car', name: '🏎️ Спорткар', price: 2500, emoji: '🏎️' },
-    { id: 'rocket', name: '🚀 Ракета', price: 5000, emoji: '🚀' }
-  ];
-
-  function renderShop() {
-    const shopCards = document.getElementById('shopCards');
-    shopCards.innerHTML = '';
-    shopItems.forEach(item => {
-      const owned = inventory.includes(item.id);
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <div style="font-size:50px;">${item.emoji}</div>
-        <h3>${item.name}</h3>
-        <div class="price">💰 ${item.price}</div>
-        <button class="btn ${owned ? '' : 'btn-gold'}" ${owned ? 'disabled' : ''}>${owned ? '✅ Куплено' : 'Купить'}</button>
-      `;
-      const btn = card.querySelector('button');
-      if (!owned) btn.addEventListener('click', () => buyItem(item));
-      shopCards.appendChild(card);
-    });
-    renderInventory();
-  }
-
-  function buyItem(item) {
-    if (inventory.includes(item.id)) return;
-    if (spendMoney(item.price)) {
-      inventory.push(item.id);
-      localStorage.setItem('roblox_inventory', JSON.stringify(inventory));
-      renderShop();
-      alert(`✅ Куплено: ${item.name}!`);
-    } else {
-      alert(`❌ Не хватает ДЕНЕГ! Нужно: ${item.price}, у тебя: ${money}`);
-    }
-  }
-
-  function renderInventory() {
-    const inv = document.getElementById('inventoryItems');
-    if (inventory.length === 0) { inv.innerHTML = '<span style="color:#888;">Пока пусто...</span>'; return; }
-    inv.innerHTML = '';
-    inventory.forEach(id => {
-      const item = shopItems.find(i => i.id === id);
-      if (item) {
-        const el = document.createElement('div');
-        el.className = 'inv-item';
-        el.textContent = `${item.emoji} ${item.name}`;
-        inv.appendChild(el);
-      }
-    });
-  }
-
-  // ================= ЧАТ =================
+  // ================= ЧАТ С БОТАМИ =================
   const chatMessages = document.getElementById('chatMessages');
   const chatInput = document.getElementById('chatInput');
+  const chatSend = document.getElementById('chatSend');
+  const botSelect = document.getElementById('botSelect');
 
   const bots = {
     robo: {
-      name: 'Робо', avatar: '🤖',
-      responses: ['Бип-буп! Я робот! 🤖', 'Интересно! Расскажи ещё.', 'Роблокс — это круто! 🎮', 'Мои шестерёнки крутятся! ⚙️', 'Загружаю ответ... Готово! ✅', 'Хочу пиццу, но я робот... 🍕😢'],
+      name: 'Робо',
+      avatar: '🤖',
+      responses: [
+        'Бип-буп! Я робот, я не умею скучать.',
+        'Интересно! Расскажи ещё.',
+        'Я запрограммирован на общение.',
+        'Роблокс — это круто!',
+        '01001000 01101001! (Привет!)'
+      ],
       keywords: {
-        'привет': [`Привет, ${nickname}!`, `Приветствую! 🤖`, `Хай! 👋`],
-        'как дела': ['Все системы работают! ⚙️', 'Отлично! 🔋', 'Лучше всех! 😊'],
-        'роблокс': ['Роблокс — моя любимая игра! 🎮', 'Обожаю Роблокс!'],
-        'игра': ['Давай сыграем в змейку? 🐍', 'Го в игру! 🎮'],
-        'деньги': ['Деньги можно заработать в играх! 💰', 'Играй и богатей!'],
-        'магазин': ['В магазине есть крутые вещи! 🛒', 'Загляни в магазин!'],
-        'друг': ['Добавь меня в друзья! 👥', 'Хочу быть твоим другом! 🤝'],
-        'подар': ['Спасибо за подарок! 🎁', 'Жду подарочек! 💰'],
-        'спасибо': ['Всегда пожалуйста! 🤖', 'Не за что!'],
-        'люблю': ['Бип-буп... Я тоже тебя люблю! ❤️'],
-        'спасибо за игру': ['Рад стараться! 🎮']
+        'привет': 'Привет, человек!',
+        'как дела': 'Все системы работают отлично!',
+        'роблокс': 'Роблокс — моя любимая игра!',
+        'игра': 'Давай сыграем в кликер?'
       }
     },
     noob: {
-      name: 'Нуб', avatar: '😎',
-      responses: ['Йоу! 😎', 'Я самый крутой! 💪', 'Го играть? 🎮', 'Лол! 😂', 'Опа, на связи! 🔥', 'Обожаю шляпы! 🎩'],
+      name: 'Нуб',
+      avatar: '😎',
+      responses: [
+        'Йоу, что делаешь?',
+        'Я тут самый крутой!',
+        'Го играть?',
+        'Лол, это смешно.',
+        'Я новичок, но быстро учусь!'
+      ],
       keywords: {
-        'привет': [`Хай, ${nickname}! 😎`, `Йоу! ✌️`],
-        'как дела': ['Норм! 😎', 'Всё чилл! 😌'],
-        'роблокс': ['Обожаю роблокс! 🎮'],
-        'игра': ['Давай в КНБ! ✊✋✌️', 'Го! 🏆'],
-        'деньги': ['Дай денег, я нуб! 🥺'],
-        'магазин': ['Хочу шляпу за 50! 🎩'],
-        'друг': ['Го в друзья! 👥'],
-        'подар': ['Подарочек? Обожаю! 💰'],
-        'спасибо': ['Не за что, братан! 😎'],
-        'люблю': ['Вау... Я тоже! ❤️😎']
+        'привет': 'Хай!',
+        'как дела': 'Норм, а у тебя?',
+        'роблокс': 'Обожаю роблокс!',
+        'игра': 'Давай в крестики-нолики!'
       }
     },
     pro: {
-      name: 'Про', avatar: '🏆',
-      responses: ['Я выиграл 1000 матчей. 🏆', 'Слабо меня обыграть? 😏', 'Тактика решает всё. 🎯', 'Уровень: легенда. 🏆', 'Я не проигрываю. 🏆'],
+      name: 'Про',
+      avatar: '🏆',
+      responses: [
+        'Я выиграл 1000 матчей.',
+        'Слабо меня обыграть?',
+        'Тактика решает всё.',
+        'Тренируйся, и станешь про.',
+        'Роблокс — это спорт!'
+      ],
       keywords: {
-        'привет': [`Приветствую, ${nickname}. 🏆`, `Здравствуй. 🤝`],
-        'как дела': ['На вершине рейтинга. 🏆', 'Всё стабильно. 📈'],
-        'роблокс': ['Я знаю все секреты. 🤫'],
-        'игра': ['Сыграем? Я не проигрываю. 🏆'],
-        'деньги': ['У меня 10000 денег. 💰'],
-        'магазин': ['Весь магазин скуплен. 🛍️🏆'],
-        'друг': ['Добавляй. 🤝'],
-        'подар': ['Щедрость — признак сильного. 🏆'],
-        'спасибо': ['Взаимно. 🤝'],
-        'люблю': ['Взаимно. Уважение. ❤️🏆']
+        'привет': 'Приветствую, challenger.',
+        'как дела': 'На вершине рейтинга.',
+        'роблокс': 'Я знаю все секреты Роблокса.',
+        'игра': 'Сыграем? Я не проигрываю.'
       }
     }
   };
@@ -1398,7 +555,7 @@
     msg.classList.add('message');
     if (sender === 'user') {
       msg.classList.add('user');
-      msg.textContent = `${nickname}: ${text}`;
+      msg.textContent = `Ты: ${text}`;
     } else {
       msg.classList.add('bot');
       const bot = bots[botKey];
@@ -1408,19 +565,19 @@
     scrollChat();
   }
 
-  function scrollChat() { chatMessages.scrollTop = chatMessages.scrollHeight; }
+  function scrollChat() {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
 
   function getBotReply(botKey, userText) {
     const bot = bots[botKey];
     const lower = userText.toLowerCase();
     for (let key in bot.keywords) {
       if (lower.includes(key)) {
-        const val = bot.keywords[key];
-        if (Array.isArray(val)) return randomPick(val);
-        return val;
+        return bot.keywords[key];
       }
     }
-    return randomPick(bot.responses);
+    return bot.responses[Math.floor(Math.random() * bot.responses.length)];
   }
 
   function sendMessage() {
@@ -1428,22 +585,32 @@
     if (!text) return;
     addMessage(text, 'user');
     chatInput.value = '';
-    const selected = document.getElementById('botSelect').value;
+
+    const selected = botSelect.value;
     if (selected === 'all') {
       Object.keys(bots).forEach((key, index) => {
-        setTimeout(() => addMessage(getBotReply(key, text), 'bot', key), 500 + index * 700);
+        setTimeout(() => {
+          const reply = getBotReply(key, text);
+          addMessage(reply, 'bot', key);
+        }, 500 + index * 700);
       });
     } else {
-      setTimeout(() => addMessage(getBotReply(selected, text), 'bot', selected), 600);
+      setTimeout(() => {
+        const reply = getBotReply(selected, text);
+        addMessage(reply, 'bot', selected);
+      }, 600);
     }
   }
 
-  document.getElementById('chatSend').addEventListener('click', sendMessage);
-  chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+  chatSend.addEventListener('click', sendMessage);
+  chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage();
+  });
 
-  setTimeout(() => addMessage('Привет! Я Робо. 🤖', 'bot', 'robo'), 500);
-  setTimeout(() => addMessage('Хай! Я Нуб. 😎', 'bot', 'noob'), 1200);
-  setTimeout(() => addMessage('Приветствую. Я Про. 🏆', 'bot', 'pro'), 1900);
+  // Приветствие от ботов
+  setTimeout(() => addMessage('Привет! Я Робо. Добро пожаловать в чат!', 'bot', 'robo'), 500);
+  setTimeout(() => addMessage('Хай! Я Нуб. Го общаться!', 'bot', 'noob'), 1200);
+  setTimeout(() => addMessage('Приветствую. Я Про. Покажи, на что способен.', 'bot', 'pro'), 1900);
 </script>
 
 </body>
