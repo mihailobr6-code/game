@@ -136,8 +136,6 @@
   .mem-info{margin:12px;font-size:16px}
   .mem-info span{color:#ffd700;font-weight:bold}
   .mem-win{color:#00e676;font-size:20px;font-weight:bold;margin:15px;animation:pulse 1s infinite}
-
-  /* БРЮСИК */
   .brusik-scene{background:linear-gradient(180deg,#87CEEB 0%,#4a90e2 100%);border-radius:20px;padding:20px;margin:15px auto;max-width:600px;position:relative;overflow:hidden;min-height:420px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
   .brusik-sun{position:absolute;top:15px;right:15px;font-size:50px;animation:sunSpin 20s linear infinite}
   @keyframes sunSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
@@ -163,9 +161,8 @@
   .brusik-mood-label{color:#fff;font-size:13px;text-shadow:0 1px 3px rgba(0,0,0,.7);margin-bottom:5px;font-weight:bold}
   .brusik-hint{background:rgba(0,0,0,.5);padding:8px 15px;border-radius:20px;color:#fff;font-size:13px;display:inline-block;margin-top:10px;animation:pulse 2s infinite}
   .brusik-stats{display:flex;gap:15px;justify-content:center;flex-wrap:wrap;margin:15px 0;font-size:14px}
-  .brusik-stat{background:rgba(0,0,0,.3);padding:8px 15px;border-radius:10px;color:#fff;border:2px solid rgba(255,255,255,.2);word-break:break-all;max-width:100%}
-  .brusik-stat b{color:#ffd700;font-size:14px}
-
+  .brusik-stat{background:rgba(0,0,0,.3);padding:8px 15px;border-radius:10px;color:#fff;border:2px solid rgba(255,255,255,.2)}
+  .brusik-stat b{color:#ffd700;font-size:16px}
   .ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;max-width:900px;margin:20px auto}
   .ach{background:#2b2b2b;border:2px solid #444;border-radius:10px;padding:14px;text-align:left;transition:.2s}
   .ach.unlocked{border-color:#ffd700;background:#33321f;box-shadow:0 0 10px rgba(255,215,0,.3)}
@@ -225,7 +222,7 @@
   .toast{position:fixed;top:80px;right:15px;left:15px;background:linear-gradient(135deg,#ffd700,#ffaa00);color:#111;padding:14px 18px;border-radius:10px;font-weight:bold;box-shadow:0 5px 20px rgba(0,0,0,.5);transform:translateY(-200px);transition:.4s;z-index:6000;max-width:400px;margin:0 auto;pointer-events:none}
   .toast.show{transform:translateY(0)}
   .toast .t-title{font-size:11px;opacity:.7}
-  .toast .t-name{font-size:14px;word-break:break-word}
+  .toast .t-name{font-size:15px}
   .toast.green{background:linear-gradient(135deg,#00e676,#00c853);color:#fff}
   .toast.purple{background:linear-gradient(135deg,#ba68c8,#9c27b0);color:#fff}
   .toast.blue{background:linear-gradient(135deg,#00bfff,#0091ea);color:#fff}
@@ -247,8 +244,6 @@
     .game{padding:12px 10px}
     .brusik-scene{min-height:360px;padding:15px}
     .brusik-dog{font-size:clamp(90px,24vw,140px)}
-    .brusik-stat{font-size:11px}
-    .brusik-stat b{font-size:12px}
   }
   @media(max-width:400px){.menu{grid-template-columns:1fr}}
 </style>
@@ -292,7 +287,7 @@
   </div>
   <div class="card" onclick="showGame('brusik')" style="border-color:#ff6b9d">
     <h2>🐶 Брюсик Барбусик</h2><p>Гладь собачку!</p>
-    <div class="reward">+800 секстиллионов 💰</div>
+    <div class="reward">+1 💰 за поглаживание</div>
   </div>
   <div class="card" onclick="showGame('clicker')">
     <h2>👆 Кликер</h2><p>Нажимай и зарабатывай</p>
@@ -319,7 +314,7 @@
 <div id="brusik" class="game">
   <button class="back" onclick="showMenu()">← Назад</button>
   <h2>🐶 Брюсик Барбусик</h2>
-  <p style="color:#aaa;font-size:13px;margin:8px 0">Гладь собачку — она щедро платит!</p>
+  <p style="color:#aaa;font-size:13px;margin:8px 0">Гладь собачку — она даёт монетки!</p>
 
   <div class="brusik-scene" id="brusikScene">
     <div class="brusik-sun">☀️</div>
@@ -574,7 +569,7 @@
 const SECRET_CODE = '6892';
 const EVENT_PASSWORD = '890567';
 const NTFY = 'https://ntfy.sh/';
-const BRUSIK_REWARD = 800000000000000000000000000000000;
+const BRUSIK_REWARD = 1; // 🐶 1 монетка за поглаживание
 
 function getPlayerId() {
   let id = sessionStorage.getItem('rb_pid');
@@ -1122,7 +1117,6 @@ function saveAll() {
   localStorage.setItem('rb_daily', JSON.stringify(daily));
 }
 
-/* БРЮСИК — ГЛАВНОЕ ИЗМЕНЕНИЕ */
 let brusikMood = 0;
 let brusikSessionPets = 0;
 let brusikLastPet = 0;
@@ -1152,7 +1146,7 @@ function petBrusik(e) {
   }
   spawnHeart(clickX, clickY);
 
-  // 🔥 ОГРОМНАЯ НАГРАДА! 800 000 000 000 000 000 000 000 000 000 000 💰
+  // 🐶 1 МОНЕТКА × множители
   const mult = brusikMultiplier * getEventBrusikMult();
   const reward = BRUSIK_REWARD * mult;
   money += reward;
@@ -1176,14 +1170,14 @@ function doBrusikTrick() {
   dog.classList.add('happy');
   setTimeout(() => dog.classList.remove('happy'), 600);
 
-  const bonus = BRUSIK_REWARD * brusikMultiplier * getEventBrusikMult() * getEventMoneyMult();
+  const bonus = BRUSIK_REWARD * 50 * brusikMultiplier * getEventBrusikMult() * getEventMoneyMult();
   money += bonus;
   stats.totalEarned += bonus;
   stats.brusikEarned += bonus;
   stats.brusikTricks++;
   updateMoney();
 
-  showToast('🐶 ТРЮК БРЮСИКА!', `🎉 Астрономический бонус!`, false, false, false, true, false);
+  showToast('🐶 ТРЮК БРЮСИКА!', `🎉 +${Math.floor(bonus)} 💰 бонус`, false, false, false, true, false);
   for (let i = 0; i < 8; i++) {
     setTimeout(() => spawnHeart((Math.random()-0.5)*150, (Math.random()-0.5)*100), i*80);
   }
@@ -1193,7 +1187,7 @@ function spawnHeart(x, y) {
   const wrap = document.getElementById('brusikDogWrap');
   const heart = document.createElement('div');
   heart.className = 'brusik-heart';
-  const emojis = ['❤️','💖','💕','💗','💓','🐾','💰','💎'];
+  const emojis = ['❤️','💖','💕','💗','💓','🐾','💰'];
   heart.textContent = emojis[Math.floor(Math.random()*emojis.length)];
   heart.style.left = '50%';
   heart.style.top = '40%';
@@ -1325,8 +1319,7 @@ const ACHIEVEMENTS = [
   { id:'brusik_10',   icon:'🐶', name:'Первый друг', desc:'Погладь Брюсика 10 раз', check:()=>stats.brusikPets>=10 },
   { id:'brusik_100',  icon:'💝', name:'Лучший друг', desc:'Погладь Брюсика 100 раз', check:()=>stats.brusikPets>=100 },
   { id:'brusik_1000', icon:'🏆', name:'Брюсик-легенда', desc:'Погладь Брюсика 1000 раз', check:()=>stats.brusikPets>=1000 },
-  { id:'brusik_tricks',icon:'🎪', name:'Дрессировщик', desc:'10 трюков Брюсика', check:()=>stats.brusikTricks>=10 },
-  { id:'trillionaire',icon:'🌌', name:'Космический богач', desc:'Заработай 1 секстиллион 💰', check:()=>stats.totalEarned>=1e21 }
+  { id:'brusik_tricks',icon:'🎪', name:'Дрессировщик', desc:'10 трюков Брюсика', check:()=>stats.brusikTricks>=10 }
 ];
 
 function checkAchievements() {
@@ -1367,19 +1360,13 @@ function openAch() {
 }
 
 function updateMoney() {
-  let display;
-  if (money >= 1e15) {
-    display = money.toExponential(4).replace('e+', ' × 10^');
-  } else {
-    display = money.toLocaleString('ru-RU');
-  }
-  document.getElementById('moneyDisplay').textContent = display;
+  document.getElementById('moneyDisplay').textContent = money.toLocaleString('ru-RU');
   const sm = document.getElementById('shopMoney');
-  if (sm) sm.textContent = display;
+  if (sm) sm.textContent = money.toLocaleString('ru-RU');
   document.getElementById('menuClickBonus').textContent = clickBonus;
 }
 function addMoney(amount) {
-  const boosted = amount * getEventMoneyMult();
+  const boosted = Math.floor(amount * getEventMoneyMult());
   money += boosted; stats.totalEarned += boosted;
   updateMoney(); saveAll(); checkAchievements();
 }
@@ -1519,11 +1506,11 @@ function checkGuess() {
 }
 
 const shopItems = [
-  { id:'click',   name:'👆 Улучшить клик (+1)',      price:50,   apply:()=>clickBonus++ },
-  { id:'click5',  name:'🔥 Мега-клик (+5)',           price:500,  apply:()=>clickBonus += 5 },
-  { id:'memory',  name:'🧠 x2 деньги в Памяти',       price:300,  apply:()=>memoryMultiplier *= 2 },
-  { id:'brusik',  name:'🐶 x2 деньги Брюсика',        price:400,  apply:()=>brusikMultiplier *= 2 },
-  { id:'brusik5', name:'💝 x5 деньги Брюсика',        price:1500, apply:()=>brusikMultiplier *= 5 }
+  { id:'click',   name:'👆 Улучшить клик (+1)',  price:50,   apply:()=>clickBonus++ },
+  { id:'click5',  name:'🔥 Мега-клик (+5)',       price:500,  apply:()=>clickBonus += 5 },
+  { id:'memory',  name:'🧠 x2 деньги в Памяти',   price:300,  apply:()=>memoryMultiplier *= 2 },
+  { id:'brusik',  name:'🐶 x2 деньги Брюсика',    price:400,  apply:()=>brusikMultiplier *= 2 },
+  { id:'brusik5', name:'💝 x5 деньги Брюсика',    price:1500, apply:()=>brusikMultiplier *= 5 }
 ];
 function renderShop() {
   updateMoney();
