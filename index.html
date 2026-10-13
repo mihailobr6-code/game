@@ -29,6 +29,7 @@
   .room-bar input { background: #222; border: 1px solid #9c27b0; color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 12px; width: 130px; }
   .room-bar button { background: #9c27b0; color: #fff; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; margin: 0; }
   .my-name { color: #00e676; font-weight: bold; }
+  .edit-nick-btn { background: #00e676 !important; color: #111 !important; font-weight: bold; padding: 5px 10px !important; cursor: pointer; }
   .menu { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 20px; max-width: 1000px; margin: 0 auto; }
   .card { background: #2b2b2b; border-radius: 12px; padding: 18px 15px; cursor: pointer; transition: 0.2s; border: 2px solid #444; display: flex; flex-direction: column; justify-content: center; min-height: 130px; position: relative; }
   .card:hover { transform: scale(1.03); border-color: #e2231a; }
@@ -111,7 +112,6 @@
   .kick-modal-btns { display: flex; gap: 10px; margin-top: 20px; justify-content: center; flex-wrap: wrap; }
   .kick-modal-btns button { flex: 1; min-width: 120px; padding: 14px 20px; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; border: none; transition: 0.15s; }
   .kick-modal-btns .cancel-kick { background: #444; color: #fff; }
-  .kick-modal-btns .cancel-kick:hover { background: #555; }
   .kick-modal-btns .confirm-kick { background: #c41e16; color: #fff; }
   .kick-modal-btns .confirm-kick:hover { background: #a01812; }
 
@@ -125,6 +125,26 @@
   .kick-duration-line { color: #ffaa00; font-size: 14px; margin: 8px 0; }
   .kick-timer { color: #fff; font-size: 14px; margin-top: 20px; }
   .kick-timer b { color: #ff4444; font-size: 20px; }
+
+  /* МОДАЛКА СМЕНЫ НИКА */
+  .nick-modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 4500; justify-content: center; align-items: center; padding: 15px; }
+  .nick-modal-overlay.show { display: flex; }
+  .nick-modal { background: linear-gradient(135deg, #1a1a1a, #2b2b2b); border: 3px solid #00e676; border-radius: 15px; padding: 25px 20px; max-width: 450px; width: 100%; box-shadow: 0 0 40px rgba(0,230,118,0.5); animation: modalIn 0.3s; }
+  .nick-modal h2 { color: #00e676; margin-bottom: 10px; font-size: 20px; text-align: center; }
+  .nick-preview { background: #000; border: 1px solid #333; border-radius: 10px; padding: 12px; margin: 10px 0; text-align: center; }
+  .nick-preview-value { color: #ffd700; font-size: 20px; font-weight: bold; margin-top: 5px; word-break: break-all; }
+  .nick-input { width: 100%; padding: 14px; background: #000; border: 2px solid #444; border-radius: 10px; color: #fff; font-size: 18px; text-align: center; box-sizing: border-box; font-weight: bold; }
+  .nick-input:focus { outline: none; border-color: #00e676; box-shadow: 0 0 15px rgba(0,230,118,0.4); }
+  .nick-btns { display: flex; gap: 10px; margin-top: 15px; justify-content: center; flex-wrap: wrap; }
+  .nick-btns button { flex: 1; min-width: 120px; padding: 14px 20px; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; border: none; transition: 0.15s; margin: 0; }
+  .nick-cancel { background: #444; color: #fff; }
+  .nick-cancel:hover { background: #555; }
+  .nick-save { background: #00e676; color: #111; }
+  .nick-save:hover { background: #00c853; }
+  .nick-tips { text-align: center; color: #888; font-size: 11px; margin-top: 15px; padding: 10px; background: #000; border-radius: 8px; }
+  .nick-options { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+  .nick-options button { background: #222; color: #00e676; border: 2px solid #00e676; font-size: 12px; padding: 6px 12px; min-height: 34px; margin: 0; }
+  .nick-options button:hover { background: #00e676; color: #111; }
 
   .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 400px; width: 100%; margin: 15px auto; }
   .mem-card { aspect-ratio: 1; background: #2b2b2b; border: 2px solid #444; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: clamp(24px, 8vw, 40px); cursor: pointer; transition: 0.15s; touch-action: manipulation; }
@@ -247,6 +267,12 @@
     .duration-grid { gap: 6px; }
     .duration-option label { padding: 10px 6px; font-size: 12px; }
     .duration-option .dur-icon { font-size: 18px; }
+    .nick-modal { padding: 20px 15px; }
+    .nick-modal h2 { font-size: 18px; }
+    .nick-input { font-size: 16px; padding: 12px; }
+    .nick-preview-value { font-size: 18px; }
+    .nick-btns button { padding: 12px 15px; font-size: 14px; }
+    .edit-nick-btn { padding: 4px 8px !important; font-size: 11px !important; }
   }
   @media (max-width: 400px) {
     .menu { grid-template-columns: 1fr; }
@@ -276,6 +302,7 @@
   🎮 Комната: <b id="roomName">shared777</b>
   <span style="color:#888;">|</span>
   <span>Ты: <span class="my-name" id="myNameDisplay">-</span></span>
+  <button class="edit-nick-btn" onclick="openNickModal()" title="Сменить ник">✏️</button>
   <span style="color:#888;">|</span>
   Игроков: <b id="playerCount">1</b>
   <input type="text" id="roomInput" placeholder="новая комната" maxlength="20">
@@ -488,6 +515,32 @@
   </div>
 </div>
 
+<!-- ✏️ МОДАЛКА СМЕНЫ НИКА -->
+<div class="nick-modal-overlay" id="nickModal">
+  <div class="nick-modal">
+    <h2>✏️ СМЕНИТЬ НИК</h2>
+    <p style="color:#aaa; font-size:13px; margin-bottom:15px;">Введи новый ник (2-20 символов)</p>
+    <div class="nick-preview">
+      <span style="color:#888; font-size:12px;">Будет так:</span>
+      <div class="nick-preview-value" id="nickPreview">НовыйНик</div>
+    </div>
+    <input type="text" id="newNickInput" class="nick-input" placeholder="Новый ник" maxlength="20" oninput="updateNickPreview()" onkeydown="if(event.key==='Enter')saveNick()">
+    <div class="nick-options">
+      <button onclick="randomNick()">🎲 Случайный</button>
+      <button onclick="addEmojiNick('🔥')">🔥</button>
+      <button onclick="addEmojiNick('⚡')">⚡</button>
+      <button onclick="addEmojiNick('👑')">👑</button>
+      <button onclick="addEmojiNick('💎')">💎</button>
+      <button onclick="addEmojiNick('🎮')">🎮</button>
+    </div>
+    <div class="nick-btns">
+      <button class="nick-cancel" onclick="closeNickModal()">Отмена</button>
+      <button class="nick-save" onclick="saveNick()">✅ Сохранить</button>
+    </div>
+    <div class="nick-tips">💡 Совет: используй разные ники чтобы друзья тебя узнавали</div>
+  </div>
+</div>
+
 <!-- 🥾 МОДАЛКА ВЫГОНА -->
 <div class="kick-modal-overlay" id="kickModal">
   <div class="kick-modal">
@@ -626,7 +679,7 @@ function setMoney(amount) {
 }
 
 /* ============================================================
-   🌍 МУЛЬТИПЛЕЕР + 🥾 ВЫГОН ИГРОКОВ
+   🌍 МУЛЬТИПЛЕЕР + НИКИ
    ============================================================ */
 function getRoomFromURL() {
   const url = new URLSearchParams(location.search).get('room') || 'shared777';
@@ -649,7 +702,7 @@ function getNickname() {
 }
 
 const MY_ID = getPlayerId();
-const MY_NICK = getNickname();
+let MY_NICK = getNickname();
 let ROOM = getRoomFromURL();
 const NTFY = 'https://ntfy.sh/';
 let NTFY_TOPIC = 'roblox3games_evt_' + ROOM;
@@ -661,6 +714,78 @@ document.getElementById('myNameDisplay').textContent = MY_NICK;
 
 const players = new Map();
 
+/* ============================================================
+   ✏️ СМЕНА НИКА
+   ============================================================ */
+function openNickModal() {
+  document.getElementById('nickModal').classList.add('show');
+  const input = document.getElementById('newNickInput');
+  input.value = MY_NICK;
+  updateNickPreview();
+  setTimeout(() => { input.focus(); input.select(); }, 200);
+}
+
+function closeNickModal() {
+  document.getElementById('nickModal').classList.remove('show');
+}
+
+function updateNickPreview() {
+  const val = document.getElementById('newNickInput').value.trim();
+  document.getElementById('nickPreview').textContent = val || 'НовыйНик';
+}
+
+function randomNick() {
+  const nick = NICKNAMES[Math.floor(Math.random() * NICKNAMES.length)] + ' #' + Math.floor(Math.random()*900+100);
+  document.getElementById('newNickInput').value = nick;
+  updateNickPreview();
+}
+
+function addEmojiNick(emoji) {
+  const input = document.getElementById('newNickInput');
+  let val = input.value.trim();
+  if (!val.includes(emoji)) input.value = val + ' ' + emoji;
+  updateNickPreview();
+}
+
+function saveNick() {
+  let newNick = document.getElementById('newNickInput').value.trim();
+
+  if (newNick.length < 2) { showToast('❌ Слишком короткий', 'Минимум 2 символа', false); return; }
+  if (newNick.length > 20) { showToast('❌ Слишком длинный', 'Максимум 20 символов', false); return; }
+
+  newNick = newNick.replace(/[<>"'&]/g, '').trim();
+  if (newNick.length < 2) { showToast('❌ Некорректный ник', 'Только буквы/цифры', false); return; }
+
+  MY_NICK = newNick;
+  localStorage.setItem('rb_nickname', MY_NICK);
+  document.getElementById('myNameDisplay').textContent = MY_NICK;
+
+  publish({ type: 'nick_change', newNick: MY_NICK });
+  sendPresence();
+
+  closeNickModal();
+  showToast('✅ НИК ИЗМЕНЁН', `Теперь ты: ${MY_NICK}`, true);
+  renderPlayersList();
+}
+
+function handleNickChange(payload) {
+  if (!payload.sender || !payload.newNick) return;
+  if (payload.sender === MY_ID) return;
+  if (players.has(payload.sender)) {
+    const p = players.get(payload.sender);
+    p.nickname = payload.newNick;
+    p.lastSeen = Date.now();
+    if (currentGame === 'secret' && adminUnlocked) renderPlayersList();
+  }
+}
+
+document.getElementById('nickModal').addEventListener('click', function(e) {
+  if (e.target === this) closeNickModal();
+});
+
+/* ============================================================
+   Мультиплеер
+   ============================================================ */
 function changeRoom() {
   const val = document.getElementById('roomInput').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
   if (!val) { alert('Введи название комнаты!'); return; }
@@ -700,8 +825,9 @@ function updatePlayerCount() {
 
 function handlePresence(payload) {
   if (!payload.sender || payload.sender === MY_ID) return;
+  const existing = players.get(payload.sender);
   players.set(payload.sender, {
-    nickname: payload.senderNick || ('Игрок_' + payload.sender.slice(-4)),
+    nickname: payload.senderNick || (existing ? existing.nickname : ('Игрок_' + payload.sender.slice(-4))),
     lastSeen: Date.now()
   });
   updatePlayerCount();
@@ -740,6 +866,7 @@ function renderPlayersList() {
 function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function escapeJs(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"').replace(/\n/g,' '); }
 
+/* 🥾 Выгон */
 function kickPlayer(targetId, targetNick) {
   if (!adminUnlocked) { showToast('❌ Нет доступа', 'Только админ может выгонять', false); return; }
   if (targetId === MY_ID) { showToast('😅 Себя нельзя', 'Ты и так админ', false); return; }
@@ -751,7 +878,6 @@ function kickPlayer(targetId, targetNick) {
   document.getElementById('kickReasonInput').value = 'Нарушение правил';
   document.getElementById('dur5').checked = true;
 }
-
 function closeKickModal() { document.getElementById('kickModal').classList.remove('show'); }
 
 function confirmKick() {
@@ -760,11 +886,8 @@ function confirmKick() {
   const reason = document.getElementById('kickReasonInput').value.trim() || 'Нарушение правил';
   const durationRadio = document.querySelector('input[name="kickDuration"]:checked');
   if (!durationRadio) { alert('Выбери длительность!'); return; }
-
-  let banMs = 0;
-  let durationText = '';
+  let banMs = 0, durationText = '';
   const val = durationRadio.value;
-
   if (val === 'forever') {
     banMs = 365 * 24 * 60 * 60 * 1000 * 100;
     durationText = 'навсегда';
@@ -773,23 +896,11 @@ function confirmKick() {
     banMs = minutes * 60 * 1000;
     durationText = formatDuration(minutes);
   }
-
-  publish({
-    type: 'kick',
-    target: targetId,
-    targetNick: targetNick,
-    reason: reason,
-    banMs: banMs,
-    durationText: durationText
-  });
-
+  publish({ type: 'kick', target: targetId, targetNick, reason, banMs, durationText });
   players.delete(targetId);
-  renderPlayersList();
-  updatePlayerCount();
-  closeKickModal();
+  renderPlayersList(); updatePlayerCount(); closeKickModal();
   showToast('🥾 ИГРОК ВЫГНАН', `${targetNick} — бан ${durationText}`, false, false, true);
 }
-
 function formatDuration(minutes) {
   if (minutes < 60) return minutes + ' мин';
   if (minutes < 1440) return Math.floor(minutes / 60) + ' ч';
@@ -819,6 +930,7 @@ function handleIncoming(payload) {
   if (payload.type === 'presence') handlePresence(payload);
   else if (payload.type === 'event_start') handleRemoteEvent(payload);
   else if (payload.type === 'kick') handleKick(payload);
+  else if (payload.type === 'nick_change') handleNickChange(payload);
 }
 
 function handleKick(payload) {
