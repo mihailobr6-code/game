@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#e2231a">
-<meta name="apple-mobile-web-app-capable" content="yes">
 <title>Roblox: 3 игры</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -32,26 +31,26 @@
     border: 2px solid #00e676;
     display: flex; align-items: center; gap: 5px;
   }
-  .online-badge .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: #00e676; animation: blink 1.5s infinite;
-  }
+  .online-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: #00e676; animation: blink 1.5s infinite; }
   .online-badge.offline { border-color: #888; color: #888; }
   .online-badge.offline .dot { background: #888; animation: none; }
   @keyframes blink { 0%,100%{ opacity: 1; } 50%{ opacity: 0.3; } }
 
   .wallet {
     background: #111; padding: 8px 16px; border-radius: 10px;
-    font-size: 16px; font-weight: bold; border: 2px solid #ffd700; color: #ffd700;
-    white-space: nowrap;
+    font-size: 16px; font-weight: bold; border: 2px solid #ffd700; color: #ffd700; white-space: nowrap;
   }
   .reset-btn {
     background: #444; color: #fff; border: 2px solid #666;
-    padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 13px;
-    transition: 0.2s;
+    padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: 0.2s;
   }
   .reset-btn:hover { background: #555; }
   .account-btn { background: #7b1fa2; border-color: #9c27b0; }
+  .secret-btn {
+    background: #111; border: 2px solid #333;
+    font-size: 15px; padding: 6px 12px; color: #666;
+  }
+  .secret-btn:hover { background: #222; color: #ffd700; border-color: #ffd700; }
 
   .room-bar {
     background: #111; padding: 8px 12px; font-size: 12px; color: #ba68c8;
@@ -65,9 +64,9 @@
   }
   .room-bar button {
     background: #9c27b0; color: #fff; border: none;
-    padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;
-    margin: 0;
+    padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; margin: 0;
   }
+  .my-name { color: #00e676; font-weight: bold; }
 
   .menu {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -105,18 +104,14 @@
   }
   .event-badge {
     position: absolute; top: -8px; right: -8px;
-    font-size: 10px; padding: 4px 8px;
-    border-radius: 10px; font-weight: bold; color: #fff;
+    font-size: 10px; padding: 4px 8px; border-radius: 10px; font-weight: bold; color: #fff;
   }
   .event-badge.on { background: #00e676; color: #111; animation: pulse 1.2s infinite; }
   .event-badge.off { background: #555; }
   .event-menu-status { margin-top: 8px; padding: 6px; border-radius: 8px; font-size: 12px; font-weight: bold; }
   .event-menu-status.on { background: #00e676; color: #111; }
   .event-menu-status.off { background: #333; color: #888; border: 1px solid #444; }
-  .event-menu-timer {
-    font-size: 18px; font-weight: bold; color: #ffd700;
-    margin-top: 4px; font-family: 'Courier New', monospace;
-  }
+  .event-menu-timer { font-size: 18px; font-weight: bold; color: #ffd700; margin-top: 4px; font-family: 'Courier New', monospace; }
   .event-menu-owner { font-size: 10px; color: #aaa; margin-top: 3px; }
   @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
 
@@ -132,13 +127,133 @@
   button:active { transform: scale(0.96); }
   input {
     padding: 12px; border-radius: 8px; border: 1px solid #555;
-    background: #222; color: white; font-size: 16px; width: 160px;
-    min-height: 44px;
+    background: #222; color: white; font-size: 16px; width: 160px; min-height: 44px;
   }
   .back { margin-bottom: 15px; }
 
   .shop-btn { background: #ffd700; color: #111; font-weight: bold; }
   .danger-btn { background: #444; color: #fff; border: 2px solid #c41e16; }
+
+  /* АДМИН */
+  .secret-box {
+    max-width: 560px; margin: 20px auto;
+    background: linear-gradient(135deg, #1a1a1a, #2b2b2b);
+    border: 2px solid #ffd700; border-radius: 15px; padding: 25px 20px;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  }
+  .secret-box h2 { color: #ffd700; margin-bottom: 15px; }
+  .secret-locked { font-size: 50px; margin: 15px 0; }
+  .secret-input {
+    width: 100%; max-width: 260px; text-align: center;
+    font-size: 24px; font-weight: bold; letter-spacing: 8px;
+    border: 2px solid #ffd700; background: #111; color: #ffd700;
+    margin: 15px 0; font-family: 'Courier New', monospace;
+  }
+  .secret-submit {
+    background: linear-gradient(135deg, #ffd700, #ffaa00);
+    color: #111; font-weight: bold; font-size: 16px; padding: 12px 30px;
+  }
+  .secret-submit:hover { background: #ffd700; }
+  .admin-panel {
+    display: none; background: #0d0d0d;
+    border: 2px solid #ffd700; border-radius: 12px;
+    padding: 20px; margin-top: 15px; text-align: left;
+  }
+  .admin-panel.show { display: block; }
+  .admin-panel h3 { color: #ffd700; text-align: center; margin-bottom: 15px; font-size: 18px; }
+  .admin-section {
+    background: #000; border: 1px solid #333;
+    border-radius: 10px; padding: 12px; margin: 12px 0;
+  }
+  .admin-section h4 {
+    color: #00e676; font-size: 14px; margin-bottom: 10px;
+    text-align: center; letter-spacing: 1px;
+  }
+  .admin-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; justify-content: center; align-items: center; }
+  .admin-row input {
+    flex: 1; min-width: 120px; max-width: 200px;
+    text-align: center; font-size: 18px;
+    background: #000; color: #00e676;
+    border: 2px solid #00e676; font-weight: bold;
+  }
+  .admin-btn {
+    background: #00e676; color: #111; font-weight: bold;
+    padding: 10px 20px; font-size: 15px;
+  }
+  .admin-btn:hover { background: #00c853; }
+  .admin-btn.danger { background: #c41e16; color: #fff; }
+  .admin-btn.danger:hover { background: #a01812; }
+  .admin-btn.secondary { background: #444; color: #fff; }
+  .quick-money { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+  .quick-money button {
+    background: #222; color: #00e676; border: 2px solid #00e676;
+    font-size: 13px; padding: 8px 14px; min-height: 38px; margin: 0;
+  }
+  .quick-money button:hover { background: #00e676; color: #111; }
+  .admin-info {
+    background: #000; color: #00e676; padding: 10px;
+    border-radius: 8px; margin-top: 10px; font-size: 13px;
+    text-align: center; font-family: 'Courier New', monospace;
+  }
+
+  /* Список игроков */
+  .players-list { margin-top: 8px; }
+  .player-item {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #111; border: 1px solid #333;
+    border-radius: 8px; padding: 8px 12px; margin: 6px 0; gap: 8px;
+  }
+  .player-info { text-align: left; flex: 1; min-width: 0; }
+  .player-name {
+    color: #00e676; font-weight: bold; font-size: 14px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .player-name.me { color: #ffd700; }
+  .player-id { color: #666; font-size: 10px; font-family: 'Courier New', monospace; }
+  .player-time { color: #666; font-size: 11px; }
+  .kick-btn {
+    background: #c41e16; color: #fff; border: none;
+    padding: 8px 14px; border-radius: 6px; cursor: pointer;
+    font-size: 13px; font-weight: bold; margin: 0; min-height: 36px;
+  }
+  .kick-btn:hover { background: #a01812; }
+  .kick-btn:active { transform: scale(0.95); }
+  .no-players { color: #666; text-align: center; font-size: 12px; padding: 15px; }
+
+  /* КИК МОДАЛКА */
+  .kick-overlay {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(120, 0, 0, 0.95); z-index: 5000;
+    justify-content: center; align-items: center; padding: 20px;
+  }
+  .kick-overlay.show { display: flex; }
+  .kick-box {
+    background: #1a0000; border: 3px solid #c41e16;
+    border-radius: 20px; padding: 40px 25px;
+    max-width: 450px; width: 100%;
+    box-shadow: 0 0 50px rgba(196, 30, 22, 0.8);
+    animation: kickShake 0.5s;
+  }
+  @keyframes kickShake {
+    0%,100% { transform: translateX(0); }
+    20%,60% { transform: translateX(-10px); }
+    40%,80% { transform: translateX(10px); }
+  }
+  .kick-icon { font-size: 80px; margin-bottom: 15px; }
+  .kick-title {
+    color: #ff4444; font-size: 28px; font-weight: bold;
+    letter-spacing: 2px; margin-bottom: 15px;
+    text-shadow: 0 0 20px rgba(255,68,68,0.8);
+  }
+  .kick-reason {
+    color: #ffaa00; font-size: 16px; margin: 15px 0;
+    background: #000; padding: 12px; border-radius: 10px;
+    border: 1px solid #333;
+  }
+  .kick-timer {
+    color: #fff; font-size: 14px; margin-top: 20px;
+  }
+  .kick-timer b { color: #ff4444; font-size: 20px; }
 
   .memory-grid {
     display: grid; grid-template-columns: repeat(4, 1fr);
@@ -150,11 +265,9 @@
     font-size: clamp(24px, 8vw, 40px); cursor: pointer;
     transition: 0.15s; touch-action: manipulation;
   }
-  .mem-card:hover { border-color: #e2231a; transform: scale(1.05); }
   .mem-card:active { transform: scale(0.92); }
   .mem-card.flipped { background: #33321f; border-color: #ffd700; }
   .mem-card.matched { background: #1e3a24; border-color: #00c853; cursor: default; opacity: 0.75; }
-  .mem-card.matched:hover { transform: none; border-color: #00c853; }
   .mem-info { margin: 12px; font-size: 16px; }
   .mem-info span { color: #ffd700; font-weight: bold; }
   .mem-win { color: #00e676; font-size: 20px; font-weight: bold; margin: 15px; animation: pulse 1s infinite; }
@@ -186,10 +299,7 @@
   .day .day-icon { font-size: 22px; margin: 3px 0; }
   .day .day-reward { font-size: 11px; color: #ffd700; font-weight: bold; }
   .day.claimed { border-color: #00c853; background: #1e3a24; }
-  .day.claimed::after {
-    content: '✓'; position: absolute; top: 3px; right: 5px;
-    color: #00c853; font-weight: bold; font-size: 12px;
-  }
+  .day.claimed::after { content: '✓'; position: absolute; top: 3px; right: 5px; color: #00c853; font-weight: bold; font-size: 12px; }
   .day.current { border-color: #ffd700; background: #33321f; box-shadow: 0 0 15px rgba(255,215,0,0.4); transform: scale(1.05); }
   .daily-info { margin: 12px; font-size: 15px; }
   .daily-info .streak { color: #ffd700; font-weight: bold; }
@@ -303,6 +413,7 @@
   .toast.purple { background: linear-gradient(135deg, #ba68c8, #9c27b0); color: #fff; }
   .toast.blue { background: linear-gradient(135deg, #00bfff, #0091ea); color: #fff; }
   .toast.red { background: linear-gradient(135deg, #c41e16, #7b1fa2); color: #fff; }
+  .toast.gold { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #111; }
 
   @media (max-width: 700px) {
     header { padding: 8px 10px; gap: 6px; }
@@ -311,6 +422,7 @@
     .wallet { font-size: 13px; padding: 6px 10px; }
     .reset-btn { font-size: 10px; padding: 5px 8px; }
     .online-badge { font-size: 10px; padding: 5px 8px; }
+    .secret-btn { font-size: 13px; padding: 5px 10px; }
 
     .menu { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 12px; }
     .card { padding: 14px 10px; min-height: 115px; }
@@ -345,6 +457,15 @@
 
     .mem-card { font-size: clamp(20px, 9vw, 34px); }
     .toast { top: 70px; }
+
+    .secret-box { padding: 20px 15px; }
+    .secret-input { font-size: 20px; letter-spacing: 6px; }
+    .admin-row input { font-size: 16px; }
+
+    .kick-icon { font-size: 60px; }
+    .kick-title { font-size: 22px; }
+    .player-name { font-size: 13px; }
+    .kick-btn { padding: 7px 12px; font-size: 12px; }
   }
 
   @media (max-width: 400px) {
@@ -371,6 +492,7 @@
     </div>
     <div id="activeEventBadge" class="active-event" style="display:none;"></div>
     <div class="wallet">💰 <span id="moneyDisplay">0</span></div>
+    <button class="secret-btn" onclick="openSecret()" title="???">🔐</button>
     <button class="reset-btn" onclick="resetMoney()">🔄 Сброс 💰</button>
     <button class="reset-btn account-btn" onclick="openAccountReset()">💥 Сброс</button>
   </div>
@@ -378,9 +500,12 @@
 
 <div class="room-bar">
   🎮 Комната: <b id="roomName">shared777</b>
+  <span style="color:#888;">|</span>
+  <span>Ты: <span class="my-name" id="myNameDisplay">-</span></span>
+  <span style="color:#888;">|</span>
+  Игроков: <b id="playerCount">1</b>
   <input type="text" id="roomInput" placeholder="новая комната" maxlength="20">
   <button onclick="changeRoom()">Сменить</button>
-  <span style="color:#888;font-size:11px;">← Играй с друзьями в одной комнате</span>
 </div>
 
 <div class="menu" id="menu">
@@ -422,6 +547,61 @@
     <h2>🏆 Ачивки</h2>
     <p>Открыто: <span id="achCounter">0</span>/<span id="achTotal">0</span></p>
     <div class="reward">Собери все достижения</div>
+  </div>
+</div>
+
+<!-- 🔐 СЕКРЕТНАЯ ПАНЕЛЬ -->
+<div id="secret" class="game">
+  <button class="back" onclick="showMenu()">← Назад</button>
+  <div class="secret-box">
+    <div class="secret-locked" id="secretLockIcon">🔒</div>
+    <h2 id="secretTitle">СЕКРЕТНЫЙ ДОСТУП</h2>
+    <p style="color:#aaa; font-size:13px;" id="secretHint">Введи секретный код</p>
+
+    <div id="secretLockedPart">
+      <input type="password" id="secretInput" class="secret-input" placeholder="••••" maxlength="10" inputmode="numeric" onkeydown="if(event.key==='Enter')checkSecret()">
+      <br>
+      <button class="secret-submit" onclick="checkSecret()">🔓 Открыть</button>
+    </div>
+
+    <div class="admin-panel" id="adminPanel">
+      <h3>👑 АДМИН-ПАНЕЛЬ</h3>
+
+      <div class="admin-section">
+        <h4>💰 ВЫДАТЬ ДЕНЬГИ</h4>
+        <div class="admin-row">
+          <input type="number" id="moneyAmount" placeholder="Сумма" min="1" inputmode="numeric">
+          <button class="admin-btn" onclick="giveMoney()">💰 Выдать</button>
+        </div>
+        <div class="quick-money">
+          <button onclick="quickGive(100)">+100</button>
+          <button onclick="quickGive(1000)">+1К</button>
+          <button onclick="quickGive(10000)">+10К</button>
+          <button onclick="quickGive(100000)">+100К</button>
+          <button onclick="quickGive(1000000)">+1МЛН</button>
+          <button onclick="quickGive(1000000000)">+1МЛРД</button>
+        </div>
+        <div class="admin-info" id="adminInfo">Баланс: <span id="adminMoney">0</span> 💰</div>
+        <div class="admin-row" style="margin-top:10px;">
+          <button class="admin-btn secondary" onclick="setMoney(0)">Обнулить</button>
+        </div>
+      </div>
+
+      <div class="admin-section">
+        <h4>🥾 ИГРОКИ В КОМНАТЕ</h4>
+        <div class="players-list" id="playersList"></div>
+        <div class="admin-row" style="margin-top:8px;">
+          <button class="admin-btn secondary" onclick="renderPlayersList()">🔄 Обновить</button>
+        </div>
+      </div>
+
+      <div class="admin-section">
+        <h4>⚙️ УПРАВЛЕНИЕ</h4>
+        <div class="admin-row">
+          <button class="admin-btn danger" onclick="lockSecret()">🔒 Заблокировать</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -546,6 +726,20 @@
   </div>
 </div>
 
+<!-- 🥾 ЭКРАН ВЫГОНА -->
+<div class="kick-overlay" id="kickOverlay">
+  <div class="kick-box">
+    <div class="kick-icon">🥾</div>
+    <div class="kick-title">ВЫ ИСКЛЮЧЕНЫ</div>
+    <p style="color:#ff8888;">Администратор выгнал вас из комнаты</p>
+    <div class="kick-reason" id="kickReason">Причина: нарушение правил</div>
+    <div class="kick-timer">
+      Повторный вход возможен через<br>
+      <b id="kickTimer">05:00</b>
+    </div>
+  </div>
+</div>
+
 <div id="toast" class="toast">
   <div class="t-title" id="toastTitle">🏆 НОВАЯ АЧИВКА!</div>
   <div class="t-name" id="toastName"></div>
@@ -553,21 +747,138 @@
 
 <script>
 /* ============================================================
-   🌍 МУЛЬТИПЛЕЕР — ОБЩИЕ ИВЕНТЫ ДЛЯ ВСЕХ ИГРОКОВ
-   Через бесплатный сервис ntfy.sh (без регистрации)
+   🔐 СЕКРЕТНАЯ АДМИН-ПАНЕЛЬ (код: 6892)
+   ============================================================ */
+const SECRET_CODE = '6892';
+let adminUnlocked = false;
+
+function openSecret() {
+  document.getElementById('menu').style.display = 'none';
+  document.querySelectorAll('.game').forEach(g => g.classList.remove('active'));
+  document.getElementById('secret').classList.add('active');
+  currentGame = 'secret';
+
+  if (adminUnlocked) {
+    document.getElementById('adminPanel').classList.add('show');
+    document.getElementById('secretLockedPart').style.display = 'none';
+    document.getElementById('secretLockIcon').textContent = '👑';
+    document.getElementById('secretTitle').textContent = 'АДМИН-РЕЖИМ';
+    document.getElementById('secretHint').textContent = 'Полный доступ!';
+    updateAdminInfo();
+    renderPlayersList();
+  } else {
+    document.getElementById('adminPanel').classList.remove('show');
+    document.getElementById('secretLockedPart').style.display = 'block';
+    document.getElementById('secretLockIcon').textContent = '🔒';
+    document.getElementById('secretTitle').textContent = 'СЕКРЕТНЫЙ ДОСТУП';
+    document.getElementById('secretHint').textContent = 'Введи секретный код';
+    document.getElementById('secretInput').value = '';
+    setTimeout(() => document.getElementById('secretInput').focus(), 200);
+  }
+}
+
+function checkSecret() {
+  const input = document.getElementById('secretInput');
+  const val = input.value.trim();
+
+  if (val === SECRET_CODE) {
+    adminUnlocked = true;
+    document.getElementById('secretLockIcon').textContent = '👑';
+    document.getElementById('secretTitle').textContent = 'АДМИН-РЕЖИМ';
+    document.getElementById('secretHint').textContent = 'Полный доступ!';
+    document.getElementById('secretLockedPart').style.display = 'none';
+    document.getElementById('adminPanel').classList.add('show');
+    updateAdminInfo();
+    renderPlayersList();
+    showToast('🔓 ДОСТУП ОТКРЫТ!', '👑 Админ-режим активирован', false, false, false, true);
+  } else {
+    input.value = '';
+    input.style.borderColor = '#c41e16';
+    setTimeout(() => { input.style.borderColor = '#ffd700'; }, 500);
+    showToast('❌ Неверный код', 'Попробуй ещё раз', false);
+  }
+}
+
+function lockSecret() {
+  adminUnlocked = false;
+  document.getElementById('secretLockIcon').textContent = '🔒';
+  document.getElementById('secretTitle').textContent = 'СЕКРЕТНЫЙ ДОСТУП';
+  document.getElementById('secretHint').textContent = 'Введи секретный код';
+  document.getElementById('secretLockedPart').style.display = 'block';
+  document.getElementById('adminPanel').classList.remove('show');
+  document.getElementById('secretInput').value = '';
+  showToast('🔒 ЗАБЛОКИРОВАНО', 'Доступ закрыт', false);
+}
+
+function updateAdminInfo() {
+  const el = document.getElementById('adminMoney');
+  if (el) el.textContent = money.toLocaleString('ru-RU');
+}
+
+function giveMoney() {
+  const input = document.getElementById('moneyAmount');
+  const val = parseInt(input.value);
+  if (isNaN(val) || val <= 0) { showToast('❌ Ошибка', 'Введи число больше 0', false); return; }
+  if (val > 999999999999) { showToast('❌ Слишком много', 'Максимум 999 999 999 999', false); return; }
+  money += val;
+  stats.totalEarned += val;
+  updateMoney();
+  updateAdminInfo();
+  saveAll();
+  checkAchievements();
+  showToast('💰 ДЕНЬГИ ВЫДАНЫ!', `+${val.toLocaleString('ru-RU')} 💰`, true, false, false, true);
+  input.value = '';
+}
+
+function quickGive(amount) {
+  money += amount;
+  stats.totalEarned += amount;
+  updateMoney();
+  updateAdminInfo();
+  saveAll();
+  checkAchievements();
+  showToast('💰 Быстрая выдача', `+${amount.toLocaleString('ru-RU')} 💰`, true, false, false, true);
+}
+
+function setMoney(amount) {
+  if (!confirm('Обнулить баланс?')) return;
+  money = amount;
+  updateMoney();
+  updateAdminInfo();
+  saveAll();
+  showToast('💰 Баланс изменён', `= ${amount} 💰`, true, false, false, true);
+}
+
+/* ============================================================
+   🌍 МУЛЬТИПЛЕЕР + 🥾 ВЫГОН ИГРОКОВ
    ============================================================ */
 function getRoomFromURL() {
   const url = new URLSearchParams(location.search).get('room') || 'shared777';
   return url.toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 40) || 'shared777';
 }
+
+const NICKNAMES = ['Хакер','Про','Геймер','Босс','Лев','Тигр','Орёл','Дракон','Робот','Кибер','Мастер','Самурай','Ниндзя','Пират','Космонавт','Волшебник'];
+
 function getPlayerId() {
   let id = localStorage.getItem('rb_playerId');
   if (!id) {
-    id = 'p_' + Math.random().toString(36).slice(2, 10);
+    id = 'p' + Math.random().toString(36).slice(2, 9);
     localStorage.setItem('rb_playerId', id);
   }
   return id;
 }
+
+function getNickname() {
+  let nick = localStorage.getItem('rb_nickname');
+  if (!nick) {
+    nick = NICKNAMES[Math.floor(Math.random() * NICKNAMES.length)] + ' #' + Math.floor(Math.random()*900+100);
+    localStorage.setItem('rb_nickname', nick);
+  }
+  return nick;
+}
+
+const MY_ID = getPlayerId();
+const MY_NICK = getNickname();
 
 let ROOM = getRoomFromURL();
 const NTFY = 'https://ntfy.sh/';
@@ -576,11 +887,14 @@ let eventSource = null;
 let onlineStatus = 'connecting';
 
 document.getElementById('roomName').textContent = ROOM;
+document.getElementById('myNameDisplay').textContent = MY_NICK;
+
+/* Список игроков в комнате */
+const players = new Map(); // playerId -> {nickname, lastSeen}
 
 function changeRoom() {
   const val = document.getElementById('roomInput').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
   if (!val) { alert('Введи название комнаты!'); return; }
-  // Перезагружаем страницу с новым room в URL
   const url = new URL(location.href);
   url.searchParams.set('room', val);
   location.href = url.toString();
@@ -590,43 +904,125 @@ function setOnlineStatus(status) {
   onlineStatus = status;
   const badge = document.getElementById('onlineBadge');
   const text = document.getElementById('onlineText');
-  if (status === 'online') {
-    badge.classList.remove('offline');
-    text.textContent = 'Онлайн';
-  } else if (status === 'offline') {
-    badge.classList.add('offline');
-    text.textContent = 'Оффлайн';
-  } else {
-    badge.classList.add('offline');
-    text.textContent = 'Подключение...';
-  }
+  if (status === 'online') { badge.classList.remove('offline'); text.textContent = 'Онлайн'; }
+  else if (status === 'offline') { badge.classList.add('offline'); text.textContent = 'Оффлайн'; }
+  else { badge.classList.add('offline'); text.textContent = 'Подключение...'; }
 }
 
-/* Публикация ивента в общую комнату */
-function publishEventToAll(ev, duration, endTime, instantAmount) {
-  const payload = {
-    type: 'event_start',
-    id: ev.id,
-    icon: ev.icon,
-    name: ev.name,
-    desc: ev.desc,
-    moneyMult: ev.moneyMult || 1,
-    clickMult: ev.clickMult || 1,
-    memoryMult: ev.memoryMult || 1,
-    instant: instantAmount || 0,
-    duration: duration,
-    endTime: endTime,
-    sender: getPlayerId(),
-    timestamp: Date.now()
-  };
-  fetch(NTFY + NTFY_TOPIC, {
+/* Отправка сообщений в комнату */
+function publish(payload) {
+  payload.sender = MY_ID;
+  payload.senderNick = MY_NICK;
+  payload.timestamp = Date.now();
+  return fetch(NTFY + NTFY_TOPIC, {
     method: 'POST',
     body: JSON.stringify(payload)
-  }).then(() => console.log('✅ Ивент отправлен в комнату', ROOM))
-    .catch(err => console.log('❌ Ошибка отправки:', err));
+  }).catch(err => console.log('Ошибка отправки:', err));
 }
 
-/* Подключение к комнате — слушаем ивенты других игроков */
+/* Хартбит присутствия */
+function sendPresence() {
+  publish({ type: 'presence' });
+}
+
+/* Очистка неактивных игроков */
+function cleanupPlayers() {
+  const now = Date.now();
+  let changed = false;
+  players.forEach((p, id) => {
+    if (now - p.lastSeen > 35000) { players.delete(id); changed = true; }
+  });
+  if (changed) updatePlayerCount();
+  if (currentGame === 'secret' && adminUnlocked) renderPlayersList();
+}
+
+function updatePlayerCount() {
+  document.getElementById('playerCount').textContent = players.size + 1;
+}
+
+/* Обработка presence */
+function handlePresence(payload) {
+  if (!payload.sender) return;
+  if (payload.sender === MY_ID) return;
+  players.set(payload.sender, {
+    nickname: payload.senderNick || ('Игрок_' + payload.sender.slice(-4)),
+    lastSeen: Date.now()
+  });
+  updatePlayerCount();
+  if (currentGame === 'secret' && adminUnlocked) renderPlayersList();
+}
+
+/* ============================================================
+   Рендер списка игроков в админ-панели
+   ============================================================ */
+function renderPlayersList() {
+  const list = document.getElementById('playersList');
+  if (!list) return;
+  list.innerHTML = '';
+
+  const allPlayers = [
+    { id: MY_ID, nick: MY_NICK + ' (ты)', isMe: true, lastSeen: Date.now() },
+    ...[...players.entries()].map(([id, p]) => ({ id, nick: p.nickname, isMe: false, lastSeen: p.lastSeen }))
+  ];
+
+  // Сортируем: сначала я, потом остальные
+  allPlayers.sort((a, b) => (a.isMe === b.isMe ? 0 : (a.isMe ? -1 : 1)));
+
+  if (allPlayers.length <= 1) {
+    list.innerHTML = '<div class="no-players">В комнате только ты 😐</div>';
+    return;
+  }
+
+  allPlayers.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'player-item';
+
+    const secAgo = Math.floor((Date.now() - p.lastSeen) / 1000);
+    const timeText = p.isMe ? 'сейчас' : (secAgo < 5 ? 'только что' : secAgo + 'с назад');
+
+    div.innerHTML = `
+      <div class="player-info">
+        <div class="player-name ${p.isMe ? 'me' : ''}">${p.isMe ? '👑' : '🎮'} ${escapeHtml(p.nick)}</div>
+        <div class="player-id">${p.id}</div>
+        <div class="player-time">⏱️ ${timeText}</div>
+      </div>
+      ${p.isMe ? '' : `<button class="kick-btn" onclick="kickPlayer('${p.id}', '${escapeJs(p.nick)}')">🥾 Выгнать</button>`}
+    `;
+    list.appendChild(div);
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeJs(s) {
+  return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"').replace(/\n/g,' ');
+}
+
+/* 🥾 ВЫГОН ИГРОКА */
+function kickPlayer(targetId, targetNick) {
+  if (!adminUnlocked) { showToast('❌ Нет доступа', 'Только админ может выгонять', false); return; }
+  if (targetId === MY_ID) { showToast('😅 Себя нельзя', 'Ты и так админ', false); return; }
+
+  const reason = prompt(`Выгнать игрока "${targetNick}"?\n\nПричина (необязательно):`, 'Нарушение правил');
+  if (reason === null) return; // отмена
+
+  publish({
+    type: 'kick',
+    target: targetId,
+    targetNick: targetNick,
+    reason: reason || 'Нарушение правил'
+  });
+
+  // Убираем из локального списка
+  players.delete(targetId);
+  renderPlayersList();
+  updatePlayerCount();
+
+  showToast('🥾 ИГРОК ВЫГНАН', `${targetNick} удалён из комнаты`, false, false, true);
+}
+
+/* Приём ивентов от других */
 function connectToEvents() {
   if (eventSource) eventSource.close();
   setOnlineStatus('connecting');
@@ -635,7 +1031,7 @@ function connectToEvents() {
 
   eventSource.onopen = () => {
     setOnlineStatus('online');
-    console.log('✅ Подключено к комнате', ROOM);
+    sendPresence(); // сразу сообщаем о себе
   };
 
   eventSource.onmessage = (e) => {
@@ -643,51 +1039,100 @@ function connectToEvents() {
       const wrapper = JSON.parse(e.data);
       if (wrapper.event !== 'message') return;
       const payload = JSON.parse(wrapper.message);
-      handleRemoteEvent(payload);
-    } catch (err) { /* ignore */ }
+      handleIncoming(payload);
+    } catch (err) {}
   };
 
   eventSource.onerror = () => {
     setOnlineStatus('offline');
-    setTimeout(() => { connectToEvents(); }, 3000);
+    setTimeout(() => connectToEvents(), 3000);
   };
 }
 
-/* Обработка ивента от другого игрока */
-function handleRemoteEvent(payload) {
-  if (!payload || payload.type !== 'event_start') return;
-  if (payload.sender === getPlayerId()) return; // свой же
-  if (!payload.endTime || payload.endTime < Date.now()) return; // уже прошёл
+function handleIncoming(payload) {
+  if (!payload || !payload.type) return;
+  if (payload.sender === MY_ID) return;
 
-  // Уже идёт ивент?
+  if (payload.type === 'presence') {
+    handlePresence(payload);
+  } else if (payload.type === 'event_start') {
+    handleRemoteEvent(payload);
+  } else if (payload.type === 'kick') {
+    handleKick(payload);
+  }
+}
+
+/* Обработка выгона */
+function handleKick(payload) {
+  if (payload.target !== MY_ID) return;
+  // Меня выгоняют!
+  const reason = payload.reason || 'Нарушение правил';
+  const banUntil = Date.now() + 5 * 60 * 1000; // 5 минут
+  localStorage.setItem('rb_kicked_until', banUntil);
+  localStorage.setItem('rb_kicked_reason', reason);
+  showKickedScreen(reason, banUntil);
+}
+
+function showKickedScreen(reason, banUntil) {
+  document.getElementById('kickReason').textContent = '📝 Причина: ' + reason;
+  document.getElementById('kickOverlay').classList.add('show');
+
+  // Отключаем соединение
+  if (eventSource) { eventSource.close(); eventSource = null; }
+  setOnlineStatus('offline');
+
+  const timerEl = document.getElementById('kickTimer');
+  function tick() {
+    const left = Math.max(0, banUntil - Date.now());
+    if (left <= 0) {
+      // Разбан
+      localStorage.removeItem('rb_kicked_until');
+      localStorage.removeItem('rb_kicked_reason');
+      location.reload();
+      return;
+    }
+    const m = Math.floor(left / 60000);
+    const s = Math.floor((left % 60000) / 1000);
+    timerEl.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  }
+  tick();
+  setInterval(tick, 500);
+}
+
+/* Проверка бана при загрузке */
+function checkBan() {
+  const until = parseInt(localStorage.getItem('rb_kicked_until') || '0');
+  if (until && until > Date.now()) {
+    const reason = localStorage.getItem('rb_kicked_reason') || 'Нарушение правил';
+    showKickedScreen(reason, until);
+    return true;
+  } else if (until) {
+    localStorage.removeItem('rb_kicked_until');
+    localStorage.removeItem('rb_kicked_reason');
+  }
+  return false;
+}
+
+/* Ивенты */
+function handleRemoteEvent(payload) {
+  if (payload.type !== 'event_start') return;
+  if (!payload.endTime || payload.endTime < Date.now()) return;
   if (activeEvent && Date.now() < eventEndTime) return;
 
   const ev = {
-    id: payload.id,
-    icon: payload.icon,
-    name: payload.name,
-    desc: payload.desc,
-    moneyMult: payload.moneyMult,
-    clickMult: payload.clickMult,
-    memoryMult: payload.memoryMult,
+    id: payload.id, icon: payload.icon, name: payload.name, desc: payload.desc,
+    moneyMult: payload.moneyMult, clickMult: payload.clickMult, memoryMult: payload.memoryMult,
     instant: payload.instant
   };
-
   applyRemoteEvent(ev, payload.endTime);
 }
 
-/* Активируем чужой ивент локально */
 function applyRemoteEvent(ev, endTime) {
   activeEvent = ev;
   activeEvent.isRemote = true;
   stats.eventsStarted = (stats.eventsStarted || 0) + 1;
 
-  // Мгновенный бонус всем
-  if (ev.instant) {
-    money += ev.instant;
-    stats.totalEarned += ev.instant;
-    updateMoney();
-  }
+  if (ev.instant) { money += ev.instant; stats.totalEarned += ev.instant; updateMoney(); }
 
   const remaining = Math.max(1, Math.ceil((endTime - Date.now()) / 1000));
   eventStartTime = Date.now();
@@ -701,11 +1146,10 @@ function applyRemoteEvent(ev, endTime) {
   renderEventStatus();
   updateActiveEventBadge();
   updateEventsCard();
-  showToast(`🌍 ИВЕНТ ОТ ДРУГОГО ИГРОКА`, `${ev.icon} ${ev.name} — ${remaining}с`, true, 'blue');
+  showToast('🌍 ИВЕНТ ОТ ДРУГОГО ИГРОКА', `${ev.icon} ${ev.name} — ${remaining}с`, true, 'blue');
   checkAchievements();
 }
 
-/* Загрузка последних ивентов при старте */
 async function loadRecentEvents() {
   try {
     const res = await fetch(NTFY + NTFY_TOPIC + '/json?poll=1&since=3m');
@@ -717,14 +1161,10 @@ async function loadRecentEvents() {
         const wrapper = JSON.parse(lines[i]);
         if (wrapper.event !== 'message') continue;
         const payload = JSON.parse(wrapper.message);
-        if (payload.type !== 'event_start') continue;
-        if (payload.endTime && payload.endTime > Date.now()) {
-          handleRemoteEvent(payload);
-          break;
-        }
+        handleIncoming(payload);
       } catch(e) {}
     }
-  } catch (err) { console.log('Не удалось проверить ивенты:', err); }
+  } catch (err) {}
 }
 
 /* ============================================================
@@ -746,9 +1186,7 @@ let eventStartTime = 0;
 let eventTotalDuration = 0;
 let eventTimerInterval = null;
 
-function setDuration(val) {
-  document.getElementById('eventDuration').value = val;
-}
+function setDuration(val) { document.getElementById('eventDuration').value = val; }
 
 function openEvents() {
   document.getElementById('menu').style.display = 'none';
@@ -761,25 +1199,14 @@ function openEvents() {
 function tryStartEvent() {
   const input = document.getElementById('eventPassword');
   const val = input.value.trim();
-
-  if (val !== EVENT_PASSWORD) {
-    showToast('❌ Неверный пароль!', 'Попробуй ещё раз', false);
-    input.value = '';
-    return;
-  }
-  if (activeEvent && Date.now() < eventEndTime) {
-    showToast('⏳ Ивент уже идёт', 'Дождись окончания', false);
-    input.value = '';
-    return;
-  }
+  if (val !== EVENT_PASSWORD) { showToast('❌ Неверный пароль!', 'Попробуй ещё раз', false); input.value = ''; return; }
+  if (activeEvent && Date.now() < eventEndTime) { showToast('⏳ Ивент уже идёт', 'Дождись окончания', false); input.value = ''; return; }
 
   const durInput = document.getElementById('eventDuration').value.trim();
   let customDuration = null;
   if (durInput !== '') {
     const parsed = parseInt(durInput);
-    if (!isNaN(parsed) && parsed > 0) {
-      customDuration = Math.min(Math.max(parsed, 5), 3600);
-    }
+    if (!isNaN(parsed) && parsed > 0) customDuration = Math.min(Math.max(parsed, 5), 3600);
   }
 
   const ev = EVENTS[Math.floor(Math.random() * EVENTS.length)];
@@ -792,18 +1219,11 @@ function startEvent(ev, customDuration) {
   activeEvent.isRemote = false;
   stats.eventsStarted = (stats.eventsStarted || 0) + 1;
 
-  if (ev.instant) {
-    money += ev.instant;
-    stats.totalEarned += ev.instant;
-    updateMoney();
-  }
+  if (ev.instant) { money += ev.instant; stats.totalEarned += ev.instant; updateMoney(); }
 
   let duration = ev.duration;
   let customText = '';
-  if (customDuration !== null && ev.duration > 0) {
-    duration = customDuration;
-    customText = ` (своя: ${duration}с)`;
-  }
+  if (customDuration !== null && ev.duration > 0) { duration = customDuration; customText = ` (своя: ${duration}с)`; }
 
   if (duration > 0) {
     eventStartTime = Date.now();
@@ -818,14 +1238,17 @@ function startEvent(ev, customDuration) {
     setTimeout(endEvent, 3000);
   }
 
-  // 🌍 Отправляем ивент всем в комнате!
-  publishEventToAll(ev, eventTotalDuration, eventEndTime, ev.instant || 0);
+  publish({
+    type: 'event_start', id: ev.id, icon: ev.icon, name: ev.name, desc: ev.desc,
+    moneyMult: ev.moneyMult || 1, clickMult: ev.clickMult || 1, memoryMult: ev.memoryMult || 1,
+    instant: ev.instant || 0, duration: eventTotalDuration, endTime: eventEndTime
+  });
 
   saveAll();
   renderEventStatus();
   updateActiveEventBadge();
   updateEventsCard();
-  showToast(`🎉 ИВЕНТ ЗАПУЩЕН ДЛЯ ВСЕХ!`, `${ev.icon} ${ev.name}${customText}`, true, 'purple');
+  showToast('🎉 ИВЕНТ ЗАПУЩЕН ДЛЯ ВСЕХ!', `${ev.icon} ${ev.name}${customText}`, true, 'purple');
   checkAchievements();
 }
 
@@ -840,12 +1263,8 @@ function tickEvent() {
 function endEvent() {
   if (eventTimerInterval) { clearInterval(eventTimerInterval); eventTimerInterval = null; }
   const wasEvent = activeEvent ? activeEvent.name : '';
-  activeEvent = null;
-  eventEndTime = 0;
-  eventStartTime = 0;
-  eventTotalDuration = 0;
-  updateActiveEventBadge();
-  updateEventsCard();
+  activeEvent = null; eventEndTime = 0; eventStartTime = 0; eventTotalDuration = 0;
+  updateActiveEventBadge(); updateEventsCard();
   if (currentGame === 'events') renderEventStatus();
   if (wasEvent) showToast('⏹️ Ивент завершён', wasEvent, false);
 }
@@ -862,30 +1281,21 @@ function updateEventsCard() {
   const isActive = activeEvent && Date.now() < eventEndTime;
 
   if (isActive) {
-    card.classList.remove('idle');
-    card.classList.add('active');
-    badge.classList.remove('off');
-    badge.classList.add('on');
+    card.classList.remove('idle'); card.classList.add('active');
+    badge.classList.remove('off'); badge.classList.add('on');
     badge.textContent = activeEvent.isRemote ? '🌍 ОБЩИЙ' : '🟢 ИДЁТ';
-
-    status.classList.remove('off');
-    status.classList.add('on');
+    status.classList.remove('off'); status.classList.add('on');
     status.innerHTML = `${activeEvent.icon} ${activeEvent.name}`;
-
     const left = Math.max(0, Math.ceil((eventEndTime - Date.now()) / 1000));
     const mm = String(Math.floor(left / 60)).padStart(2, '0');
     const ss = String(left % 60).padStart(2, '0');
     info.innerHTML = `<div class="event-menu-timer">⏱️ ${mm}:${ss}</div>` +
       (activeEvent.isRemote ? `<div class="event-menu-owner">🌍 от другого игрока</div>` : '');
   } else {
-    card.classList.remove('active');
-    card.classList.add('idle');
-    badge.classList.remove('on');
-    badge.classList.add('off');
+    card.classList.remove('active'); card.classList.add('idle');
+    badge.classList.remove('on'); badge.classList.add('off');
     badge.textContent = 'НЕТ';
-
-    status.classList.remove('on');
-    status.classList.add('off');
+    status.classList.remove('on'); status.classList.add('off');
     status.innerHTML = '🔴 Не активен';
     info.innerHTML = `<p style="font-size:11px;color:#888;margin-top:4px;">Введи пароль</p>`;
   }
@@ -897,16 +1307,13 @@ function renderEventStatus() {
     const left = Math.ceil((eventEndTime - Date.now()) / 1000);
     const elapsed = (Date.now() - eventStartTime) / 1000;
     const percent = Math.min(100, Math.max(0, (elapsed / eventTotalDuration) * 100));
-
     box.className = 'event-status active' + (activeEvent.isRemote ? ' remote' : '');
     box.innerHTML = `
       <div style="font-size:36px;">${activeEvent.icon}</div>
       <div class="event-name">${activeEvent.name}</div>
       <div class="event-desc">${activeEvent.desc}</div>
       <div class="event-timer">⏱️ ${left} сек</div>
-      <div class="event-progress">
-        <div class="event-progress-bar" style="width:${percent}%"></div>
-      </div>
+      <div class="event-progress"><div class="event-progress-bar" style="width:${percent}%"></div></div>
       ${activeEvent.isRemote ? '<p style="color:#00bfff;font-size:12px;margin-top:8px;">🌍 Ивент от другого игрока в комнате</p>' : ''}
     `;
   } else {
@@ -921,18 +1328,13 @@ function updateActiveEventBadge() {
     const left = Math.ceil((eventEndTime - Date.now()) / 1000);
     badge.style.display = 'block';
     badge.textContent = `${activeEvent.icon} ${left}с`;
-  } else {
-    badge.style.display = 'none';
-  }
+  } else badge.style.display = 'none';
 }
 
 const DAILY_REWARDS = [
-  { money: 50, icon: '🪙', label: '50' },
-  { money: 100, icon: '💵', label: '100' },
-  { money: 150, icon: '💰', label: '150' },
-  { money: 250, icon: '💎', label: '250' },
-  { money: 400, icon: '🏆', label: '400' },
-  { money: 600, icon: '👑', label: '600' },
+  { money: 50, icon: '🪙', label: '50' }, { money: 100, icon: '💵', label: '100' },
+  { money: 150, icon: '💰', label: '150' }, { money: 250, icon: '💎', label: '250' },
+  { money: 400, icon: '🏆', label: '400' }, { money: 600, icon: '👑', label: '600' },
   { money: 1000, icon: '🌟', label: '1000+' }
 ];
 
@@ -952,7 +1354,6 @@ stats.eventsStarted = stats.eventsStarted || 0;
 stats.memoryWins    = stats.memoryWins    || 0;
 
 let achievements = JSON.parse(localStorage.getItem('rb_ach') || '{}');
-
 let daily = JSON.parse(localStorage.getItem('rb_daily') || '{}');
 daily.lastClaim = daily.lastClaim || 0;
 daily.streak    = daily.streak    || 0;
@@ -972,9 +1373,7 @@ function openAccountReset() {
   document.getElementById('confirmInput').value = '';
   document.getElementById('confirmResetBtn').disabled = true;
 }
-function closeAccountReset() {
-  document.getElementById('accountModal').classList.remove('show');
-}
+function closeAccountReset() { document.getElementById('accountModal').classList.remove('show'); }
 function checkConfirmInput() {
   const val = document.getElementById('confirmInput').value.trim().toUpperCase();
   document.getElementById('confirmResetBtn').disabled = (val !== 'УДАЛИТЬ');
@@ -982,45 +1381,22 @@ function checkConfirmInput() {
 function confirmAccountReset() {
   const val = document.getElementById('confirmInput').value.trim().toUpperCase();
   if (val !== 'УДАЛИТЬ') return;
-
   if (eventTimerInterval) { clearInterval(eventTimerInterval); eventTimerInterval = null; }
   if (gameInterval) { clearInterval(gameInterval); gameInterval = null; }
-  activeEvent = null;
-  eventEndTime = 0;
-
+  activeEvent = null; eventEndTime = 0;
   localStorage.clear();
-
-  money = 0;
-  clickBonus = 1;
-  memoryMultiplier = 1;
-  clickScore = 0;
-
-  stats = {
-    totalClicks: 0, totalEarned: 0, totalPairs: 0,
-    totalGuesses: 0, bestGuess: 0, gamesPlayed: 0,
-    dailyClaims: 0, eventsStarted: 0, memoryWins: 0
-  };
+  money = 0; clickBonus = 1; memoryMultiplier = 1; clickScore = 0;
+  stats = { totalClicks: 0, totalEarned: 0, totalPairs: 0, totalGuesses: 0, bestGuess: 0, gamesPlayed: 0, dailyClaims: 0, eventsStarted: 0, memoryWins: 0 };
   achievements = {};
   daily = { lastClaim: 0, streak: 0, cycleDay: 0 };
-
   document.getElementById('clickScore').textContent = 0;
   document.getElementById('clickBonus').textContent = 1;
   document.getElementById('menuClickBonus').textContent = 1;
-  updateMoney();
-  updateAchCounter();
-  updateDailyCard();
-  updateEventsCard();
-
-  closeAccountReset();
-  showMenu();
-  saveAll();
-
+  updateMoney(); updateAchCounter(); updateDailyCard(); updateEventsCard();
+  closeAccountReset(); showMenu(); saveAll();
   showToast('💥 АККАУНТ СБРОШЕН', 'Все данные удалены', false, 'red');
 }
-
-document.getElementById('accountModal').addEventListener('click', function(e) {
-  if (e.target === this) closeAccountReset();
-});
+document.getElementById('accountModal').addEventListener('click', function(e) { if (e.target === this) closeAccountReset(); });
 
 function msUntilMidnight() {
   const now = new Date();
@@ -1030,54 +1406,34 @@ function msUntilMidnight() {
 function canClaimToday() {
   if (!daily.lastClaim) return true;
   const now = new Date(), last = new Date(daily.lastClaim);
-  return now.getFullYear() !== last.getFullYear() ||
-         now.getMonth()    !== last.getMonth()    ||
-         now.getDate()     !== last.getDate();
+  return now.getFullYear() !== last.getFullYear() || now.getMonth() !== last.getMonth() || now.getDate() !== last.getDate();
 }
 function wasYesterday() {
   if (!daily.lastClaim) return false;
   const now = new Date(), last = new Date(daily.lastClaim);
   const y = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-  return last.getFullYear() === y.getFullYear() &&
-         last.getMonth()    === y.getMonth()    &&
-         last.getDate()     === y.getDate();
+  return last.getFullYear() === y.getFullYear() && last.getMonth() === y.getMonth() && last.getDate() === y.getDate();
 }
 function checkStreakBreak() {
   if (!daily.lastClaim) return;
-  if (canClaimToday() && !wasYesterday()) {
-    daily.streak = 0;
-    daily.cycleDay = 0;
-    saveAll();
-  }
+  if (canClaimToday() && !wasYesterday()) { daily.streak = 0; daily.cycleDay = 0; saveAll(); }
 }
 function claimDaily() {
   if (!canClaimToday()) return;
-  if (wasYesterday()) daily.streak++;
-  else { daily.streak = 1; daily.cycleDay = 0; }
-
+  if (wasYesterday()) daily.streak++; else { daily.streak = 1; daily.cycleDay = 0; }
   const idx = daily.cycleDay;
   const reward = DAILY_REWARDS[idx];
   let totalMoney = reward.money;
   let bonusText = reward.label;
-
   if (idx === 6) {
     clickBonus += 5;
     bonusText = '1000 💰 + бонус клика +5!';
     document.getElementById('clickBonus').textContent = clickBonus;
   }
   totalMoney = Math.floor(totalMoney * getEventMoneyMult());
-
-  money += totalMoney;
-  stats.totalEarned += totalMoney;
-  stats.dailyClaims++;
-  daily.lastClaim = Date.now();
-  daily.cycleDay = (daily.cycleDay + 1) % 7;
-
-  updateMoney();
-  saveAll();
-  renderDaily();
-  updateDailyCard();
-  checkAchievements();
+  money += totalMoney; stats.totalEarned += totalMoney; stats.dailyClaims++;
+  daily.lastClaim = Date.now(); daily.cycleDay = (daily.cycleDay + 1) % 7;
+  updateMoney(); saveAll(); renderDaily(); updateDailyCard(); checkAchievements();
   showToast(`🎁 Ежедневка! День ${daily.streak}`, `+${totalMoney} 💰 ${bonusText}`, true);
 }
 function updateDailyCard() {
@@ -1098,30 +1454,17 @@ function renderDaily() {
     dayDiv.className = 'day';
     if (daily.cycleDay > i) dayDiv.classList.add('claimed');
     if (daily.cycleDay === i && canClaimToday()) dayDiv.classList.add('current');
-    dayDiv.innerHTML = `
-      <div class="day-num">День ${i + 1}</div>
-      <div class="day-icon">${r.icon}</div>
-      <div class="day-reward">${r.label}💰</div>
-    `;
+    dayDiv.innerHTML = `<div class="day-num">День ${i + 1}</div><div class="day-icon">${r.icon}</div><div class="day-reward">${r.label}💰</div>`;
     grid.appendChild(dayDiv);
   }
   const btn = document.getElementById('claimBtn');
-  if (canClaimToday()) {
-    btn.disabled = false;
-    btn.textContent = '🎁 Забрать награду';
-    document.getElementById('dailyTimer').textContent = '';
-  } else {
-    btn.disabled = true;
-    btn.textContent = '✅ Уже забрано сегодня';
-    updateTimer();
-  }
+  if (canClaimToday()) { btn.disabled = false; btn.textContent = '🎁 Забрать награду'; document.getElementById('dailyTimer').textContent = ''; }
+  else { btn.disabled = true; btn.textContent = '✅ Уже забрано сегодня'; updateTimer(); }
 }
 function updateTimer() {
   if (canClaimToday()) { document.getElementById('dailyTimer').textContent = ''; return; }
   const ms = msUntilMidnight();
-  const h = Math.floor(ms / 3600000);
-  const m = Math.floor((ms % 3600000) / 60000);
-  const s = Math.floor((ms % 60000) / 1000);
+  const h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000), s = Math.floor((ms % 60000) / 1000);
   document.getElementById('dailyTimer').textContent = `⏰ Через: ${h}ч ${m}м ${s}с`;
 }
 function openDaily() {
@@ -1137,6 +1480,7 @@ setInterval(() => {
   if (currentGame === 'events') renderEventStatus();
   updateActiveEventBadge();
   updateEventsCard();
+  if (currentGame === 'secret' && adminUnlocked) { updateAdminInfo(); renderPlayersList(); }
 }, 500);
 
 const ACHIEVEMENTS = [
@@ -1170,20 +1514,17 @@ function checkAchievements() {
       anyNew = true;
     }
   });
-  if (anyNew) {
-    saveAll();
-    updateAchCounter();
-    if (currentGame === 'achievements') renderAch();
-  }
+  if (anyNew) { saveAll(); updateAchCounter(); if (currentGame === 'achievements') renderAch(); }
 }
-function showToast(title, name, green = false, purple = false, red = false, blue = false) {
+function showToast(title, name, green = false, purple = false, red = false, gold = false, blue = false) {
   const toast = document.getElementById('toast');
   document.getElementById('toastTitle').textContent = title;
   document.getElementById('toastName').textContent = name;
-  toast.classList.remove('green', 'purple', 'red', 'blue');
+  toast.classList.remove('green', 'purple', 'red', 'gold', 'blue');
   if (green) toast.classList.add('green');
   if (purple) toast.classList.add('purple');
   if (red) toast.classList.add('red');
+  if (gold) toast.classList.add('gold');
   if (blue) toast.classList.add('blue');
   toast.classList.add('show');
   clearTimeout(window._toastTimer);
@@ -1203,11 +1544,7 @@ function renderAch() {
   ACHIEVEMENTS.forEach(a => {
     const div = document.createElement('div');
     div.className = 'ach' + (achievements[a.id] ? ' unlocked' : '');
-    div.innerHTML = `
-      <div class="icon">${achievements[a.id] ? a.icon : '🔒'}</div>
-      <div class="name">${a.name}</div>
-      <div class="desc">${a.desc}</div>
-    `;
+    div.innerHTML = `<div class="icon">${achievements[a.id] ? a.icon : '🔒'}</div><div class="name">${a.name}</div><div class="desc">${a.desc}</div>`;
     grid.appendChild(div);
   });
 }
@@ -1216,29 +1553,23 @@ function openAch() {
   document.querySelectorAll('.game').forEach(g => g.classList.remove('active'));
   document.getElementById('achievements').classList.add('active');
   currentGame = 'achievements';
-  renderAch();
-  updateAchCounter();
+  renderAch(); updateAchCounter();
 }
 
 function updateMoney() {
-  document.getElementById('moneyDisplay').textContent = money;
+  document.getElementById('moneyDisplay').textContent = money.toLocaleString('ru-RU');
   const sm = document.getElementById('shopMoney');
-  if (sm) sm.textContent = money;
+  if (sm) sm.textContent = money.toLocaleString('ru-RU');
   document.getElementById('menuClickBonus').textContent = clickBonus;
 }
 function addMoney(amount) {
   const boosted = Math.floor(amount * getEventMoneyMult());
-  money += boosted;
-  stats.totalEarned += boosted;
-  updateMoney();
-  saveAll();
-  checkAchievements();
+  money += boosted; stats.totalEarned += boosted;
+  updateMoney(); saveAll(); checkAchievements();
 }
 function resetMoney() {
   if (!confirm('Сбросить все деньги?')) return;
-  money = 0;
-  updateMoney();
-  saveAll();
+  money = 0; updateMoney(); saveAll();
 }
 
 let currentGame = null;
@@ -1257,9 +1588,7 @@ function showMenu() {
   currentGame = null;
   document.querySelectorAll('.game').forEach(g => g.classList.remove('active'));
   document.getElementById('menu').style.display = 'grid';
-  updateMoney();
-  updateDailyCard();
-  updateEventsCard();
+  updateMoney(); updateDailyCard(); updateEventsCard();
 }
 function openShop() {
   document.getElementById('menu').style.display = 'none';
@@ -1271,40 +1600,23 @@ function openShop() {
 
 let clickScore = 0;
 function clickerClick() {
-  clickScore++;
-  stats.totalClicks++;
+  clickScore++; stats.totalClicks++;
   document.getElementById('clickScore').textContent = clickScore;
   addMoney(clickBonus * getEventClickMult());
 }
-function resetClicker() {
-  clickScore = 0;
-  document.getElementById('clickScore').textContent = clickScore;
-}
+function resetClicker() { clickScore = 0; document.getElementById('clickScore').textContent = clickScore; }
 
 const MEMORY_EMOJIS = ['🍎','🍌','🍇','🍓','🍊','🍒','🥝','🍑'];
-let memoryCards = [];
-let memoryFirst = null;
-let memorySecond = null;
-let memoryLock = false;
-let memoryMoves = 0;
-let memoryPairs = 0;
+let memoryCards = [], memoryFirst = null, memorySecond = null, memoryLock = false, memoryMoves = 0, memoryPairs = 0;
 
 function startMemory() {
   const all = [...MEMORY_EMOJIS, ...MEMORY_EMOJIS];
-  for (let i = all.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [all[i], all[j]] = [all[j], all[i]];
-  }
+  for (let i = all.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [all[i], all[j]] = [all[j], all[i]]; }
   memoryCards = all.map(e => ({ emoji: e, matched: false }));
-  memoryFirst = null;
-  memorySecond = null;
-  memoryLock = false;
-  memoryMoves = 0;
-  memoryPairs = 0;
+  memoryFirst = null; memorySecond = null; memoryLock = false; memoryMoves = 0; memoryPairs = 0;
   document.getElementById('memoryWin').innerHTML = '';
   renderMemory();
 }
-
 function renderMemory() {
   const grid = document.getElementById('memoryGrid');
   grid.innerHTML = '';
@@ -1321,51 +1633,28 @@ function renderMemory() {
   document.getElementById('memoryMoves').textContent = memoryMoves;
   document.getElementById('memoryPairs').textContent = memoryPairs;
 }
-
 function flipMemory(i) {
-  if (memoryLock) return;
-  if (memoryCards[i].matched) return;
+  if (memoryLock || memoryCards[i].matched) return;
   if (memoryFirst === i || memorySecond === i) return;
-
-  if (memoryFirst === null) {
-    memoryFirst = i;
-    renderMemory();
-    return;
-  }
-
-  memorySecond = i;
-  memoryMoves++;
-  renderMemory();
-
+  if (memoryFirst === null) { memoryFirst = i; renderMemory(); return; }
+  memorySecond = i; memoryMoves++; renderMemory();
   if (memoryCards[memoryFirst].emoji === memoryCards[memorySecond].emoji) {
     memoryCards[memoryFirst].matched = true;
     memoryCards[memorySecond].matched = true;
-    memoryPairs++;
-    stats.totalPairs = (stats.totalPairs || 0) + 1;
+    memoryPairs++; stats.totalPairs = (stats.totalPairs || 0) + 1;
     addMoney(15 * memoryMultiplier * getEventMemoryMult());
-    memoryFirst = null;
-    memorySecond = null;
-    renderMemory();
-
+    memoryFirst = null; memorySecond = null; renderMemory();
     if (memoryPairs === 8) {
       stats.memoryWins = (stats.memoryWins || 0) + 1;
       addMoney(50 * memoryMultiplier * getEventMemoryMult());
-      document.getElementById('memoryWin').innerHTML =
-        `<div class="mem-win">🎉 Победа! +50 💰 бонус</div>`;
+      document.getElementById('memoryWin').innerHTML = `<div class="mem-win">🎉 Победа! +50 💰 бонус</div>`;
       showToast('🎉 ПОЛЕ СОБРАНО!', `Ходов: ${memoryMoves} | +50 💰`, true);
-      saveAll();
-      checkAchievements();
+      saveAll(); checkAchievements();
     }
-    saveAll();
-    checkAchievements();
+    saveAll(); checkAchievements();
   } else {
     memoryLock = true;
-    setTimeout(() => {
-      memoryFirst = null;
-      memorySecond = null;
-      memoryLock = false;
-      renderMemory();
-    }, 800);
+    setTimeout(() => { memoryFirst = null; memorySecond = null; memoryLock = false; renderMemory(); }, 800);
   }
 }
 
@@ -1378,23 +1667,16 @@ function newGuessGame() {
 }
 function checkGuess() {
   const val = parseInt(document.getElementById('guessInput').value);
-  if (isNaN(val) || val < 1 || val > 100) {
-    document.getElementById('guessMessage').textContent = 'Введи число от 1 до 100!';
-    return;
-  }
-  attempts++;
-  stats.totalGuesses++;
+  if (isNaN(val) || val < 1 || val > 100) { document.getElementById('guessMessage').textContent = 'Введи число от 1 до 100!'; return; }
+  attempts++; stats.totalGuesses++;
   if (val === secretNumber) {
     let reward = Math.max(10, 100 - (attempts - 1) * 10);
     stats.gamesPlayed++;
     if (stats.bestGuess === 0 || attempts < stats.bestGuess) stats.bestGuess = attempts;
     addMoney(reward);
     document.getElementById('guessMessage').textContent = `🎉 Угадал за ${attempts} попыток! +${reward} 💰`;
-  } else if (val < secretNumber) {
-    document.getElementById('guessMessage').textContent = `Больше! Попыток: ${attempts}`;
-  } else {
-    document.getElementById('guessMessage').textContent = `Меньше! Попыток: ${attempts}`;
-  }
+  } else if (val < secretNumber) document.getElementById('guessMessage').textContent = `Больше! Попыток: ${attempts}`;
+  else document.getElementById('guessMessage').textContent = `Меньше! Попыток: ${attempts}`;
   saveAll();
 }
 
@@ -1414,9 +1696,7 @@ function renderShop() {
     container.appendChild(div);
   });
   const info = document.createElement('p');
-  info.style.marginTop = '15px';
-  info.style.color = '#aaa';
-  info.style.fontSize = '13px';
+  info.style.marginTop = '15px'; info.style.color = '#aaa'; info.style.fontSize = '13px';
   info.textContent = `Бонус клика: ${clickBonus} | Множитель памяти: x${memoryMultiplier}`;
   container.appendChild(info);
 }
@@ -1424,16 +1704,11 @@ function buyItem(id) {
   const item = shopItems.find(i => i.id === id);
   if (!item) return;
   if (money < item.price) { alert('Недостаточно денег!'); return; }
-  money -= item.price;
-  item.apply();
-  updateMoney();
-  document.getElementById('clickBonus').textContent = clickBonus;
-  saveAll();
-  renderShop();
-  checkAchievements();
+  money -= item.price; item.apply();
+  updateMoney(); document.getElementById('clickBonus').textContent = clickBonus;
+  saveAll(); renderShop(); checkAchievements();
 }
 
-/* Отключение зума на iOS */
 let lastTouchEnd = 0;
 document.addEventListener('touchend', function(e) {
   const now = Date.now();
@@ -1441,19 +1716,22 @@ document.addEventListener('touchend', function(e) {
   lastTouchEnd = now;
 }, { passive: false });
 
-/* СТАРТ */
 updateMoney();
 document.getElementById('clickBonus').textContent = clickBonus;
-updateAchCounter();
-updateDailyCard();
-updateEventsCard();
-checkStreakBreak();
-saveAll();
+updateAchCounter(); updateDailyCard(); updateEventsCard(); checkStreakBreak(); saveAll();
 
-// 🌍 Подключаемся к общей комнате
-connectToEvents();
-// Проверяем недавние ивенты
-setTimeout(loadRecentEvents, 1500);
+// Проверка бана
+if (!checkBan()) {
+  connectToEvents();
+  // Хартбит каждые 8 секунд
+  setInterval(sendPresence, 8000);
+  // Очистка старых игроков
+  setInterval(cleanupPlayers, 5000);
+  // Первая загрузка последних ивентов
+  setTimeout(loadRecentEvents, 1500);
+  // Обновление счётчика
+  setTimeout(updatePlayerCount, 500);
+}
 </script>
 
 </body>
