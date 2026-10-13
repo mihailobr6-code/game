@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#e2231a">
-<title>Roblox: 3 игры</title>
+<title>Roblox: 4 игры</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%;touch-action:manipulation}
-  body{font-family:Arial,sans-serif;background:#1a1a1a;color:#fff;text-align:center;min-height:100vh;user-select:none;-webkit-user-select:none}
+  body{font-family:Arial,sans-serif;background:#1a1a1a;color:#fff;text-align:center;min-height:100vh;user-select:none;-webkit-user-select:none;overflow-x:hidden}
   input,textarea{user-select:text;-webkit-user-select:text}
   header{background:#e2231a;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:500;box-shadow:0 2px 10px rgba(0,0,0,.4)}
   header h1{font-size:20px;letter-spacing:2px}
@@ -121,7 +121,7 @@
   .nick-preview{background:#000;border:1px solid #333;border-radius:10px;padding:12px;margin:10px 0;text-align:center}
   .nick-preview-value{color:#ffd700;font-size:20px;font-weight:bold;margin-top:5px;word-break:break-all}
   .nick-input{width:100%;padding:14px;background:#000;border:2px solid #444;border-radius:10px;color:#fff;font-size:18px;text-align:center;font-weight:bold}
-  .nick-input:focus{outline:none;border-color:#00e676;box-shadow:0 0 15px rgba(0,230,118,.4)}
+  .nick-input:focus{outline:none;border-color:#00e676}
   .nick-btns{display:flex;gap:10px;margin-top:15px;justify-content:center;flex-wrap:wrap}
   .nick-btns button{flex:1;min-width:120px;padding:14px 20px;border-radius:10px;font-size:15px;font-weight:bold;border:none;margin:0}
   .nick-cancel{background:#444;color:#fff}
@@ -136,6 +136,128 @@
   .mem-info{margin:12px;font-size:16px}
   .mem-info span{color:#ffd700;font-weight:bold}
   .mem-win{color:#00e676;font-size:20px;font-weight:bold;margin:15px;animation:pulse 1s infinite}
+
+  /* ===== БРЮСИК БАРБУСИК ===== */
+  .brusik-scene{
+    background:linear-gradient(180deg,#87CEEB 0%,#4a90e2 100%);
+    border-radius:20px;padding:20px;margin:15px auto;max-width:600px;
+    position:relative;overflow:hidden;min-height:420px;
+    box-shadow:0 10px 30px rgba(0,0,0,.5);
+  }
+  .brusik-sun{
+    position:absolute;top:15px;right:15px;font-size:50px;
+    animation:sunSpin 20s linear infinite;
+  }
+  @keyframes sunSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  .brusik-cloud{
+    position:absolute;font-size:40px;opacity:.85;
+    animation:cloudFloat 15s linear infinite;
+  }
+  .brusik-cloud.c2{top:60px;animation-duration:25s;font-size:32px}
+  .brusik-cloud.c3{top:110px;animation-duration:20s;animation-delay:-5s;font-size:36px}
+  @keyframes cloudFloat{
+    from{left:-80px}to{left:110%}
+  }
+  .brusik-ground{
+    position:absolute;bottom:0;left:0;right:0;height:80px;
+    background:linear-gradient(180deg,#7cb342,#558b2f);
+    border-radius:20px 20px 0 0;
+  }
+  .brusik-grass{
+    position:absolute;bottom:70px;left:0;right:0;
+    font-size:24px;letter-spacing:20px;opacity:.5;
+  }
+  .brusik-dog-wrap{
+    position:relative;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    margin-top:80px;
+    cursor:pointer;
+    user-select:none;
+    z-index:5;
+  }
+  .brusik-dog{
+    font-size:clamp(100px,26vw,160px);
+    line-height:1;
+    transition:transform .15s;
+    filter:drop-shadow(0 10px 20px rgba(0,0,0,.3));
+    display:inline-block;
+    animation:dogIdle 3s ease-in-out infinite;
+  }
+  @keyframes dogIdle{
+    0%,100%{transform:translateY(0) rotate(0)}
+    25%{transform:translateY(-5px) rotate(-2deg)}
+    75%{transform:translateY(-5px) rotate(2deg)}
+  }
+  .brusik-dog.petting{
+    animation:dogPet .3s ease-out;
+  }
+  @keyframes dogPet{
+    0%{transform:scale(1) rotate(0)}
+    50%{transform:scale(1.15) rotate(-5deg)}
+    100%{transform:scale(1) rotate(0)}
+  }
+  .brusik-dog.happy{
+    animation:dogHappy .6s ease-out;
+  }
+  @keyframes dogHappy{
+    0%{transform:scale(1)}
+    25%{transform:scale(1.2) rotate(-10deg)}
+    50%{transform:scale(1.15) translateY(-20px) rotate(10deg)}
+    75%{transform:scale(1.1) rotate(-5deg)}
+    100%{transform:scale(1) rotate(0)}
+  }
+  .brusik-heart{
+    position:absolute;
+    font-size:24px;
+    pointer-events:none;
+    animation:heartFly 1s ease-out forwards;
+    z-index:100;
+  }
+  @keyframes heartFly{
+    0%{opacity:1;transform:translate(0,0) scale(0.5)}
+    50%{opacity:1;transform:translate(var(--hx),var(--hy)) scale(1.2)}
+    100%{opacity:0;transform:translate(var(--hx2),var(--hy2)) scale(0.3)}
+  }
+  .brusik-score{
+    font-size:18px;font-weight:bold;margin:10px 0;
+    color:#fff;text-shadow:0 2px 5px rgba(0,0,0,.5);
+  }
+  .brusik-score span{color:#ffd700;font-size:22px}
+  .brusik-mood-bar{
+    width:90%;max-width:400px;height:20px;
+    background:rgba(0,0,0,.4);
+    border-radius:10px;margin:10px auto;overflow:hidden;
+    border:2px solid rgba(255,255,255,.4);
+  }
+  .brusik-mood-fill{
+    height:100%;
+    background:linear-gradient(90deg,#ff6b9d,#ffd700,#00e676);
+    width:0%;transition:width .3s;
+    border-radius:8px;
+  }
+  .brusik-mood-label{
+    color:#fff;font-size:13px;text-shadow:0 1px 3px rgba(0,0,0,.7);
+    margin-bottom:5px;font-weight:bold;
+  }
+  .brusik-hint{
+    background:rgba(0,0,0,.5);padding:8px 15px;
+    border-radius:20px;color:#fff;font-size:13px;
+    display:inline-block;margin-top:10px;
+    animation:pulse 2s infinite;
+  }
+  .brusik-stats{
+    display:flex;gap:15px;justify-content:center;
+    flex-wrap:wrap;margin:15px 0;
+    font-size:14px;
+  }
+  .brusik-stat{
+    background:rgba(0,0,0,.3);padding:8px 15px;
+    border-radius:10px;color:#fff;
+    border:2px solid rgba(255,255,255,.2);
+  }
+  .brusik-stat b{color:#ffd700;font-size:16px}
+
   .ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;max-width:900px;margin:20px auto}
   .ach{background:#2b2b2b;border:2px solid #444;border-radius:10px;padding:14px;text-align:left;transition:.2s}
   .ach.unlocked{border-color:#ffd700;background:#33321f;box-shadow:0 0 10px rgba(255,215,0,.3)}
@@ -201,6 +323,7 @@
   .toast.blue{background:linear-gradient(135deg,#00bfff,#0091ea);color:#fff}
   .toast.red{background:linear-gradient(135deg,#c41e16,#7b1fa2);color:#fff}
   .toast.gold{background:linear-gradient(135deg,#ffd700,#ffaa00);color:#111}
+  .toast.pink{background:linear-gradient(135deg,#ff6b9d,#ff4081);color:#fff}
   @media(max-width:700px){
     header{padding:8px 10px;gap:6px}
     header h1{font-size:14px}
@@ -223,6 +346,8 @@
     .kick-icon{font-size:60px}
     .kick-title{font-size:22px}
     .edit-nick-btn{padding:4px 8px!important;font-size:11px!important}
+    .brusik-scene{min-height:360px;padding:15px}
+    .brusik-dog{font-size:clamp(90px,24vw,140px)}
   }
   @media(max-width:400px){.menu{grid-template-columns:1fr}}
 </style>
@@ -230,7 +355,7 @@
 <body>
 
 <header>
-  <h1>ROBLOX: 3 ИГРЫ</h1>
+  <h1>ROBLOX: 4 ИГРЫ</h1>
   <div class="header-right">
     <div id="onlineBadge" class="online-badge offline"><div class="dot"></div><span id="onlineText">Подключение...</span></div>
     <div id="activeEventBadge" class="active-event" style="display:none"></div>
@@ -264,6 +389,10 @@
     <div class="event-menu-status off" id="eventsCardStatus">🔴 Не активен</div>
     <div id="eventsCardInfo" style="margin-top:6px"></div>
   </div>
+  <div class="card" onclick="showGame('brusik')" style="border-color:#ff6b9d">
+    <h2>🐶 Брюсик Барбусик</h2><p>Гладь собачку!</p>
+    <div class="reward">+2 💰 за поглаживание</div>
+  </div>
   <div class="card" onclick="showGame('clicker')">
     <h2>👆 Кликер</h2><p>Нажимай и зарабатывай</p>
     <div class="reward">+<span id="menuClickBonus">1</span> 💰</div>
@@ -284,6 +413,42 @@
     <h2>🏆 Ачивки</h2><p>Открыто: <span id="achCounter">0</span>/<span id="achTotal">0</span></p>
     <div class="reward">Собери все достижения</div>
   </div>
+</div>
+
+<!-- БРЮСИК БАРБУСИК ИГРА -->
+<div id="brusik" class="game">
+  <button class="back" onclick="showMenu()">← Назад</button>
+  <h2>🐶 Брюсик Барбусик</h2>
+  <p style="color:#aaa;font-size:13px;margin:8px 0">Гладь собачку — она даёт деньги!</p>
+
+  <div class="brusik-scene" id="brusikScene">
+    <div class="brusik-sun">☀️</div>
+    <div class="brusik-cloud c1">☁️</div>
+    <div class="brusik-cloud c2">☁️</div>
+    <div class="brusik-cloud c3">☁️</div>
+    <div class="brusik-ground"></div>
+    <div class="brusik-grass">🌱🌿🌱🌿🌱🌿🌱🌿🌱🌿</div>
+
+    <div class="brusik-score">Поглаживаний: <span id="brusikPets">0</span></div>
+
+    <div class="brusik-mood-label">Настроение Брюсика:</div>
+    <div class="brusik-mood-bar">
+      <div class="brusik-mood-fill" id="brusikMoodFill"></div>
+    </div>
+
+    <div class="brusik-dog-wrap" id="brusikDogWrap" onclick="petBrusik(event)">
+      <div class="brusik-dog" id="brusikDog">🐶</div>
+      <div class="brusik-hint" id="brusikHint">👆 Гладь меня!</div>
+    </div>
+  </div>
+
+  <div class="brusik-stats">
+    <div class="brusik-stat">🐾 Всего поглаживаний: <b id="brusikTotalPets">0</b></div>
+    <div class="brusik-stat">💝 Трюков сделано: <b id="brusikTricks">0</b></div>
+    <div class="brusik-stat">💰 Заработано: <b id="brusikEarned">0</b></div>
+  </div>
+
+  <button class="danger-btn" onclick="resetBrusik()">🔄 Сбросить прогресс Брюсика</button>
 </div>
 
 <div id="secret" class="game">
@@ -364,6 +529,7 @@
     <p>💎 <b>x2 Деньги</b> — все награды удваиваются</p>
     <p>⚡ <b>Кликер-безумие</b> — клики x5</p>
     <p>🧠 <b>Супер-память</b> — память x3</p>
+    <p>🐶 <b>Брюсик-мания</b> — поглаживания x3</p>
     <p>💰 <b>Денежный дождь</b> — +500 💰 всем</p>
     <p>🌟 <b>Мега-ивент</b> — x3 на всё + 1000 💰</p>
   </div>
@@ -428,7 +594,7 @@
   <div class="modal">
     <h2>💥 СБРОС АККАУНТА</h2>
     <p>⚠️ Удалит ВСЁ безвозвратно</p>
-    <ul><li>💰 Деньги</li><li>👆 Улучшения</li><li>📊 Статистику</li><li>🏆 Ачивки</li><li>🎁 Ежедневки</li></ul>
+    <ul><li>💰 Деньги</li><li>👆 Улучшения</li><li>🐶 Прогресс Брюсика</li><li>📊 Статистику</li><li>🏆 Ачивки</li><li>🎁 Ежедневки</li></ul>
     <p style="color:#c41e16;font-weight:bold">Введи <span style="color:#ffd700">УДАЛИТЬ</span>:</p>
     <input type="text" id="confirmInput" placeholder="УДАЛИТЬ" oninput="checkConfirmInput()">
     <div class="modal-btns">
@@ -452,7 +618,7 @@
       <button onclick="addEmojiNick('🔥')">🔥</button>
       <button onclick="addEmojiNick('⚡')">⚡</button>
       <button onclick="addEmojiNick('👑')">👑</button>
-      <button onclick="addEmojiNick('💎')">💎</button>
+      <button onclick="addEmojiNick('🐶')">🐶</button>
     </div>
     <div class="nick-btns">
       <button class="nick-cancel" onclick="closeNickModal()">Отмена</button>
@@ -531,7 +697,6 @@ function getNickname() {
   }
   return nick;
 }
-
 const MY_ID = getPlayerId();
 let MY_NICK = getNickname();
 
@@ -542,14 +707,12 @@ function getRoomFromURL() {
 }
 let ROOM = getRoomFromURL();
 const NTFY_TOPIC = 'roblox3games_' + ROOM;
-
 document.getElementById('roomName').textContent = ROOM;
 document.getElementById('myNameDisplay').textContent = MY_NICK;
 
 /* ============ ПОДКЛЮЧЕНИЕ ============ */
 let eventSource = null;
 const players = new Map();
-
 function setOnlineStatus(status) {
   const badge = document.getElementById('onlineBadge');
   const text = document.getElementById('onlineText');
@@ -557,45 +720,27 @@ function setOnlineStatus(status) {
   else if (status === 'offline') { badge.classList.add('offline'); text.textContent = 'Оффлайн'; }
   else { badge.classList.add('offline'); text.textContent = 'Подключение...'; }
 }
-
 function publish(payload) {
   payload.sender = MY_ID;
   payload.senderNick = MY_NICK;
   payload.timestamp = Date.now();
-  return fetch(NTFY + NTFY_TOPIC, {
-    method: 'POST',
-    body: JSON.stringify(payload)
-  }).catch(err => console.log('Ошибка отправки:', err));
+  return fetch(NTFY + NTFY_TOPIC, { method: 'POST', body: JSON.stringify(payload) }).catch(()=>{});
 }
 function sendPresence() { publish({type:'presence'}); }
-
 function connectToEvents() {
   if (eventSource) eventSource.close();
   setOnlineStatus('connecting');
   eventSource = new EventSource(NTFY + NTFY_TOPIC + '/sse');
-
-  eventSource.onopen = () => {
-    setOnlineStatus('online');
-    sendPresence();
-    sendPresence();
-    console.log('✅ Подключено к комнате', ROOM);
-  };
-
+  eventSource.onopen = () => { setOnlineStatus('online'); sendPresence(); sendPresence(); };
   eventSource.onmessage = (e) => {
     try {
       const wrapper = JSON.parse(e.data);
       if (wrapper.event !== 'message') return;
-      const payload = JSON.parse(wrapper.message);
-      handleIncoming(payload);
+      handleIncoming(JSON.parse(wrapper.message));
     } catch (err) {}
   };
-
-  eventSource.onerror = () => {
-    setOnlineStatus('offline');
-    setTimeout(connectToEvents, 3000);
-  };
+  eventSource.onerror = () => { setOnlineStatus('offline'); setTimeout(connectToEvents, 3000); };
 }
-
 function handleIncoming(payload) {
   if (!payload || !payload.type) return;
   if (payload.sender === MY_ID) return;
@@ -604,7 +749,6 @@ function handleIncoming(payload) {
   else if (payload.type === 'kick') handleKick(payload);
   else if (payload.type === 'nick_change') handleNickChange(payload);
 }
-
 function handlePresence(payload) {
   if (!payload.sender) return;
   const existing = players.get(payload.sender);
@@ -615,22 +759,16 @@ function handlePresence(payload) {
   updatePlayerCount();
   if (currentGame === 'secret' && adminUnlocked) renderPlayersList();
 }
-
 function cleanupPlayers() {
   const now = Date.now();
   let changed = false;
-  players.forEach((p, id) => {
-    if (now - p.lastSeen > 30000) { players.delete(id); changed = true; }
-  });
+  players.forEach((p, id) => { if (now - p.lastSeen > 30000) { players.delete(id); changed = true; } });
   if (changed) updatePlayerCount();
   if (currentGame === 'secret' && adminUnlocked) renderPlayersList();
 }
+function updatePlayerCount() { document.getElementById('playerCount').textContent = players.size + 1; }
 
-function updatePlayerCount() {
-  document.getElementById('playerCount').textContent = players.size + 1;
-}
-
-/* ============ СМЕНА НИКА ============ */
+/* ============ НИК ============ */
 function openNickModal() {
   document.getElementById('nickModal').classList.add('show');
   const input = document.getElementById('newNickInput');
@@ -679,10 +817,9 @@ function handleNickChange(payload) {
   }
 }
 
-/* ============ ИГРОКИ В АДМИНКЕ ============ */
+/* ============ ИГРОКИ ============ */
 function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function escapeJs(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"').replace(/\n/g,' '); }
-
 function renderPlayersList() {
   const list = document.getElementById('playersList');
   if (!list) return;
@@ -734,22 +871,14 @@ function confirmKick() {
   if (!durationRadio) { alert('Выбери длительность!'); return; }
   let banMs = 0, durationText = '';
   const val = durationRadio.value;
-  if (val === 'forever') {
-    banMs = 365 * 24 * 60 * 60 * 1000 * 100;
-    durationText = 'навсегда';
-  } else {
-    const minutes = parseInt(val);
-    banMs = minutes * 60 * 1000;
-    durationText = formatDuration(minutes);
-  }
+  if (val === 'forever') { banMs = 365 * 24 * 60 * 60 * 1000 * 100; durationText = 'навсегда'; }
+  else { const minutes = parseInt(val); banMs = minutes * 60 * 1000; durationText = formatDuration(minutes); }
   const kickPayload = {type:'kick', target: targetId, targetNick, reason, banMs, durationText};
   publish(kickPayload);
   setTimeout(() => publish(kickPayload), 500);
   setTimeout(() => publish(kickPayload), 1500);
   players.delete(targetId);
-  renderPlayersList();
-  updatePlayerCount();
-  closeKickModal();
+  renderPlayersList(); updatePlayerCount(); closeKickModal();
   showToast('🥾 ИГРОК ВЫГНАН', `${targetNick} — бан ${durationText}`, false, false, true);
 }
 function formatDuration(minutes) {
@@ -783,8 +912,7 @@ function showKickedScreen(reason, banUntil, durationText) {
       localStorage.removeItem('rb_kicked_until');
       localStorage.removeItem('rb_kicked_reason');
       localStorage.removeItem('rb_kicked_duration');
-      location.reload();
-      return;
+      location.reload(); return;
     }
     const days = Math.floor(left/86400000);
     const hours = Math.floor((left%86400000)/3600000);
@@ -796,8 +924,7 @@ function showKickedScreen(reason, banUntil, durationText) {
     else text = String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
     timerEl.textContent = text;
   }
-  tick();
-  setInterval(tick, 500);
+  tick(); setInterval(tick, 500);
 }
 function checkBan() {
   const until = parseInt(localStorage.getItem('rb_kicked_until') || '0');
@@ -814,7 +941,7 @@ function checkBan() {
   return false;
 }
 
-/* ============ СМЕНА КОМНАТЫ ============ */
+/* ============ КОМНАТА ============ */
 function changeRoom() {
   const val = document.getElementById('roomInput').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g,'');
   if (!val) { alert('Введи название комнаты!'); return; }
@@ -826,16 +953,18 @@ function changeRoom() {
 /* ============ ИВЕНТЫ ============ */
 let activeEvent = null, eventEndTime = 0, eventStartTime = 0, eventTotalDuration = 0, eventTimerInterval = null;
 const EVENTS = [
-  { id:'x2money',     icon:'💎', name:'x2 Деньги',      desc:'Все награды удваиваются!',  duration:60, moneyMult:2, clickMult:2, memoryMult:2 },
-  { id:'clickFrenzy', icon:'⚡', name:'Кликер-безумие', desc:'Клики дают x5 денег!',      duration:60, moneyMult:1, clickMult:5, memoryMult:1 },
-  { id:'superMemory', icon:'🧠', name:'Супер-память',   desc:'Память даёт x3 денег!',     duration:60, moneyMult:1, clickMult:1, memoryMult:3 },
-  { id:'moneyRain',   icon:'💰', name:'Денежный дождь', desc:'Мгновенно +500 💰 всем!',   duration:0,  instant:500 },
-  { id:'megaEvent',   icon:'🌟', name:'МЕГА-ИВЕНТ',     desc:'x3 на всё + 1000 💰 всем!', duration:45, moneyMult:3, clickMult:3, memoryMult:3, instant:1000 }
+  { id:'x2money',      icon:'💎', name:'x2 Деньги',      desc:'Все награды удваиваются!', duration:60, moneyMult:2, clickMult:2, memoryMult:2, brusikMult:2 },
+  { id:'clickFrenzy',  icon:'⚡', name:'Кликер-безумие', desc:'Клики дают x5 денег!',     duration:60, moneyMult:1, clickMult:5, memoryMult:1, brusikMult:1 },
+  { id:'superMemory',  icon:'🧠', name:'Супер-память',   desc:'Память даёт x3 денег!',    duration:60, moneyMult:1, clickMult:1, memoryMult:3, brusikMult:1 },
+  { id:'brusikMania',  icon:'🐶', name:'Брюсик-мания',   desc:'Поглаживания x3!',         duration:60, moneyMult:1, clickMult:1, memoryMult:1, brusikMult:3 },
+  { id:'moneyRain',    icon:'💰', name:'Денежный дождь', desc:'Мгновенно +500 💰 всем!',  duration:0,  instant:500 },
+  { id:'megaEvent',    icon:'🌟', name:'МЕГА-ИВЕНТ',     desc:'x3 на всё + 1000 💰!',     duration:45, moneyMult:3, clickMult:3, memoryMult:3, brusikMult:3, instant:1000 }
 ];
 
 function getEventMoneyMult()  { return activeEvent ? (activeEvent.moneyMult  || 1) : 1; }
 function getEventClickMult()  { return activeEvent ? (activeEvent.clickMult  || 1) : 1; }
 function getEventMemoryMult() { return activeEvent ? (activeEvent.memoryMult || 1) : 1; }
+function getEventBrusikMult() { return activeEvent ? (activeEvent.brusikMult || 1) : 1; }
 
 function handleRemoteEvent(payload) {
   if (payload.type !== 'event_start') return;
@@ -843,7 +972,8 @@ function handleRemoteEvent(payload) {
   if (activeEvent && Date.now() < eventEndTime) return;
   applyRemoteEvent({
     id: payload.id, icon: payload.icon, name: payload.name, desc: payload.desc,
-    moneyMult: payload.moneyMult, clickMult: payload.clickMult, memoryMult: payload.memoryMult, instant: payload.instant
+    moneyMult: payload.moneyMult, clickMult: payload.clickMult, memoryMult: payload.memoryMult,
+    brusikMult: payload.brusikMult, instant: payload.instant
   }, payload.endTime);
 }
 function applyRemoteEvent(ev, endTime) {
@@ -867,7 +997,6 @@ function openEvents() {
   renderEventStatus();
 }
 function setDuration(val) { document.getElementById('eventDuration').value = val; }
-
 function tryStartEvent() {
   const input = document.getElementById('eventPassword');
   if (input.value.trim() !== EVENT_PASSWORD) { showToast('❌ Неверный пароль!', 'Попробуй ещё раз', false); input.value=''; return; }
@@ -903,7 +1032,7 @@ function startEvent(ev, customDuration) {
   const evPayload = {
     type:'event_start', id: ev.id, icon: ev.icon, name: ev.name, desc: ev.desc,
     moneyMult: ev.moneyMult || 1, clickMult: ev.clickMult || 1, memoryMult: ev.memoryMult || 1,
-    instant: ev.instant || 0, duration: eventTotalDuration, endTime: eventEndTime
+    brusikMult: ev.brusikMult || 1, instant: ev.instant || 0, duration: eventTotalDuration, endTime: eventEndTime
   };
   publish(evPayload);
   saveAll(); renderEventStatus(); updateActiveEventBadge(); updateEventsCard();
@@ -976,7 +1105,6 @@ function updateActiveEventBadge() {
     badge.textContent = `${activeEvent.icon} ${left}с`;
   } else badge.style.display = 'none';
 }
-
 async function loadRecentEvents() {
   try {
     const res = await fetch(NTFY + NTFY_TOPIC + '/json?poll=1&since=2m');
@@ -993,7 +1121,7 @@ async function loadRecentEvents() {
   } catch (err) {}
 }
 
-/* ============ АДМИН-ПАНЕЛЬ ============ */
+/* ============ АДМИН ============ */
 let adminUnlocked = false;
 function openSecret() {
   document.getElementById('menu').style.display = 'none';
@@ -1006,8 +1134,7 @@ function openSecret() {
     document.getElementById('secretLockIcon').textContent = '👑';
     document.getElementById('secretTitle').textContent = 'АДМИН-РЕЖИМ';
     document.getElementById('secretHint').textContent = 'Полный доступ!';
-    updateAdminInfo();
-    renderPlayersList();
+    updateAdminInfo(); renderPlayersList();
   } else {
     document.getElementById('adminPanel').classList.remove('show');
     document.getElementById('secretLockedPart').style.display = 'block';
@@ -1027,8 +1154,7 @@ function checkSecret() {
     document.getElementById('secretHint').textContent = 'Полный доступ!';
     document.getElementById('secretLockedPart').style.display = 'none';
     document.getElementById('adminPanel').classList.add('show');
-    updateAdminInfo();
-    renderPlayersList();
+    updateAdminInfo(); renderPlayersList();
     showToast('🔓 ДОСТУП ОТКРЫТ!', '👑 Админ-режим активирован', false, false, false, true);
   } else {
     input.value = '';
@@ -1083,6 +1209,7 @@ const DAILY_REWARDS = [
 let money           = parseInt(localStorage.getItem('rb_money'))   || 0;
 let clickBonus      = parseInt(localStorage.getItem('rb_clickBonus')) || 1;
 let memoryMultiplier= parseInt(localStorage.getItem('rb_memoryMult')) || 1;
+let brusikMultiplier= parseInt(localStorage.getItem('rb_brusikMult')) || 1;
 
 let stats = JSON.parse(localStorage.getItem('rb_stats') || '{}');
 stats.totalClicks   = stats.totalClicks   || 0;
@@ -1094,6 +1221,9 @@ stats.gamesPlayed   = stats.gamesPlayed   || 0;
 stats.dailyClaims   = stats.dailyClaims   || 0;
 stats.eventsStarted = stats.eventsStarted || 0;
 stats.memoryWins    = stats.memoryWins    || 0;
+stats.brusikPets    = stats.brusikPets    || 0;
+stats.brusikEarned  = stats.brusikEarned  || 0;
+stats.brusikTricks  = stats.brusikTricks  || 0;
 
 let achievements = JSON.parse(localStorage.getItem('rb_ach') || '{}');
 let daily = JSON.parse(localStorage.getItem('rb_daily') || '{}');
@@ -1105,12 +1235,121 @@ function saveAll() {
   localStorage.setItem('rb_money', money);
   localStorage.setItem('rb_clickBonus', clickBonus);
   localStorage.setItem('rb_memoryMult', memoryMultiplier);
+  localStorage.setItem('rb_brusikMult', brusikMultiplier);
   localStorage.setItem('rb_stats', JSON.stringify(stats));
   localStorage.setItem('rb_ach', JSON.stringify(achievements));
   localStorage.setItem('rb_daily', JSON.stringify(daily));
 }
 
-/* Ежедневка */
+/* ============ БРЮСИК БАРБУСИК ============ */
+let brusikMood = 0;
+let brusikSessionPets = 0;
+let brusikLastPet = 0;
+
+function petBrusik(e) {
+  const now = Date.now();
+  if (now - brusikLastPet < 100) return;
+  brusikLastPet = now;
+
+  const dog = document.getElementById('brusikDog');
+  const wrap = document.getElementById('brusikDogWrap');
+  const hint = document.getElementById('brusikHint');
+  hint.style.display = 'none';
+
+  // Анимация
+  dog.classList.remove('petting', 'happy');
+  void dog.offsetWidth;
+  dog.classList.add('petting');
+
+  // Сердечки
+  const rect = wrap.getBoundingClientRect();
+  let clickX = 0, clickY = 0;
+  if (e && e.clientX !== undefined && e.clientX !== 0) {
+    clickX = e.clientX - (rect.left + rect.width/2);
+    clickY = e.clientY - (rect.top + rect.height/2);
+  } else {
+    clickX = (Math.random()-0.5)*100;
+    clickY = (Math.random()-0.5)*60;
+  }
+  spawnHeart(clickX, clickY);
+
+  // Награда
+  const mult = brusikMultiplier * getEventBrusikMult();
+  const reward = 2 * mult;
+  addMoney(reward);
+  brusikSessionPets++;
+  stats.brusikPets++;
+  stats.brusikEarned += Math.floor(reward * getEventMoneyMult());
+
+  // Настроение
+  brusikMood += 8;
+  if (brusikMood >= 100) {
+    brusikMood = 0;
+    // Трюк!
+    doBrusikTrick();
+  }
+
+  updateBrusikUI();
+  saveAll();
+  checkAchievements();
+}
+
+function doBrusikTrick() {
+  const dog = document.getElementById('brusikDog');
+  dog.classList.add('happy');
+  setTimeout(() => dog.classList.remove('happy'), 600);
+
+  const bonus = Math.floor(50 * brusikMultiplier * getEventBrusikMult() * getEventMoneyMult());
+  money += bonus;
+  stats.totalEarned += bonus;
+  stats.brusikEarned += bonus;
+  stats.brusikTricks++;
+  updateMoney();
+
+  showToast('🐶 БРЮСИК СДЕЛАЛ ТРЮК!', `🎉 +${bonus} 💰 бонус`, false, false, false, true, false);
+  // Пять сердечек веером
+  for (let i = 0; i < 8; i++) {
+    setTimeout(() => spawnHeart((Math.random()-0.5)*150, (Math.random()-0.5)*100), i*80);
+  }
+}
+
+function spawnHeart(x, y) {
+  const wrap = document.getElementById('brusikDogWrap');
+  const heart = document.createElement('div');
+  heart.className = 'brusik-heart';
+  const emojis = ['❤️','💖','💕','💗','💓','🐾'];
+  heart.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+  heart.style.left = '50%';
+  heart.style.top = '40%';
+  heart.style.setProperty('--hx', (x*0.5) + 'px');
+  heart.style.setProperty('--hy', (y - 60) + 'px');
+  heart.style.setProperty('--hx2', (x) + 'px');
+  heart.style.setProperty('--hy2', (y - 120) + 'px');
+  wrap.appendChild(heart);
+  setTimeout(() => heart.remove(), 1100);
+}
+
+function updateBrusikUI() {
+  document.getElementById('brusikPets').textContent = brusikSessionPets;
+  document.getElementById('brusikTotalPets').textContent = stats.brusikPets;
+  document.getElementById('brusikTricks').textContent = stats.brusikTricks;
+  document.getElementById('brusikEarned').textContent = stats.brusikEarned.toLocaleString('ru-RU');
+  document.getElementById('brusikMoodFill').style.width = brusikMood + '%';
+}
+
+function resetBrusik() {
+  if (!confirm('Сбросить прогресс Брюсика?')) return;
+  stats.brusikPets = 0;
+  stats.brusikEarned = 0;
+  stats.brusikTricks = 0;
+  brusikSessionPets = 0;
+  brusikMood = 0;
+  saveAll();
+  updateBrusikUI();
+  showToast('🔄 Прогресс Брюсика сброшен', 'Собачка готова снова!', false);
+}
+
+/* ============ ЕЖЕДНЕВКА ============ */
 function msUntilMidnight() {
   const now = new Date();
   return new Date(now.getFullYear(), now.getMonth(), now.getDate()+1) - now;
@@ -1187,7 +1426,7 @@ function openDaily() {
   renderDaily();
 }
 
-/* ============ АЧИВКИ (20 штук с Брюсик Барбусик) ============ */
+/* ============ АЧИВКИ ============ */
 const ACHIEVEMENTS = [
   { id:'first_money', icon:'🪙', name:'Первая монетка', desc:'Заработай 1 💰', check:()=>stats.totalEarned>=1 },
   { id:'money_100',   icon:'💵', name:'Сотка', desc:'Заработай 100 💰', check:()=>stats.totalEarned>=100 },
@@ -1201,14 +1440,18 @@ const ACHIEVEMENTS = [
   { id:'memory_win',  icon:'🏅', name:'Полное поле', desc:'Собери все пары', check:()=>stats.memoryWins>=1 },
   { id:'guess_win',   icon:'🔢', name:'Угадал!', desc:'Выиграй 1 раз', check:()=>stats.gamesPlayed>=1 },
   { id:'guess_best',  icon:'🎯', name:'Снайпер', desc:'Угадай за 3 попытки', check:()=>stats.bestGuess>0 && stats.bestGuess<=3 },
-  { id:'shop_buyer',  icon:'🛒', name:'Шопоголик', desc:'Купи улучшение', check:()=>(clickBonus>1 || memoryMultiplier>1) },
+  { id:'shop_buyer',  icon:'🛒', name:'Шопоголик', desc:'Купи улучшение', check:()=>(clickBonus>1 || memoryMultiplier>1 || brusikMultiplier>1) },
   { id:'daily_1',     icon:'🎁', name:'Первый бонус', desc:'Забери ежедневку', check:()=>stats.dailyClaims>=1 },
   { id:'daily_7',     icon:'🔥', name:'Неделя подряд', desc:'7 дней streak', check:()=>daily.streak>=7 },
   { id:'daily_30',    icon:'👑', name:'Месяц верности', desc:'30 дней streak', check:()=>daily.streak>=30 },
   { id:'event_1',     icon:'🎉', name:'Первый ивент', desc:'Запусти 1 ивент', check:()=>stats.eventsStarted>=1 },
   { id:'event_10',    icon:'🎊', name:'Ивент-мастер', desc:'10 ивентов', check:()=>stats.eventsStarted>=10 },
   { id:'event_50',    icon:'🎆', name:'Повелитель ивентов', desc:'50 ивентов', check:()=>stats.eventsStarted>=50 },
-  { id:'brusik',      icon:'🐱', name:'Брюсик Барбусик', desc:'Собери 1000 монет чтобы накормить Брюсик Барбусик', check:()=>stats.totalEarned>=1000 }
+  { id:'brusik',      icon:'🐱', name:'Брюсик Барбусик', desc:'Собери 1000 монет чтобы накормить Брюсик Барбусик', check:()=>stats.totalEarned>=1000 },
+  { id:'brusik_10',   icon:'🐶', name:'Первый друг', desc:'Погладь Брюсика 10 раз', check:()=>stats.brusikPets>=10 },
+  { id:'brusik_100',  icon:'💝', name:'Лучший друг', desc:'Погладь Брюсика 100 раз', check:()=>stats.brusikPets>=100 },
+  { id:'brusik_1000', icon:'🏆', name:'Брюсик-легенда', desc:'Погладь Брюсика 1000 раз', check:()=>stats.brusikPets>=1000 },
+  { id:'brusik_tricks',icon:'🎪', name:'Дрессировщик', desc:'10 трюков Брюсика', check:()=>stats.brusikTricks>=10 }
 ];
 
 function checkAchievements() {
@@ -1245,11 +1488,10 @@ function openAch() {
   document.querySelectorAll('.game').forEach(g => g.classList.remove('active'));
   document.getElementById('achievements').classList.add('active');
   currentGame = 'achievements';
-  renderAch();
-  updateAchCounter();
+  renderAch(); updateAchCounter();
 }
 
-/* Деньги */
+/* ============ ДЕНЬГИ ============ */
 function updateMoney() {
   document.getElementById('moneyDisplay').textContent = money.toLocaleString('ru-RU');
   const sm = document.getElementById('shopMoney');
@@ -1297,6 +1539,11 @@ function showGame(id) {
   currentGame = id;
   if (id === 'memory') startMemory();
   if (id === 'guess')  newGuessGame();
+  if (id === 'brusik') {
+    updateBrusikUI();
+    document.getElementById('brusikHint').style.display = 'inline-block';
+    brusikSessionPets = 0;
+  }
 }
 function showMenu() {
   if (gameInterval) { clearInterval(gameInterval); gameInterval = null; }
@@ -1325,7 +1572,6 @@ function resetClicker() { clickScore = 0; document.getElementById('clickScore').
 /* ============ ПАМЯТЬ ============ */
 const MEMORY_EMOJIS = ['🍎','🍌','🍇','🍓','🍊','🍒','🥝','🍑'];
 let memoryCards = [], memoryFirst = null, memorySecond = null, memoryLock = false, memoryMoves = 0, memoryPairs = 0;
-
 function startMemory() {
   const all = [...MEMORY_EMOJIS, ...MEMORY_EMOJIS];
   for (let i = all.length - 1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [all[i], all[j]] = [all[j], all[i]]; }
@@ -1374,7 +1620,7 @@ function flipMemory(i) {
   }
 }
 
-/* ============ УГАДАЙ ЧИСЛО ============ */
+/* ============ УГАДАЙ ============ */
 let secretNumber, attempts;
 function newGuessGame() {
   secretNumber = Math.floor(Math.random()*100) + 1;
@@ -1399,9 +1645,11 @@ function checkGuess() {
 
 /* ============ МАГАЗИН ============ */
 const shopItems = [
-  { id:'click',  name:'👆 Улучшить клик (+1)', price:50,  apply:()=>clickBonus++ },
-  { id:'click5', name:'🔥 Мега-клик (+5)',     price:500, apply:()=>clickBonus += 5 },
-  { id:'memory', name:'🧠 x2 деньги в Памяти', price:300, apply:()=>memoryMultiplier *= 2 }
+  { id:'click',   name:'👆 Улучшить клик (+1)',      price:50,   apply:()=>clickBonus++ },
+  { id:'click5',  name:'🔥 Мега-клик (+5)',           price:500,  apply:()=>clickBonus += 5 },
+  { id:'memory',  name:'🧠 x2 деньги в Памяти',       price:300,  apply:()=>memoryMultiplier *= 2 },
+  { id:'brusik',  name:'🐶 x2 деньги за поглаживание', price:400,  apply:()=>brusikMultiplier *= 2 },
+  { id:'brusik5', name:'💝 x5 деньги за поглаживание', price:1500, apply:()=>brusikMultiplier *= 5 }
 ];
 function renderShop() {
   updateMoney();
@@ -1415,7 +1663,7 @@ function renderShop() {
   });
   const info = document.createElement('p');
   info.style.marginTop = '15px'; info.style.color = '#aaa'; info.style.fontSize = '13px';
-  info.textContent = `Бонус клика: ${clickBonus} | Множитель памяти: x${memoryMultiplier}`;
+  info.textContent = `Клик: ${clickBonus} | Память: x${memoryMultiplier} | Брюсик: x${brusikMultiplier}`;
   container.appendChild(info);
 }
 function buyItem(id) {
@@ -1428,16 +1676,17 @@ function buyItem(id) {
 }
 
 /* ============ TOAST ============ */
-function showToast(title, name, green = false, purple = false, red = false, gold = false, blue = false) {
+function showToast(title, name, green = false, purple = false, red = false, gold = false, blue = false, pink = false) {
   const toast = document.getElementById('toast');
   document.getElementById('toastTitle').textContent = title;
   document.getElementById('toastName').textContent = name;
-  toast.classList.remove('green','purple','red','gold','blue');
+  toast.classList.remove('green','purple','red','gold','blue','pink');
   if (green) toast.classList.add('green');
   if (purple) toast.classList.add('purple');
   if (red) toast.classList.add('red');
   if (gold) toast.classList.add('gold');
   if (blue) toast.classList.add('blue');
+  if (pink) toast.classList.add('pink');
   toast.classList.add('show');
   clearTimeout(window._toastTimer);
   window._toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
@@ -1457,7 +1706,7 @@ setInterval(() => {
   if (currentGame === 'secret' && adminUnlocked) { updateAdminInfo(); renderPlayersList(); }
 }, 500);
 
-/* ============ ОТКЛЮЧЕНИЕ ЗУМА ============ */
+/* ============ ЗУМ OFF ============ */
 let lastTouchEnd = 0;
 document.addEventListener('touchend', function(e) {
   const now = Date.now();
@@ -1468,7 +1717,9 @@ document.addEventListener('touchend', function(e) {
 /* ============ СТАРТ ============ */
 updateMoney();
 document.getElementById('clickBonus').textContent = clickBonus;
-updateAchCounter(); updateDailyCard(); updateEventsCard(); checkStreakBreak(); saveAll();
+updateAchCounter(); updateDailyCard(); updateEventsCard(); checkStreakBreak();
+updateBrusikUI();
+saveAll();
 
 if (!checkBan()) {
   connectToEvents();
