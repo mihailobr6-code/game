@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#e2231a">
-<title>Roblox: 4 игры</title>
+<title>Roblox: 3 игры</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%;touch-action:manipulation}
@@ -251,7 +251,7 @@
 <body>
 
 <header>
-  <h1>ROBLOX: 4 ИГРЫ</h1>
+  <h1>ROBLOX: 3 ИГРЫ</h1>
   <div class="header-right">
     <div id="onlineBadge" class="online-badge offline"><div class="dot"></div><span id="onlineText">Подключение...</span></div>
     <div id="activeEventBadge" class="active-event" style="display:none"></div>
@@ -287,11 +287,7 @@
   </div>
   <div class="card" onclick="showGame('brusik')" style="border-color:#ff6b9d">
     <h2>🐶 Брюсик Барбусик</h2><p>Гладь собачку!</p>
-    <div class="reward">+1 💰 за поглаживание</div>
-  </div>
-  <div class="card" onclick="showGame('clicker')">
-    <h2>👆 Кликер</h2><p>Нажимай и зарабатывай</p>
-    <div class="reward">+<span id="menuClickBonus">1</span> 💰</div>
+    <div class="reward">+2 💰 за поглаживание</div>
   </div>
   <div class="card" onclick="showGame('memory')">
     <h2>🧠 Найди пару</h2><p>Ищи парные карточки</p>
@@ -314,7 +310,7 @@
 <div id="brusik" class="game">
   <button class="back" onclick="showMenu()">← Назад</button>
   <h2>🐶 Брюсик Барбусик</h2>
-  <p style="color:#aaa;font-size:13px;margin:8px 0">Гладь собачку — она даёт монетки!</p>
+  <p style="color:#aaa;font-size:13px;margin:8px 0">Гладь собачку — 2 монетки за поглаживание!</p>
 
   <div class="brusik-scene" id="brusikScene">
     <div class="brusik-sun">☀️</div>
@@ -352,7 +348,7 @@
     <h2 id="secretTitle">СЕКРЕТНЫЙ ДОСТУП</h2>
     <p style="color:#aaa;font-size:13px" id="secretHint">Введи секретный код</p>
     <div id="secretLockedPart">
-      <input type="password" id="secretInput" class="secret-input" placeholder="••••" maxlength="10" inputmode="numeric" onkeydown="if(event.key==='Enter')checkSecret()">
+      <input type="password" id="secretInput" class="secret-input" placeholder="•••••" maxlength="10" inputmode="numeric" onkeydown="if(event.key==='Enter')checkSecret()">
       <br><button class="secret-submit" onclick="checkSecret()">🔓 Открыть</button>
     </div>
     <div class="admin-panel" id="adminPanel">
@@ -419,12 +415,11 @@
   </div>
   <div class="event-list">
     <h4>📋 Возможные ивенты:</h4>
-    <p>💎 <b>x2 Деньги</b></p>
-    <p>⚡ <b>Кликер-безумие</b> — x5</p>
-    <p>🧠 <b>Супер-память</b> — x3</p>
-    <p>🐶 <b>Брюсик-мания</b> — x3</p>
+    <p>💎 <b>x2 Деньги</b> — все награды удваиваются</p>
+    <p>🧠 <b>Супер-память</b> — память x3</p>
+    <p>🐶 <b>Брюсик-мания</b> — поглаживания x3</p>
     <p>💰 <b>Денежный дождь</b> — +500 💰 всем</p>
-    <p>🌟 <b>Мега-ивент</b> — x3 на всё</p>
+    <p>🌟 <b>Мега-ивент</b> — x3 на всё + 1000 💰</p>
   </div>
 </div>
 
@@ -435,15 +430,6 @@
   <div class="daily-grid" id="dailyGrid"></div>
   <button class="big-claim" id="claimBtn" onclick="claimDaily()">🎁 Забрать награду</button>
   <p class="daily-info timer" id="dailyTimer"></p>
-</div>
-
-<div id="clicker" class="game">
-  <button class="back" onclick="showMenu()">← Назад</button>
-  <h2>Кликер</h2>
-  <p>Очки: <span id="clickScore">0</span></p>
-  <p>Бонус: <span id="clickBonus">1</span> 💰</p>
-  <button onclick="clickerClick()" style="font-size:20px;padding:18px 40px">Кликнуть 👆</button><br>
-  <button class="danger-btn" onclick="resetClicker()">Сброс очков</button>
 </div>
 
 <div id="memory" class="game">
@@ -566,10 +552,11 @@
 </div>
 
 <script>
-const SECRET_CODE = '6892';
-const EVENT_PASSWORD = '890567';
+/* ==================== КОНСТАНТЫ ==================== */
+const SECRET_CODE = '67890';      // 👑 КОД АДМИН-ПАНЕЛИ
+const EVENT_PASSWORD = '56890';   // 🎉 КОД ИВЕНТОВ (НОВЫЙ!)
 const NTFY = 'https://ntfy.sh/';
-const BRUSIK_REWARD = 1; // 🐶 1 монетка за поглаживание
+const BRUSIK_REWARD = 2; // 🐶 2 монетки за поглаживание
 
 function getPlayerId() {
   let id = sessionStorage.getItem('rb_pid');
@@ -835,15 +822,13 @@ function changeRoom() {
 
 let activeEvent = null, eventEndTime = 0, eventStartTime = 0, eventTotalDuration = 0, eventTimerInterval = null;
 const EVENTS = [
-  { id:'x2money',      icon:'💎', name:'x2 Деньги',      desc:'Все награды удваиваются!', duration:60, moneyMult:2, clickMult:2, memoryMult:2, brusikMult:2 },
-  { id:'clickFrenzy',  icon:'⚡', name:'Кликер-безумие', desc:'Клики дают x5 денег!',     duration:60, moneyMult:1, clickMult:5, memoryMult:1, brusikMult:1 },
-  { id:'superMemory',  icon:'🧠', name:'Супер-память',   desc:'Память даёт x3 денег!',    duration:60, moneyMult:1, clickMult:1, memoryMult:3, brusikMult:1 },
-  { id:'brusikMania',  icon:'🐶', name:'Брюсик-мания',   desc:'Поглаживания x3!',         duration:60, moneyMult:1, clickMult:1, memoryMult:1, brusikMult:3 },
+  { id:'x2money',      icon:'💎', name:'x2 Деньги',      desc:'Все награды удваиваются!', duration:60, moneyMult:2, memoryMult:2, brusikMult:2 },
+  { id:'superMemory',  icon:'🧠', name:'Супер-память',   desc:'Память даёт x3 денег!',    duration:60, moneyMult:1, memoryMult:3, brusikMult:1 },
+  { id:'brusikMania',  icon:'🐶', name:'Брюсик-мания',   desc:'Поглаживания x3!',         duration:60, moneyMult:1, memoryMult:1, brusikMult:3 },
   { id:'moneyRain',    icon:'💰', name:'Денежный дождь', desc:'Мгновенно +500 💰 всем!',  duration:0,  instant:500 },
-  { id:'megaEvent',    icon:'🌟', name:'МЕГА-ИВЕНТ',     desc:'x3 на всё + 1000 💰!',     duration:45, moneyMult:3, clickMult:3, memoryMult:3, brusikMult:3, instant:1000 }
+  { id:'megaEvent',    icon:'🌟', name:'МЕГА-ИВЕНТ',     desc:'x3 на всё + 1000 💰!',     duration:45, moneyMult:3, memoryMult:3, brusikMult:3, instant:1000 }
 ];
 function getEventMoneyMult()  { return activeEvent ? (activeEvent.moneyMult  || 1) : 1; }
-function getEventClickMult()  { return activeEvent ? (activeEvent.clickMult  || 1) : 1; }
 function getEventMemoryMult() { return activeEvent ? (activeEvent.memoryMult || 1) : 1; }
 function getEventBrusikMult() { return activeEvent ? (activeEvent.brusikMult || 1) : 1; }
 
@@ -853,7 +838,7 @@ function handleRemoteEvent(payload) {
   if (activeEvent && Date.now() < eventEndTime) return;
   applyRemoteEvent({
     id: payload.id, icon: payload.icon, name: payload.name, desc: payload.desc,
-    moneyMult: payload.moneyMult, clickMult: payload.clickMult, memoryMult: payload.memoryMult,
+    moneyMult: payload.moneyMult, memoryMult: payload.memoryMult,
     brusikMult: payload.brusikMult, instant: payload.instant
   }, payload.endTime);
 }
@@ -911,7 +896,7 @@ function startEvent(ev, customDuration) {
   }
   const evPayload = {
     type:'event_start', id: ev.id, icon: ev.icon, name: ev.name, desc: ev.desc,
-    moneyMult: ev.moneyMult || 1, clickMult: ev.clickMult || 1, memoryMult: ev.memoryMult || 1,
+    moneyMult: ev.moneyMult || 1, memoryMult: ev.memoryMult || 1,
     brusikMult: ev.brusikMult || 1, instant: ev.instant || 0, duration: eventTotalDuration, endTime: eventEndTime
   };
   publish(evPayload);
@@ -1000,6 +985,7 @@ async function loadRecentEvents() {
   } catch (err) {}
 }
 
+/* ==================== АДМИН-ПАНЕЛЬ ==================== */
 let adminUnlocked = false;
 function openSecret() {
   document.getElementById('menu').style.display = 'none';
@@ -1079,16 +1065,14 @@ const DAILY_REWARDS = [
   { money:50, icon:'🪙', label:'50' }, { money:100, icon:'💵', label:'100' },
   { money:150, icon:'💰', label:'150' }, { money:250, icon:'💎', label:'250' },
   { money:400, icon:'🏆', label:'400' }, { money:600, icon:'👑', label:'600' },
-  { money:1000, icon:'🌟', label:'1000+' }
+  { money:2000, icon:'🌟', label:'2000' }
 ];
 
 let money           = parseInt(localStorage.getItem('rb_money'))   || 0;
-let clickBonus      = parseInt(localStorage.getItem('rb_clickBonus')) || 1;
 let memoryMultiplier= parseInt(localStorage.getItem('rb_memoryMult')) || 1;
 let brusikMultiplier= parseInt(localStorage.getItem('rb_brusikMult')) || 1;
 
 let stats = JSON.parse(localStorage.getItem('rb_stats') || '{}');
-stats.totalClicks   = stats.totalClicks   || 0;
 stats.totalEarned   = stats.totalEarned   || 0;
 stats.totalPairs    = stats.totalPairs    || 0;
 stats.totalGuesses  = stats.totalGuesses  || 0;
@@ -1109,7 +1093,6 @@ daily.cycleDay  = daily.cycleDay  || 0;
 
 function saveAll() {
   localStorage.setItem('rb_money', money);
-  localStorage.setItem('rb_clickBonus', clickBonus);
   localStorage.setItem('rb_memoryMult', memoryMultiplier);
   localStorage.setItem('rb_brusikMult', brusikMultiplier);
   localStorage.setItem('rb_stats', JSON.stringify(stats));
@@ -1146,7 +1129,6 @@ function petBrusik(e) {
   }
   spawnHeart(clickX, clickY);
 
-  // 🐶 1 МОНЕТКА × множители
   const mult = brusikMultiplier * getEventBrusikMult();
   const reward = BRUSIK_REWARD * mult;
   money += reward;
@@ -1245,11 +1227,7 @@ function claimDaily() {
   const reward = DAILY_REWARDS[idx];
   let totalMoney = reward.money;
   let bonusText = reward.label;
-  if (idx === 6) {
-    clickBonus += 5;
-    bonusText = '1000 💰 + бонус клика +5!';
-    document.getElementById('clickBonus').textContent = clickBonus;
-  }
+  if (idx === 6) bonusText = '2000 💰 + бонус!';
   totalMoney = Math.floor(totalMoney * getEventMoneyMult());
   money += totalMoney; stats.totalEarned += totalMoney; stats.dailyClaims++;
   daily.lastClaim = Date.now(); daily.cycleDay = (daily.cycleDay + 1) % 7;
@@ -1300,15 +1278,12 @@ const ACHIEVEMENTS = [
   { id:'money_100',   icon:'💵', name:'Сотка', desc:'Заработай 100 💰', check:()=>stats.totalEarned>=100 },
   { id:'money_1000',  icon:'💰', name:'Богач', desc:'Заработай 1 000 💰', check:()=>stats.totalEarned>=1000 },
   { id:'money_10000', icon:'💎', name:'Миллионер', desc:'Заработай 10 000 💰', check:()=>stats.totalEarned>=10000 },
-  { id:'click_10',    icon:'👆', name:'Разминка', desc:'10 кликов', check:()=>stats.totalClicks>=10 },
-  { id:'click_100',   icon:'🖱️', name:'Кликер-мастер', desc:'100 кликов', check:()=>stats.totalClicks>=100 },
-  { id:'click_1000',  icon:'⚡', name:'Кликер-бог', desc:'1000 кликов', check:()=>stats.totalClicks>=1000 },
   { id:'memory_10',   icon:'🧠', name:'Первые пары', desc:'10 пар', check:()=>stats.totalPairs>=10 },
   { id:'memory_50',   icon:'🎴', name:'Мастер памяти', desc:'50 пар', check:()=>stats.totalPairs>=50 },
   { id:'memory_win',  icon:'🏅', name:'Полное поле', desc:'Собери все пары', check:()=>stats.memoryWins>=1 },
   { id:'guess_win',   icon:'🔢', name:'Угадал!', desc:'Выиграй 1 раз', check:()=>stats.gamesPlayed>=1 },
   { id:'guess_best',  icon:'🎯', name:'Снайпер', desc:'Угадай за 3 попытки', check:()=>stats.bestGuess>0 && stats.bestGuess<=3 },
-  { id:'shop_buyer',  icon:'🛒', name:'Шопоголик', desc:'Купи улучшение', check:()=>(clickBonus>1 || memoryMultiplier>1 || brusikMultiplier>1) },
+  { id:'shop_buyer',  icon:'🛒', name:'Шопоголик', desc:'Купи улучшение', check:()=>(memoryMultiplier>1 || brusikMultiplier>1) },
   { id:'daily_1',     icon:'🎁', name:'Первый бонус', desc:'Забери ежедневку', check:()=>stats.dailyClaims>=1 },
   { id:'daily_7',     icon:'🔥', name:'Неделя подряд', desc:'7 дней streak', check:()=>daily.streak>=7 },
   { id:'daily_30',    icon:'👑', name:'Месяц верности', desc:'30 дней streak', check:()=>daily.streak>=30 },
@@ -1363,7 +1338,6 @@ function updateMoney() {
   document.getElementById('moneyDisplay').textContent = money.toLocaleString('ru-RU');
   const sm = document.getElementById('shopMoney');
   if (sm) sm.textContent = money.toLocaleString('ru-RU');
-  document.getElementById('menuClickBonus').textContent = clickBonus;
 }
 function addMoney(amount) {
   const boosted = Math.floor(amount * getEventMoneyMult());
@@ -1425,14 +1399,6 @@ function openShop() {
   currentGame = 'shop';
   renderShop();
 }
-
-let clickScore = 0;
-function clickerClick() {
-  clickScore++; stats.totalClicks++;
-  document.getElementById('clickScore').textContent = clickScore;
-  addMoney(clickBonus * getEventClickMult());
-}
-function resetClicker() { clickScore = 0; document.getElementById('clickScore').textContent = clickScore; }
 
 const MEMORY_EMOJIS = ['🍎','🍌','🍇','🍓','🍊','🍒','🥝','🍑'];
 let memoryCards = [], memoryFirst = null, memorySecond = null, memoryLock = false, memoryMoves = 0, memoryPairs = 0;
@@ -1506,8 +1472,6 @@ function checkGuess() {
 }
 
 const shopItems = [
-  { id:'click',   name:'👆 Улучшить клик (+1)',  price:50,   apply:()=>clickBonus++ },
-  { id:'click5',  name:'🔥 Мега-клик (+5)',       price:500,  apply:()=>clickBonus += 5 },
   { id:'memory',  name:'🧠 x2 деньги в Памяти',   price:300,  apply:()=>memoryMultiplier *= 2 },
   { id:'brusik',  name:'🐶 x2 деньги Брюсика',    price:400,  apply:()=>brusikMultiplier *= 2 },
   { id:'brusik5', name:'💝 x5 деньги Брюсика',    price:1500, apply:()=>brusikMultiplier *= 5 }
@@ -1524,7 +1488,7 @@ function renderShop() {
   });
   const info = document.createElement('p');
   info.style.marginTop = '15px'; info.style.color = '#aaa'; info.style.fontSize = '13px';
-  info.textContent = `Клик: ${clickBonus} | Память: x${memoryMultiplier} | Брюсик: x${brusikMultiplier}`;
+  info.textContent = `Память: x${memoryMultiplier} | Брюсик: x${brusikMultiplier}`;
   container.appendChild(info);
 }
 function buyItem(id) {
@@ -1532,7 +1496,7 @@ function buyItem(id) {
   if (!item) return;
   if (money < item.price) { alert('Недостаточно денег!'); return; }
   money -= item.price; item.apply();
-  updateMoney(); document.getElementById('clickBonus').textContent = clickBonus;
+  updateMoney();
   saveAll(); renderShop(); checkAchievements();
 }
 
@@ -1572,7 +1536,6 @@ document.addEventListener('touchend', function(e) {
 }, { passive: false });
 
 updateMoney();
-document.getElementById('clickBonus').textContent = clickBonus;
 updateAchCounter(); updateDailyCard(); updateEventsCard(); checkStreakBreak();
 updateBrusikUI();
 saveAll();
