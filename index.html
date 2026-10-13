@@ -8,31 +8,38 @@
 <title>Roblox: 3 игры</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body {
-    overscroll-behavior: none;
-    -webkit-text-size-adjust: 100%;
-    touch-action: manipulation;
-  }
+  html, body { overscroll-behavior: none; -webkit-text-size-adjust: 100%; touch-action: manipulation; }
   body {
-    font-family: Arial, sans-serif;
-    background: #1a1a1a;
-    color: #fff;
-    text-align: center;
-    min-height: 100vh;
-    user-select: none;
-    -webkit-user-select: none;
+    font-family: Arial, sans-serif; background: #1a1a1a; color: #fff; text-align: center;
+    min-height: 100vh; user-select: none; -webkit-user-select: none;
   }
   input, textarea { user-select: text; -webkit-user-select: text; }
 
   header {
-    background: #e2231a; padding: 12px 15px;
+    background: #e2231a; padding: 10px 12px;
     display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 10px;
+    flex-wrap: wrap; gap: 8px;
     position: sticky; top: 0; z-index: 500;
     box-shadow: 0 2px 10px rgba(0,0,0,0.4);
   }
-  header h1 { font-size: 22px; letter-spacing: 2px; }
+  header h1 { font-size: 20px; letter-spacing: 2px; }
   .header-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  .online-badge {
+    background: #111; color: #00e676;
+    padding: 6px 12px; border-radius: 10px;
+    font-size: 12px; font-weight: bold;
+    border: 2px solid #00e676;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .online-badge .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #00e676; animation: blink 1.5s infinite;
+  }
+  .online-badge.offline { border-color: #888; color: #888; }
+  .online-badge.offline .dot { background: #888; animation: none; }
+  @keyframes blink { 0%,100%{ opacity: 1; } 50%{ opacity: 0.3; } }
+
   .wallet {
     background: #111; padding: 8px 16px; border-radius: 10px;
     font-size: 16px; font-weight: bold; border: 2px solid #ffd700; color: #ffd700;
@@ -44,24 +51,33 @@
     transition: 0.2s;
   }
   .reset-btn:hover { background: #555; }
-  .reset-btn:active { transform: scale(0.95); }
   .account-btn { background: #7b1fa2; border-color: #9c27b0; }
-  .account-btn:hover { background: #9c27b0; }
+
+  .room-bar {
+    background: #111; padding: 8px 12px; font-size: 12px; color: #ba68c8;
+    border-bottom: 1px solid #333;
+    display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .room-bar b { color: #ffd700; }
+  .room-bar input {
+    background: #222; border: 1px solid #9c27b0; color: #fff;
+    padding: 4px 10px; border-radius: 6px; font-size: 12px; width: 130px;
+  }
+  .room-bar button {
+    background: #9c27b0; color: #fff; border: none;
+    padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;
+    margin: 0;
+  }
 
   .menu {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 15px;
-    padding: 20px;
-    max-width: 1000px;
-    margin: 0 auto;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px; padding: 20px; max-width: 1000px; margin: 0 auto;
   }
   .card {
     background: #2b2b2b; border-radius: 12px; padding: 18px 15px;
     cursor: pointer; transition: 0.2s; border: 2px solid #444;
     display: flex; flex-direction: column; justify-content: center;
-    min-height: 130px;
-    position: relative;
+    min-height: 130px; position: relative;
   }
   .card:hover { transform: scale(1.03); border-color: #e2231a; }
   .card:active { transform: scale(0.98); }
@@ -77,7 +93,6 @@
   }
   .card.events { transition: 0.3s; }
   .card.events.idle { border-color: #555; background: #232323; }
-  .card.events.idle:hover { border-color: #777; }
   .card.events.active {
     border-color: #00e676;
     background: linear-gradient(135deg, #1e3a24, #2b3a24);
@@ -102,6 +117,7 @@
     font-size: 18px; font-weight: bold; color: #ffd700;
     margin-top: 4px; font-family: 'Courier New', monospace;
   }
+  .event-menu-owner { font-size: 10px; color: #aaa; margin-top: 3px; }
   @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
 
   .game { display: none; padding: 20px 15px; }
@@ -109,10 +125,8 @@
   button {
     background: #e2231a; color: white; border: none;
     padding: 12px 24px; border-radius: 8px; cursor: pointer;
-    font-size: 16px; margin: 5px;
-    transition: 0.15s;
-    min-height: 44px;
-    touch-action: manipulation;
+    font-size: 16px; margin: 5px; transition: 0.15s;
+    min-height: 44px; touch-action: manipulation;
   }
   button:hover { background: #c41e16; }
   button:active { transform: scale(0.96); }
@@ -124,48 +138,29 @@
   .back { margin-bottom: 15px; }
 
   .shop-btn { background: #ffd700; color: #111; font-weight: bold; }
-  .shop-btn:hover { background: #e6c200; }
   .danger-btn { background: #444; color: #fff; border: 2px solid #c41e16; }
-  .danger-btn:hover { background: #c41e16; }
 
-  /* MEMORY */
   .memory-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    max-width: 400px;
-    width: 100%;
-    margin: 15px auto;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 8px; max-width: 400px; width: 100%; margin: 15px auto;
   }
   .mem-card {
-    aspect-ratio: 1;
-    background: #2b2b2b;
-    border: 2px solid #444;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: clamp(24px, 8vw, 40px);
-    cursor: pointer;
-    transition: 0.15s;
-    touch-action: manipulation;
+    aspect-ratio: 1; background: #2b2b2b; border: 2px solid #444;
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: clamp(24px, 8vw, 40px); cursor: pointer;
+    transition: 0.15s; touch-action: manipulation;
   }
   .mem-card:hover { border-color: #e2231a; transform: scale(1.05); }
   .mem-card:active { transform: scale(0.92); }
   .mem-card.flipped { background: #33321f; border-color: #ffd700; }
-  .mem-card.matched {
-    background: #1e3a24; border-color: #00c853;
-    cursor: default; opacity: 0.75;
-  }
+  .mem-card.matched { background: #1e3a24; border-color: #00c853; cursor: default; opacity: 0.75; }
   .mem-card.matched:hover { transform: none; border-color: #00c853; }
   .mem-info { margin: 12px; font-size: 16px; }
   .mem-info span { color: #ffd700; font-weight: bold; }
-  .mem-win {
-    color: #00e676; font-size: 20px; font-weight: bold;
-    margin: 15px; animation: pulse 1s infinite;
-  }
+  .mem-win { color: #00e676; font-size: 20px; font-weight: bold; margin: 15px; animation: pulse 1s infinite; }
 
   .ach-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 12px; max-width: 900px; margin: 20px auto;
   }
   .ach {
@@ -180,15 +175,12 @@
   .ach .desc { font-size: 12px; color: #bbb; }
 
   .daily-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-    max-width: 800px; margin: 20px auto;
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 8px; max-width: 800px; margin: 20px auto;
   }
   .day {
     background: #2b2b2b; border: 2px solid #444; border-radius: 10px;
-    padding: 10px 4px; text-align: center; transition: 0.2s;
-    position: relative;
+    padding: 10px 4px; text-align: center; transition: 0.2s; position: relative;
   }
   .day .day-num { font-size: 10px; color: #aaa; margin-bottom: 3px; }
   .day .day-icon { font-size: 22px; margin: 3px 0; }
@@ -198,11 +190,7 @@
     content: '✓'; position: absolute; top: 3px; right: 5px;
     color: #00c853; font-weight: bold; font-size: 12px;
   }
-  .day.current {
-    border-color: #ffd700; background: #33321f;
-    box-shadow: 0 0 15px rgba(255,215,0,0.4);
-    transform: scale(1.05);
-  }
+  .day.current { border-color: #ffd700; background: #33321f; box-shadow: 0 0 15px rgba(255,215,0,0.4); transform: scale(1.05); }
   .daily-info { margin: 12px; font-size: 15px; }
   .daily-info .streak { color: #ffd700; font-weight: bold; }
   .daily-info .timer { color: #00bfff; }
@@ -211,7 +199,6 @@
     border-radius: 12px; font-weight: bold; margin: 15px;
     width: 90%; max-width: 350px;
   }
-  .big-claim:hover { background: #00e676; }
   .big-claim:disabled { background: #555; cursor: not-allowed; color: #aaa; }
 
   .events-box {
@@ -220,27 +207,17 @@
   }
   .events-box h3 { color: #ba68c8; margin-bottom: 12px; font-size: 16px; }
   .events-box input { width: 100%; max-width: 260px; margin: 6px; }
-  .event-password-btn {
-    background: #9c27b0; padding: 14px 28px; font-weight: bold;
-    width: 90%; max-width: 280px;
-  }
-  .event-password-btn:hover { background: #7b1fa2; }
+  .event-password-btn { background: #9c27b0; padding: 14px 28px; font-weight: bold; width: 90%; max-width: 280px; }
   .duration-row {
     display: flex; align-items: center; justify-content: center;
     gap: 8px; flex-wrap: wrap; margin: 12px 0;
-    padding: 12px; background: #1a1a1a; border-radius: 10px;
-    border: 2px dashed #9c27b0;
+    padding: 12px; background: #1a1a1a; border-radius: 10px; border: 2px dashed #9c27b0;
   }
   .duration-row label { font-size: 14px; color: #ba68c8; font-weight: bold; }
   .duration-row input { width: 100px; text-align: center; }
   .duration-hint { font-size: 11px; color: #888; width: 100%; margin-top: 5px; }
   .quick-btns { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
-  .quick-btns button {
-    background: #444; font-size: 12px; padding: 8px 12px;
-    border: 2px solid #666; margin: 0;
-    min-height: 38px;
-  }
-  .quick-btns button:hover { background: #555; border-color: #9c27b0; }
+  .quick-btns button { background: #444; font-size: 12px; padding: 8px 12px; border: 2px solid #666; margin: 0; min-height: 38px; }
 
   .event-status {
     margin-top: 15px; padding: 12px; border-radius: 10px;
@@ -251,21 +228,24 @@
     background: linear-gradient(135deg, #2b2200, #33321f);
     animation: eventGlow 2s infinite;
   }
+  .event-status.remote {
+    border-color: #00bfff;
+    background: linear-gradient(135deg, #002233, #1a2a33);
+    animation: remoteGlow 2s infinite;
+  }
   @keyframes eventGlow {
     0%,100% { box-shadow: 0 0 10px rgba(255,215,0,0.3); }
     50% { box-shadow: 0 0 25px rgba(255,215,0,0.7); }
   }
+  @keyframes remoteGlow {
+    0%,100% { box-shadow: 0 0 10px rgba(0,191,255,0.3); }
+    50% { box-shadow: 0 0 25px rgba(0,191,255,0.7); }
+  }
   .event-name { font-size: 18px; font-weight: bold; color: #ffd700; margin: 6px 0; }
   .event-desc { color: #ccc; font-size: 13px; }
   .event-timer { font-size: 22px; font-weight: bold; color: #00e676; margin-top: 8px; }
-  .event-progress {
-    height: 8px; background: #333; border-radius: 4px;
-    overflow: hidden; margin-top: 10px;
-  }
-  .event-progress-bar {
-    height: 100%; background: linear-gradient(90deg, #00e676, #ffd700);
-    transition: width 0.3s;
-  }
+  .event-progress { height: 8px; background: #333; border-radius: 4px; overflow: hidden; margin-top: 10px; }
+  .event-progress-bar { height: 100%; background: linear-gradient(90deg, #00e676, #ffd700); transition: width 0.3s; }
   .event-list {
     text-align: left; max-width: 520px; margin: 15px auto;
     background: #222; border-radius: 10px; padding: 12px;
@@ -276,24 +256,20 @@
   .active-event {
     background: linear-gradient(135deg, #9c27b0, #e91e63);
     padding: 6px 12px; border-radius: 10px; font-weight: bold;
-    animation: pulse 1s infinite;
-    font-size: 13px;
-    white-space: nowrap;
+    animation: pulse 1s infinite; font-size: 12px; white-space: nowrap;
   }
 
   .modal-overlay {
     display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0,0,0,0.85); z-index: 2000;
-    justify-content: center; align-items: center;
-    padding: 15px;
+    justify-content: center; align-items: center; padding: 15px;
   }
   .modal-overlay.show { display: flex; }
   .modal {
     background: #2b2b2b; border: 2px solid #c41e16; border-radius: 15px;
     padding: 25px 20px; max-width: 450px; width: 100%;
     box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-    animation: modalIn 0.3s;
-    max-height: 90vh; overflow-y: auto;
+    animation: modalIn 0.3s; max-height: 90vh; overflow-y: auto;
   }
   @keyframes modalIn {
     from { transform: scale(0.85); opacity: 0; }
@@ -304,16 +280,13 @@
   .modal ul { text-align: left; margin: 12px auto; max-width: 280px; font-size: 13px; color: #aaa; }
   .modal li { margin: 4px 0; }
   .modal input {
-    width: 100%; text-align: center; font-size: 18px;
-    font-weight: bold; letter-spacing: 4px;
-    border: 2px solid #c41e16; margin: 12px 0;
+    width: 100%; text-align: center; font-size: 18px; font-weight: bold;
+    letter-spacing: 4px; border: 2px solid #c41e16; margin: 12px 0;
   }
   .modal-btns { display: flex; gap: 8px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
   .modal .confirm-reset { background: #c41e16; font-weight: bold; padding: 12px 20px; }
-  .modal .confirm-reset:hover { background: #a01812; }
   .modal .confirm-reset:disabled { background: #555; cursor: not-allowed; }
   .modal .cancel-reset { background: #444; padding: 12px 20px; }
-  .modal .cancel-reset:hover { background: #555; }
 
   .toast {
     position: fixed; top: 80px; right: 15px; left: 15px;
@@ -321,38 +294,26 @@
     color: #111; padding: 14px 18px; border-radius: 10px;
     font-weight: bold; box-shadow: 0 5px 20px rgba(0,0,0,0.5);
     transform: translateY(-200px); transition: 0.4s;
-    z-index: 3000;
-    max-width: 400px;
-    margin: 0 auto;
-    pointer-events: none;
+    z-index: 3000; max-width: 400px; margin: 0 auto; pointer-events: none;
   }
   .toast.show { transform: translateY(0); }
   .toast .t-title { font-size: 11px; opacity: 0.7; }
   .toast .t-name { font-size: 15px; }
   .toast.green { background: linear-gradient(135deg, #00e676, #00c853); color: #fff; }
   .toast.purple { background: linear-gradient(135deg, #ba68c8, #9c27b0); color: #fff; }
+  .toast.blue { background: linear-gradient(135deg, #00bfff, #0091ea); color: #fff; }
   .toast.red { background: linear-gradient(135deg, #c41e16, #7b1fa2); color: #fff; }
 
-  /* ========== МОБИЛЬНАЯ АДАПТАЦИЯ ========== */
   @media (max-width: 700px) {
-    header {
-      padding: 10px;
-      gap: 8px;
-    }
-    header h1 { font-size: 16px; letter-spacing: 1px; }
-    .header-right { gap: 6px; }
-    .wallet { font-size: 14px; padding: 6px 12px; }
-    .reset-btn { font-size: 11px; padding: 6px 10px; }
+    header { padding: 8px 10px; gap: 6px; }
+    header h1 { font-size: 14px; letter-spacing: 1px; }
+    .header-right { gap: 5px; }
+    .wallet { font-size: 13px; padding: 6px 10px; }
+    .reset-btn { font-size: 10px; padding: 5px 8px; }
+    .online-badge { font-size: 10px; padding: 5px 8px; }
 
-    .menu {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      padding: 12px;
-    }
-    .card {
-      padding: 14px 10px;
-      min-height: 115px;
-    }
+    .menu { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 12px; }
+    .card { padding: 14px 10px; min-height: 115px; }
     .card h2 { font-size: 15px; margin-bottom: 5px; }
     .card p { font-size: 11px; }
     .card .reward { font-size: 11px; margin-top: 5px; }
@@ -376,8 +337,6 @@
     .events-box { padding: 15px 12px; }
     .events-box h3 { font-size: 14px; }
     .event-password-btn { font-size: 15px; padding: 12px 20px; }
-    .duration-row { padding: 10px; gap: 6px; }
-    .duration-row label { font-size: 12px; }
     .quick-btns button { font-size: 11px; padding: 6px 10px; }
 
     .modal { padding: 20px 15px; }
@@ -385,25 +344,19 @@
     .modal-btns button { flex: 1; padding: 12px 10px; font-size: 14px; }
 
     .mem-card { font-size: clamp(20px, 9vw, 34px); }
-
     .toast { top: 70px; }
   }
 
   @media (max-width: 400px) {
     .menu { grid-template-columns: 1fr; }
-    header h1 { font-size: 14px; }
-    .wallet { font-size: 13px; padding: 5px 10px; }
+    header h1 { font-size: 13px; }
+    .wallet { font-size: 12px; padding: 5px 8px; }
     .daily-grid { grid-template-columns: repeat(4, 1fr); }
-    .day:nth-child(n+5) { display: flex; }
   }
 
-  /* Touch улучшения для больших экранов */
   @media (hover: none) and (pointer: coarse) {
     .card:hover { transform: none; }
     .mem-card:hover { transform: none; }
-    button:hover { background: #e2231a; }
-    .shop-btn:hover { background: #ffd700; }
-    .back:hover { background: #e2231a; }
   }
 </style>
 </head>
@@ -412,12 +365,23 @@
 <header>
   <h1>ROBLOX: 3 ИГРЫ</h1>
   <div class="header-right">
+    <div id="onlineBadge" class="online-badge offline">
+      <div class="dot"></div>
+      <span id="onlineText">Подключение...</span>
+    </div>
     <div id="activeEventBadge" class="active-event" style="display:none;"></div>
     <div class="wallet">💰 <span id="moneyDisplay">0</span></div>
     <button class="reset-btn" onclick="resetMoney()">🔄 Сброс 💰</button>
     <button class="reset-btn account-btn" onclick="openAccountReset()">💥 Сброс</button>
   </div>
 </header>
+
+<div class="room-bar">
+  🎮 Комната: <b id="roomName">shared777</b>
+  <input type="text" id="roomInput" placeholder="новая комната" maxlength="20">
+  <button onclick="changeRoom()">Сменить</button>
+  <span style="color:#888;font-size:11px;">← Играй с друзьями в одной комнате</span>
+</div>
 
 <div class="menu" id="menu">
   <div class="card daily" id="dailyCard" onclick="openDaily()">
@@ -483,7 +447,8 @@
       <div class="duration-hint">Оставь пустым — будет стандартная длительность</div>
     </div>
 
-    <button class="event-password-btn" onclick="tryStartEvent()">🚀 Запустить ивент</button>
+    <button class="event-password-btn" onclick="tryStartEvent()">🚀 Запустить ивент (для всех!)</button>
+    <p style="font-size:11px;color:#00bfff;margin-top:8px;">🌍 Ивент увидят все игроки в комнате!</p>
     <div class="event-status" id="eventStatus">
       <p class="event-desc">Ивент не активен. Введи пароль.</p>
     </div>
@@ -493,8 +458,8 @@
     <p>💎 <b>x2 Деньги</b> — все награды удваиваются</p>
     <p>⚡ <b>Кликер-безумие</b> — клики дают x5 денег</p>
     <p>🧠 <b>Супер-память</b> — память даёт x3 денег</p>
-    <p>💰 <b>Денежный дождь</b> — мгновенно +500 💰</p>
-    <p>🌟 <b>Мега-ивент</b> — x3 на всё + бонус 1000 💰</p>
+    <p>💰 <b>Денежный дождь</b> — мгновенно +500 💰 всем!</p>
+    <p>🌟 <b>Мега-ивент</b> — x3 на всё + бонус 1000 💰 всем!</p>
   </div>
 </div>
 
@@ -587,14 +552,192 @@
 </div>
 
 <script>
+/* ============================================================
+   🌍 МУЛЬТИПЛЕЕР — ОБЩИЕ ИВЕНТЫ ДЛЯ ВСЕХ ИГРОКОВ
+   Через бесплатный сервис ntfy.sh (без регистрации)
+   ============================================================ */
+function getRoomFromURL() {
+  const url = new URLSearchParams(location.search).get('room') || 'shared777';
+  return url.toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 40) || 'shared777';
+}
+function getPlayerId() {
+  let id = localStorage.getItem('rb_playerId');
+  if (!id) {
+    id = 'p_' + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem('rb_playerId', id);
+  }
+  return id;
+}
+
+let ROOM = getRoomFromURL();
+const NTFY = 'https://ntfy.sh/';
+let NTFY_TOPIC = 'roblox3games_evt_' + ROOM;
+let eventSource = null;
+let onlineStatus = 'connecting';
+
+document.getElementById('roomName').textContent = ROOM;
+
+function changeRoom() {
+  const val = document.getElementById('roomInput').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+  if (!val) { alert('Введи название комнаты!'); return; }
+  // Перезагружаем страницу с новым room в URL
+  const url = new URL(location.href);
+  url.searchParams.set('room', val);
+  location.href = url.toString();
+}
+
+function setOnlineStatus(status) {
+  onlineStatus = status;
+  const badge = document.getElementById('onlineBadge');
+  const text = document.getElementById('onlineText');
+  if (status === 'online') {
+    badge.classList.remove('offline');
+    text.textContent = 'Онлайн';
+  } else if (status === 'offline') {
+    badge.classList.add('offline');
+    text.textContent = 'Оффлайн';
+  } else {
+    badge.classList.add('offline');
+    text.textContent = 'Подключение...';
+  }
+}
+
+/* Публикация ивента в общую комнату */
+function publishEventToAll(ev, duration, endTime, instantAmount) {
+  const payload = {
+    type: 'event_start',
+    id: ev.id,
+    icon: ev.icon,
+    name: ev.name,
+    desc: ev.desc,
+    moneyMult: ev.moneyMult || 1,
+    clickMult: ev.clickMult || 1,
+    memoryMult: ev.memoryMult || 1,
+    instant: instantAmount || 0,
+    duration: duration,
+    endTime: endTime,
+    sender: getPlayerId(),
+    timestamp: Date.now()
+  };
+  fetch(NTFY + NTFY_TOPIC, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }).then(() => console.log('✅ Ивент отправлен в комнату', ROOM))
+    .catch(err => console.log('❌ Ошибка отправки:', err));
+}
+
+/* Подключение к комнате — слушаем ивенты других игроков */
+function connectToEvents() {
+  if (eventSource) eventSource.close();
+  setOnlineStatus('connecting');
+
+  eventSource = new EventSource(NTFY + NTFY_TOPIC + '/sse');
+
+  eventSource.onopen = () => {
+    setOnlineStatus('online');
+    console.log('✅ Подключено к комнате', ROOM);
+  };
+
+  eventSource.onmessage = (e) => {
+    try {
+      const wrapper = JSON.parse(e.data);
+      if (wrapper.event !== 'message') return;
+      const payload = JSON.parse(wrapper.message);
+      handleRemoteEvent(payload);
+    } catch (err) { /* ignore */ }
+  };
+
+  eventSource.onerror = () => {
+    setOnlineStatus('offline');
+    setTimeout(() => { connectToEvents(); }, 3000);
+  };
+}
+
+/* Обработка ивента от другого игрока */
+function handleRemoteEvent(payload) {
+  if (!payload || payload.type !== 'event_start') return;
+  if (payload.sender === getPlayerId()) return; // свой же
+  if (!payload.endTime || payload.endTime < Date.now()) return; // уже прошёл
+
+  // Уже идёт ивент?
+  if (activeEvent && Date.now() < eventEndTime) return;
+
+  const ev = {
+    id: payload.id,
+    icon: payload.icon,
+    name: payload.name,
+    desc: payload.desc,
+    moneyMult: payload.moneyMult,
+    clickMult: payload.clickMult,
+    memoryMult: payload.memoryMult,
+    instant: payload.instant
+  };
+
+  applyRemoteEvent(ev, payload.endTime);
+}
+
+/* Активируем чужой ивент локально */
+function applyRemoteEvent(ev, endTime) {
+  activeEvent = ev;
+  activeEvent.isRemote = true;
+  stats.eventsStarted = (stats.eventsStarted || 0) + 1;
+
+  // Мгновенный бонус всем
+  if (ev.instant) {
+    money += ev.instant;
+    stats.totalEarned += ev.instant;
+    updateMoney();
+  }
+
+  const remaining = Math.max(1, Math.ceil((endTime - Date.now()) / 1000));
+  eventStartTime = Date.now();
+  eventEndTime = endTime;
+  eventTotalDuration = remaining;
+
+  if (eventTimerInterval) clearInterval(eventTimerInterval);
+  eventTimerInterval = setInterval(tickEvent, 250);
+
+  saveAll();
+  renderEventStatus();
+  updateActiveEventBadge();
+  updateEventsCard();
+  showToast(`🌍 ИВЕНТ ОТ ДРУГОГО ИГРОКА`, `${ev.icon} ${ev.name} — ${remaining}с`, true, 'blue');
+  checkAchievements();
+}
+
+/* Загрузка последних ивентов при старте */
+async function loadRecentEvents() {
+  try {
+    const res = await fetch(NTFY + NTFY_TOPIC + '/json?poll=1&since=3m');
+    const text = await res.text();
+    if (!text.trim()) return;
+    const lines = text.trim().split('\n');
+    for (let i = lines.length - 1; i >= 0; i--) {
+      try {
+        const wrapper = JSON.parse(lines[i]);
+        if (wrapper.event !== 'message') continue;
+        const payload = JSON.parse(wrapper.message);
+        if (payload.type !== 'event_start') continue;
+        if (payload.endTime && payload.endTime > Date.now()) {
+          handleRemoteEvent(payload);
+          break;
+        }
+      } catch(e) {}
+    }
+  } catch (err) { console.log('Не удалось проверить ивенты:', err); }
+}
+
+/* ============================================================
+   БАЗОВАЯ ЛОГИКА ИГРЫ
+   ============================================================ */
 const EVENT_PASSWORD = '890567';
 
 const EVENTS = [
   { id: 'x2money',       icon: '💎', name: 'x2 Деньги',      desc: 'Все награды удваиваются!',   duration: 60, moneyMult: 2, clickMult: 2, memoryMult: 2 },
   { id: 'clickFrenzy',   icon: '⚡', name: 'Кликер-безумие', desc: 'Клики дают x5 денег!',       duration: 60, moneyMult: 1, clickMult: 5, memoryMult: 1 },
   { id: 'superMemory',   icon: '🧠', name: 'Супер-память',   desc: 'Память даёт x3 денег!',      duration: 60, moneyMult: 1, clickMult: 1, memoryMult: 3 },
-  { id: 'moneyRain',     icon: '💰', name: 'Денежный дождь', desc: 'Мгновенно +500 💰!',         duration: 0,  instant: 500 },
-  { id: 'megaEvent',     icon: '🌟', name: 'МЕГА-ИВЕНТ',     desc: 'x3 на всё + бонус 1000 💰!', duration: 45, moneyMult: 3, clickMult: 3, memoryMult: 3, instant: 1000 }
+  { id: 'moneyRain',     icon: '💰', name: 'Денежный дождь', desc: 'Мгновенно +500 💰 всем!',    duration: 0,  instant: 500 },
+  { id: 'megaEvent',     icon: '🌟', name: 'МЕГА-ИВЕНТ',     desc: 'x3 на всё + 1000 💰 всем!',  duration: 45, moneyMult: 3, clickMult: 3, memoryMult: 3, instant: 1000 }
 ];
 
 let activeEvent = null;
@@ -646,6 +789,7 @@ function tryStartEvent() {
 
 function startEvent(ev, customDuration) {
   activeEvent = ev;
+  activeEvent.isRemote = false;
   stats.eventsStarted = (stats.eventsStarted || 0) + 1;
 
   if (ev.instant) {
@@ -674,11 +818,14 @@ function startEvent(ev, customDuration) {
     setTimeout(endEvent, 3000);
   }
 
+  // 🌍 Отправляем ивент всем в комнате!
+  publishEventToAll(ev, eventTotalDuration, eventEndTime, ev.instant || 0);
+
   saveAll();
   renderEventStatus();
   updateActiveEventBadge();
   updateEventsCard();
-  showToast(`🎉 ИВЕНТ: ${ev.icon} ${ev.name}`, ev.desc + customText, true, 'purple');
+  showToast(`🎉 ИВЕНТ ЗАПУЩЕН ДЛЯ ВСЕХ!`, `${ev.icon} ${ev.name}${customText}`, true, 'purple');
   checkAchievements();
 }
 
@@ -719,7 +866,7 @@ function updateEventsCard() {
     card.classList.add('active');
     badge.classList.remove('off');
     badge.classList.add('on');
-    badge.textContent = '🟢 ИДЁТ';
+    badge.textContent = activeEvent.isRemote ? '🌍 ОБЩИЙ' : '🟢 ИДЁТ';
 
     status.classList.remove('off');
     status.classList.add('on');
@@ -728,7 +875,8 @@ function updateEventsCard() {
     const left = Math.max(0, Math.ceil((eventEndTime - Date.now()) / 1000));
     const mm = String(Math.floor(left / 60)).padStart(2, '0');
     const ss = String(left % 60).padStart(2, '0');
-    info.innerHTML = `<div class="event-menu-timer">⏱️ ${mm}:${ss}</div>`;
+    info.innerHTML = `<div class="event-menu-timer">⏱️ ${mm}:${ss}</div>` +
+      (activeEvent.isRemote ? `<div class="event-menu-owner">🌍 от другого игрока</div>` : '');
   } else {
     card.classList.remove('active');
     card.classList.add('idle');
@@ -750,7 +898,7 @@ function renderEventStatus() {
     const elapsed = (Date.now() - eventStartTime) / 1000;
     const percent = Math.min(100, Math.max(0, (elapsed / eventTotalDuration) * 100));
 
-    box.className = 'event-status active';
+    box.className = 'event-status active' + (activeEvent.isRemote ? ' remote' : '');
     box.innerHTML = `
       <div style="font-size:36px;">${activeEvent.icon}</div>
       <div class="event-name">${activeEvent.name}</div>
@@ -759,6 +907,7 @@ function renderEventStatus() {
       <div class="event-progress">
         <div class="event-progress-bar" style="width:${percent}%"></div>
       </div>
+      ${activeEvent.isRemote ? '<p style="color:#00bfff;font-size:12px;margin-top:8px;">🌍 Ивент от другого игрока в комнате</p>' : ''}
     `;
   } else {
     box.className = 'event-status';
@@ -1027,17 +1176,18 @@ function checkAchievements() {
     if (currentGame === 'achievements') renderAch();
   }
 }
-function showToast(title, name, green = false, purple = false, red = false) {
+function showToast(title, name, green = false, purple = false, red = false, blue = false) {
   const toast = document.getElementById('toast');
   document.getElementById('toastTitle').textContent = title;
   document.getElementById('toastName').textContent = name;
-  toast.classList.remove('green', 'purple', 'red');
+  toast.classList.remove('green', 'purple', 'red', 'blue');
   if (green) toast.classList.add('green');
   if (purple) toast.classList.add('purple');
   if (red) toast.classList.add('red');
+  if (blue) toast.classList.add('blue');
   toast.classList.add('show');
   clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+  window._toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
 }
 function updateAchCounter() {
   const unlocked = Object.values(achievements).filter(v => v).length;
@@ -1283,17 +1433,15 @@ function buyItem(id) {
   checkAchievements();
 }
 
-/* Предотвращение зума по двойному тапу на iOS */
+/* Отключение зума на iOS */
 let lastTouchEnd = 0;
 document.addEventListener('touchend', function(e) {
   const now = Date.now();
-  if (now - lastTouchEnd <= 300) {
-    e.preventDefault();
-  }
+  if (now - lastTouchEnd <= 300) e.preventDefault();
   lastTouchEnd = now;
 }, { passive: false });
 
-/* Старт */
+/* СТАРТ */
 updateMoney();
 document.getElementById('clickBonus').textContent = clickBonus;
 updateAchCounter();
@@ -1301,6 +1449,11 @@ updateDailyCard();
 updateEventsCard();
 checkStreakBreak();
 saveAll();
+
+// 🌍 Подключаемся к общей комнате
+connectToEvents();
+// Проверяем недавние ивенты
+setTimeout(loadRecentEvents, 1500);
 </script>
 
 </body>
