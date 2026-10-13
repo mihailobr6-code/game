@@ -513,7 +513,7 @@ const SECRET_CODE = '6892';
 const EVENT_PASSWORD = '890567';
 const NTFY = 'https://ntfy.sh/';
 
-/* ============ ID ИГРОКА (уникальный на вкладку!) ============ */
+/* ============ ID ИГРОКА ============ */
 function getPlayerId() {
   let id = sessionStorage.getItem('rb_pid');
   if (!id) {
@@ -567,7 +567,6 @@ function publish(payload) {
     body: JSON.stringify(payload)
   }).catch(err => console.log('Ошибка отправки:', err));
 }
-
 function sendPresence() { publish({type:'presence'}); }
 
 function connectToEvents() {
@@ -604,7 +603,6 @@ function handleIncoming(payload) {
   else if (payload.type === 'event_start') handleRemoteEvent(payload);
   else if (payload.type === 'kick') handleKick(payload);
   else if (payload.type === 'nick_change') handleNickChange(payload);
-  else if (payload.type === 'money_give') handleMoneyGive(payload);
 }
 
 function handlePresence(payload) {
@@ -744,7 +742,6 @@ function confirmKick() {
     banMs = minutes * 60 * 1000;
     durationText = formatDuration(minutes);
   }
-  // Отправляем несколько раз для надёжности
   const kickPayload = {type:'kick', target: targetId, targetNick, reason, banMs, durationText};
   publish(kickPayload);
   setTimeout(() => publish(kickPayload), 500);
@@ -1190,7 +1187,7 @@ function openDaily() {
   renderDaily();
 }
 
-/* Ачивки */
+/* ============ АЧИВКИ (20 штук с Брюсик Барбусик) ============ */
 const ACHIEVEMENTS = [
   { id:'first_money', icon:'🪙', name:'Первая монетка', desc:'Заработай 1 💰', check:()=>stats.totalEarned>=1 },
   { id:'money_100',   icon:'💵', name:'Сотка', desc:'Заработай 100 💰', check:()=>stats.totalEarned>=100 },
@@ -1210,7 +1207,8 @@ const ACHIEVEMENTS = [
   { id:'daily_30',    icon:'👑', name:'Месяц верности', desc:'30 дней streak', check:()=>daily.streak>=30 },
   { id:'event_1',     icon:'🎉', name:'Первый ивент', desc:'Запусти 1 ивент', check:()=>stats.eventsStarted>=1 },
   { id:'event_10',    icon:'🎊', name:'Ивент-мастер', desc:'10 ивентов', check:()=>stats.eventsStarted>=10 },
-  { id:'event_50',    icon:'🎆', name:'Повелитель ивентов', desc:'50 ивентов', check:()=>stats.eventsStarted>=50 }
+  { id:'event_50',    icon:'🎆', name:'Повелитель ивентов', desc:'50 ивентов', check:()=>stats.eventsStarted>=50 },
+  { id:'brusik',      icon:'🐱', name:'Брюсик Барбусик', desc:'Собери 1000 монет чтобы накормить Брюсик Барбусик', check:()=>stats.totalEarned>=1000 }
 ];
 
 function checkAchievements() {
