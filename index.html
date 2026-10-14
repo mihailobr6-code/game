@@ -133,7 +133,6 @@
   .nick-tips{text-align:center;color:#888;font-size:11px;margin-top:15px;padding:10px;background:#000;border-radius:8px}
   .nick-options{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px}
   .nick-options button{background:#222;color:#00e676;border:2px solid #00e676;font-size:12px;padding:6px 12px;min-height:34px;margin:0}
-  /* МОДАЛКА ПЕРЕВОДА ДЕНЕГ */
   .transfer-modal{background:linear-gradient(135deg,#1a1a1a,#2b2b2b);border:3px solid #ffd700;border-radius:15px;padding:25px 20px;max-width:450px;width:100%;box-shadow:0 0 40px rgba(255,215,0,.5);animation:modalIn .3s}
   .transfer-modal h2{color:#ffd700;margin-bottom:10px;font-size:20px;text-align:center}
   .transfer-target{background:#000;border:1px solid #333;border-radius:10px;padding:12px;margin:10px 0;text-align:center}
@@ -394,6 +393,7 @@
           <button onclick="quickGive(10000)">+10К</button>
           <button onclick="quickGive(1000000)">+1МЛН</button>
           <button onclick="quickGive(1000000000)">+1МЛРД</button>
+          <button onclick="quickGive(999999999999999)">+∞</button>
         </div>
         <div class="admin-info">Баланс: <span id="adminMoney">0</span> 💰</div>
         <div class="admin-row" style="margin-top:10px">
@@ -537,7 +537,6 @@
   </div>
 </div>
 
-<!-- 💰 МОДАЛКА ПЕРЕВОДА ДЕНЕГ -->
 <div class="transfer-modal-overlay" id="transferModal">
   <div class="transfer-modal">
     <h2>💰 ПЕРЕВЕСТИ ДЕНЬГИ</h2>
@@ -609,10 +608,10 @@
 
 <script>
 /* ==================== КОНСТАНТЫ ==================== */
-const SECRET_CODE = '67890';      // 👑 КОД АДМИН-ПАНЕЛИ
-const EVENT_PASSWORD = '56890';   // 🎉 КОД ИВЕНТОВ
+const SECRET_CODE = '67890';
+const EVENT_PASSWORD = '56890';
 const NTFY = 'https://ntfy.sh/';
-const BRUSIK_REWARD = 2; // 🐶 2 монетки за поглаживание
+const BRUSIK_REWARD = 2;
 
 function getPlayerId() {
   let id = sessionStorage.getItem('rb_pid');
@@ -715,58 +714,28 @@ function openTransferModal(targetId, targetNick) {
   setTimeout(() => document.getElementById('transferAmount').focus(), 200);
 }
 function closeTransferModal() { document.getElementById('transferModal').classList.remove('show'); }
-function setTransferAmount(amount) {
-  document.getElementById('transferAmount').value = amount;
-}
-function setTransferAll() {
-  document.getElementById('transferAmount').value = Math.floor(money);
-}
+function setTransferAmount(amount) { document.getElementById('transferAmount').value = amount; }
+function setTransferAll() { document.getElementById('transferAmount').value = Math.floor(money); }
 function confirmTransfer() {
   const targetId = document.getElementById('transferTargetIdInput').value;
   const targetNick = document.getElementById('transferTargetNickInput').value;
   const amount = parseInt(document.getElementById('transferAmount').value);
-
-  if (isNaN(amount) || amount <= 0) {
-    showToast('❌ Ошибка', 'Введи сумму больше 0', false);
-    return;
-  }
-  if (amount > money) {
-    showToast('❌ Недостаточно денег', `У тебя только ${Math.floor(money).toLocaleString('ru-RU')} 💰`, false);
-    return;
-  }
-
-  // Снимаем деньги у себя
-  money -= amount;
-  updateMoney();
-  saveAll();
-
-  // Отправляем перевод
-  const transferPayload = {
-    type: 'money_transfer',
-    target: targetId,
-    fromNick: MY_NICK,
-    fromId: MY_ID,
-    amount: amount
-  };
+  if (isNaN(amount) || amount <= 0) { showToast('❌ Ошибка', 'Введи сумму больше 0', false); return; }
+  if (amount > money) { showToast('❌ Недостаточно денег', `У тебя только ${Math.floor(money).toLocaleString('ru-RU')} 💰`, false); return; }
+  money -= amount; updateMoney(); saveAll();
+  const transferPayload = { type: 'money_transfer', target: targetId, fromNick: MY_NICK, fromId: MY_ID, amount: amount };
   publish(transferPayload);
   setTimeout(() => publish(transferPayload), 500);
   setTimeout(() => publish(transferPayload), 1500);
-
   closeTransferModal();
   showToast('💰 ПЕРЕВОД ОТПРАВЛЕН!', `${targetNick} получит ${amount.toLocaleString('ru-RU')} 💰`, true, false, false, true);
 }
-
 function handleMoneyTransfer(payload) {
   if (payload.target !== MY_ID) return;
   const amount = parseInt(payload.amount) || 0;
   if (amount <= 0) return;
-
-  money += amount;
-  stats.totalEarned += amount;
-  updateMoney();
-  saveAll();
-  checkAchievements();
-
+  money += amount; stats.totalEarned += amount;
+  updateMoney(); saveAll(); checkAchievements();
   showToast(`💰 ДЕНЬГИ ОТ ${payload.fromNick || 'игрока'}!`, `+${amount.toLocaleString('ru-RU')} 💰`, true, false, false, true);
 }
 
@@ -1139,7 +1108,6 @@ async function loadRecentEvents() {
   } catch (err) {}
 }
 
-/* ==================== АДМИН-ПАНЕЛЬ ==================== */
 let adminUnlocked = false;
 function openSecret() {
   document.getElementById('menu').style.display = 'none';
@@ -1427,6 +1395,7 @@ function openDaily() {
   renderDaily();
 }
 
+/* ==================== АЧИВКИ ==================== */
 const ACHIEVEMENTS = [
   { id:'first_money', icon:'🪙', name:'Первая монетка', desc:'Заработай 1 💰', check:()=>stats.totalEarned>=1 },
   { id:'money_100',   icon:'💵', name:'Сотка', desc:'Заработай 100 💰', check:()=>stats.totalEarned>=100 },
@@ -1448,7 +1417,8 @@ const ACHIEVEMENTS = [
   { id:'brusik_10',   icon:'🐶', name:'Первый друг', desc:'Погладь Брюсика 10 раз', check:()=>stats.brusikPets>=10 },
   { id:'brusik_100',  icon:'💝', name:'Лучший друг', desc:'Погладь Брюсика 100 раз', check:()=>stats.brusikPets>=100 },
   { id:'brusik_1000', icon:'🏆', name:'Брюсик-легенда', desc:'Погладь Брюсика 1000 раз', check:()=>stats.brusikPets>=1000 },
-  { id:'brusik_tricks',icon:'🎪', name:'Дрессировщик', desc:'10 трюков Брюсика', check:()=>stats.brusikTricks>=10 }
+  { id:'brusik_tricks',icon:'🎪', name:'Дрессировщик', desc:'10 трюков Брюсика', check:()=>stats.brusikTricks>=10 },
+  { id:'sigma_millionaires', icon:'🐱💎', name:'Брисик и Сигма Миллионеры', desc:'Заработайте бесконечность денег', check:()=>money >= 999999999999999 }
 ];
 
 function checkAchievements() {
