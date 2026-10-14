@@ -607,7 +607,6 @@
 </div>
 
 <script>
-/* ==================== КОНСТАНТЫ ==================== */
 const SECRET_CODE = '67890';
 const EVENT_PASSWORD = '56890';
 const NTFY = 'https://ntfy.sh/';
@@ -701,7 +700,6 @@ function cleanupPlayers() {
 }
 function updatePlayerCount() { document.getElementById('playerCount').textContent = players.size + 1; }
 
-/* ==================== ПЕРЕВОД ДЕНЕГ ==================== */
 function openTransferModal(targetId, targetNick) {
   if (targetId === MY_ID) { showToast('😅 Себе нельзя', 'Это твой ID', false); return; }
   document.getElementById('transferModal').classList.add('show');
@@ -799,7 +797,7 @@ function renderPlayersList() {
   ];
   allPlayers.sort((a, b) => (a.isMe === b.isMe ? 0 : (a.isMe ? -1 : 1)));
   if (allPlayers.length <= 1) {
-    list.innerHTML = '<div class="no-players">В комнате только ты 😐<br><span style="font-size:10px;color:#555">Позови друга в ту же комнату</span></div>';
+    list.innerHTML = '<div class="no-players">В комнате только ты 😐</div>';
     return;
   }
   allPlayers.forEach(p => {
@@ -1395,7 +1393,7 @@ function openDaily() {
   renderDaily();
 }
 
-/* ==================== АЧИВКИ ==================== */
+/* ============ АЧИВКИ (22 шт) ============ */
 const ACHIEVEMENTS = [
   { id:'first_money', icon:'🪙', name:'Первая монетка', desc:'Заработай 1 💰', check:()=>stats.totalEarned>=1 },
   { id:'money_100',   icon:'💵', name:'Сотка', desc:'Заработай 100 💰', check:()=>stats.totalEarned>=100 },
@@ -1418,7 +1416,7 @@ const ACHIEVEMENTS = [
   { id:'brusik_100',  icon:'💝', name:'Лучший друг', desc:'Погладь Брюсика 100 раз', check:()=>stats.brusikPets>=100 },
   { id:'brusik_1000', icon:'🏆', name:'Брюсик-легенда', desc:'Погладь Брюсика 1000 раз', check:()=>stats.brusikPets>=1000 },
   { id:'brusik_tricks',icon:'🎪', name:'Дрессировщик', desc:'10 трюков Брюсика', check:()=>stats.brusikTricks>=10 },
-  { id:'sigma_millionaires', icon:'🐱💎', name:'Брисик и Сигма Миллионеры', desc:'Заработайте бесконечность денег', check:()=>money >= 999999999999999 }
+  { id:'sigma_millionaires', icon:'🐱💎', name:'Брюсик и Сигма Миллионеры', desc:'Заработайте бесконечность денег', check:()=>money >= 999999999999999 }
 ];
 
 function checkAchievements() {
