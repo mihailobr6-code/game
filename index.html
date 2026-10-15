@@ -50,7 +50,6 @@
   .event-menu-status.on{background:#00e676;color:#111}
   .event-menu-status.off{background:#333;color:#888;border:1px solid #444}
   .event-menu-timer{font-size:18px;font-weight:bold;color:#ffd700;margin-top:4px;font-family:'Courier New',monospace}
-  .event-menu-owner{font-size:10px;color:#aaa;margin-top:3px}
   @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
   .game{display:none;padding:20px 15px}
   .game.active{display:block}
@@ -141,7 +140,6 @@
   .transfer-input:focus{outline:none;border-color:#00e676}
   .transfer-quick{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:12px}
   .transfer-quick button{background:#222;color:#ffd700;border:2px solid #ffd700;font-size:13px;padding:8px 14px;min-height:38px;margin:0}
-  .transfer-quick button:hover{background:#ffd700;color:#111}
   .transfer-btns{display:flex;gap:10px;margin-top:18px;justify-content:center;flex-wrap:wrap}
   .transfer-btns button{flex:1;min-width:120px;padding:14px 20px;border-radius:10px;font-size:15px;font-weight:bold;border:none;margin:0}
   .transfer-cancel{background:#444;color:#fff}
@@ -163,12 +161,15 @@
   .brusik-ground{position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(180deg,#7cb342,#558b2f);border-radius:20px 20px 0 0}
   .brusik-grass{position:absolute;bottom:70px;left:0;right:0;font-size:24px;letter-spacing:20px;opacity:.5}
   .brusik-dog-wrap{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-top:80px;cursor:pointer;user-select:none;z-index:5}
-  .brusik-dog{font-size:clamp(100px,26vw,160px);line-height:1;transition:transform .15s;filter:drop-shadow(0 10px 20px rgba(0,0,0,.3));display:inline-block;animation:dogIdle 3s ease-in-out infinite}
+  .brusik-dog{font-size:clamp(100px,26vw,160px);line-height:1;transition:transform .15s;filter:drop-shadow(0 10px 20px rgba(0,0,0,.3));display:inline-block;position:relative;animation:dogIdle 3s ease-in-out infinite}
   @keyframes dogIdle{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-5px) rotate(-2deg)}75%{transform:translateY(-5px) rotate(2deg)}}
   .brusik-dog.petting{animation:dogPet .3s ease-out}
   @keyframes dogPet{0%{transform:scale(1) rotate(0)}50%{transform:scale(1.15) rotate(-5deg)}100%{transform:scale(1) rotate(0)}}
   .brusik-dog.happy{animation:dogHappy .6s ease-out}
   @keyframes dogHappy{0%{transform:scale(1)}25%{transform:scale(1.2) rotate(-10deg)}50%{transform:scale(1.15) translateY(-20px) rotate(10deg)}75%{transform:scale(1.1) rotate(-5deg)}100%{transform:scale(1) rotate(0)}}
+  .dog-face-inner{display:inline-block;transition:filter .3s}
+  .dog-acc{position:absolute;font-size:.4em;top:5%;right:-10%;filter:drop-shadow(0 3px 6px rgba(0,0,0,.5));animation:accFloat 3s ease-in-out infinite;pointer-events:none}
+  @keyframes accFloat{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-5px) rotate(5deg)}}
   .brusik-heart{position:absolute;font-size:24px;pointer-events:none;animation:heartFly 1s ease-out forwards;z-index:100}
   @keyframes heartFly{0%{opacity:1;transform:translate(0,0) scale(0.5)}50%{opacity:1;transform:translate(var(--hx),var(--hy)) scale(1.2)}100%{opacity:0;transform:translate(var(--hx2),var(--hy2)) scale(0.3)}}
   .brusik-score{font-size:18px;font-weight:bold;margin:10px 0;color:#fff;text-shadow:0 2px 5px rgba(0,0,0,.5)}
@@ -182,28 +183,35 @@
   .brusik-stat b{color:#ffd700;font-size:16px}
   .brusik-skin-name{color:#fff;font-size:16px;font-weight:bold;margin:8px 0;text-shadow:0 2px 5px rgba(0,0,0,.6)}
   .brusik-skin-name span{color:#ffd700}
-
-  /* СКИНЫ */
   .skins-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;max-width:900px;margin:20px auto;padding:0 10px}
   .skin-card{background:#2b2b2b;border:3px solid #444;border-radius:14px;padding:14px 10px;cursor:pointer;transition:.2s;position:relative;text-align:center}
   .skin-card:hover{transform:scale(1.03);border-color:#e2231a}
   .skin-card.owned{border-color:#00e676}
   .skin-card.equipped{border-color:#ffd700;background:linear-gradient(135deg,#2b2200,#33321f);box-shadow:0 0 20px rgba(255,215,0,.5)}
-  .skin-card.zebra{border-color:#000;background:linear-gradient(135deg,#fff,#000 50%,#fff);border-width:4px;position:relative}
-  .skin-card.zebra.equipped{box-shadow:0 0 30px rgba(255,255,255,.8)}
-  .skin-emoji{font-size:56px;line-height:1;margin:5px 0;filter:drop-shadow(0 5px 10px rgba(0,0,0,.4))}
+  .skin-card.rarity-rare{border-color:#2196f3}
+  .skin-card.rarity-rare.equipped{box-shadow:0 0 20px rgba(33,150,243,.7)}
+  .skin-card.rarity-epic{border-color:#9c27b0}
+  .skin-card.rarity-epic.equipped{box-shadow:0 0 20px rgba(156,39,176,.7)}
+  .skin-card.rarity-legendary{border-color:#ff9800}
+  .skin-card.rarity-legendary.equipped{box-shadow:0 0 25px rgba(255,152,0,.8)}
+  .skin-card.rarity-mythic{border-color:#00e676;border-width:4px;background:linear-gradient(135deg,#002200,#003300);box-shadow:0 0 25px rgba(0,230,118,.6);animation:mythicGlow 2s infinite}
+  .skin-card.rarity-mythic.equipped{box-shadow:0 0 40px rgba(0,230,118,1);background:linear-gradient(135deg,#004400,#006600)}
+  .skin-card.rarity-mythic .skin-name{color:#00e676;text-shadow:0 0 10px #00e676}
+  @keyframes mythicGlow{0%,100%{box-shadow:0 0 20px rgba(0,230,118,.5)}50%{box-shadow:0 0 40px rgba(0,230,118,1)}}
+  .skin-emoji{position:relative;display:inline-block;font-size:56px;line-height:1;margin:5px 0;filter:drop-shadow(0 5px 10px rgba(0,0,0,.4))}
+  .skin-acc{position:absolute;font-size:24px;top:-8px;right:-12px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
   .skin-name{font-weight:bold;font-size:14px;margin:6px 0;color:#fff}
   .skin-price{color:#ffd700;font-size:13px;font-weight:bold}
   .skin-badge{position:absolute;top:-8px;right:-8px;padding:4px 10px;border-radius:10px;font-size:10px;font-weight:bold;color:#fff}
   .skin-badge.owned-b{background:#00e676;color:#111}
   .skin-badge.equipped-b{background:#ffd700;color:#111;animation:pulse 1.2s infinite}
-  .skin-badge.zebra-b{background:#000;color:#fff;border:2px solid #fff}
   .skin-badge.new-b{background:#c41e16}
+  .skin-badge.rare-b{background:#2196f3}
+  .skin-badge.epic-b{background:#9c27b0}
+  .skin-badge.legendary-b{background:#ff9800}
+  .skin-badge.mythic-b{background:linear-gradient(135deg,#00e676,#00c853);color:#000;animation:pulse 1s infinite;font-size:11px;padding:5px 12px}
   .skins-header{color:#ffd700;font-size:20px;font-weight:bold;margin:20px 0 10px}
   .skins-hint{color:#aaa;font-size:13px;margin:8px 0 20px}
-  .skin-card.zebra .skin-name{color:#fff;text-shadow:0 0 10px #fff,0 0 20px #fff}
-  .skin-card.zebra .skin-price{color:#fff;text-shadow:0 0 5px #000,0 0 10px #000}
-
   .ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;max-width:900px;margin:20px auto}
   .ach{background:#2b2b2b;border:2px solid #444;border-radius:10px;padding:14px;text-align:left;transition:.2s}
   .ach.unlocked{border-color:#ffd700;background:#33321f;box-shadow:0 0 10px rgba(255,215,0,.3)}
@@ -363,16 +371,13 @@
   </div>
 </div>
 
-<!-- 🎨 СКИНЫ -->
 <div id="skins" class="game">
   <button class="back" onclick="showMenu()">← Назад</button>
   <h2>🎨 Скины Брюсика</h2>
-  <p class="skins-hint">Покупай и примеряй новые облики для Брюсика!</p>
-
-  <div class="skins-header">🐶 Собачки</div>
+  <p class="skins-hint">Одно лицо 🐶 — разные стили!</p>
+  <div class="skins-header">🐶 Стили</div>
   <div class="skins-grid" id="dogSkinsGrid"></div>
-
-  <div class="skins-header" style="margin-top:30px">👑 Легендарный скин</div>
+  <div class="skins-header" style="margin-top:30px">👑 Легендарные скины</div>
   <div class="skins-grid" id="zebraSkinsGrid"></div>
 </div>
 
@@ -380,7 +385,6 @@
   <button class="back" onclick="showMenu()">← Назад</button>
   <h2>🐶 Брюсик Барбусик</h2>
   <p style="color:#aaa;font-size:13px;margin:8px 0">Гладь собачку — 2 монетки за поглаживание!</p>
-
   <div class="brusik-scene" id="brusikScene">
     <div class="brusik-sun">☀️</div>
     <div class="brusik-cloud c1">☁️</div>
@@ -388,28 +392,21 @@
     <div class="brusik-cloud c3">☁️</div>
     <div class="brusik-ground"></div>
     <div class="brusik-grass">🌱🌿🌱🌿🌱🌿🌱🌿🌱🌿</div>
-
     <div class="brusik-score">Поглаживаний: <span id="brusikPets">0</span></div>
     <div class="brusik-skin-name">Скин: <span id="brusikSkinName">Обычный пёс</span></div>
     <div class="brusik-mood-label">Настроение Брюсика:</div>
-    <div class="brusik-mood-bar">
-      <div class="brusik-mood-fill" id="brusikMoodFill"></div>
-    </div>
-
+    <div class="brusik-mood-bar"><div class="brusik-mood-fill" id="brusikMoodFill"></div></div>
     <div class="brusik-dog-wrap" id="brusikDogWrap" onclick="petBrusik(event)">
-      <div class="brusik-dog" id="brusikDog">🐶</div>
+      <div class="brusik-dog" id="brusikDog"></div>
       <div class="brusik-hint" id="brusikHint">👆 Гладь меня!</div>
     </div>
   </div>
-
   <div class="brusik-stats">
     <div class="brusik-stat">🐾 Всего: <b id="brusikTotalPets">0</b></div>
     <div class="brusik-stat">💝 Трюков: <b id="brusikTricks">0</b></div>
     <div class="brusik-stat">💰 Заработано: <b id="brusikEarned">0</b></div>
   </div>
-
-  <button onclick="openSkins()" class="shop-btn" style="padding:14px 30px;font-size:16px">🎨 Сменить скин</button>
-  <br>
+  <button onclick="openSkins()" class="shop-btn" style="padding:14px 30px;font-size:16px">🎨 Сменить скин</button><br>
   <button class="danger-btn" onclick="resetBrusik()">🔄 Сбросить прогресс Брюсика</button>
 </div>
 
@@ -445,9 +442,9 @@
         </div>
       </div>
       <div class="admin-section">
-        <h4>🎨 СКИНЫ (ВЫДАТЬ ВСЕ)</h4>
+        <h4>🎨 СКИНЫ</h4>
         <div class="admin-row">
-          <button class="admin-btn" onclick="unlockAllSkins()">🎁 Открыть все скины</button>
+          <button class="admin-btn" onclick="unlockAllSkins()">🎁 Открыть все</button>
           <button class="admin-btn danger" onclick="lockAllSkins()">🔒 Забрать все</button>
         </div>
       </div>
@@ -489,9 +486,7 @@
     </div>
     <button class="event-password-btn" onclick="tryStartEvent()">🚀 Запустить (для всех!)</button>
     <p style="font-size:11px;color:#00bfff;margin-top:8px">🌍 Ивент увидят все в комнате!</p>
-    <div class="event-status" id="eventStatus">
-      <p class="event-desc">Ивент не активен. Введи пароль.</p>
-    </div>
+    <div class="event-status" id="eventStatus"><p class="event-desc">Ивент не активен. Введи пароль.</p></div>
     <button id="stopEventBtn" class="stop-event-btn" onclick="stopEventManually()" style="display:none">⏹️ ОСТАНОВИТЬ ИВЕНТ</button>
   </div>
   <div class="event-list">
@@ -554,7 +549,7 @@
   <div class="modal">
     <h2>💥 СБРОС АККАУНТА</h2>
     <p>⚠️ Удалит ВСЁ безвозвратно</p>
-    <ul><li>💰 Деньги</li><li>👆 Улучшения</li><li>🐶 Прогресс Брюсика</li><li>🎨 Купленные скины</li><li>📊 Статистику</li><li>🏆 Ачивки</li><li>🎁 Ежедневки</li></ul>
+    <ul><li>💰 Деньги</li><li>👆 Улучшения</li><li>🐶 Прогресс Брюсика</li><li>🎨 Скины</li><li>📊 Статистику</li><li>🏆 Ачивки</li><li>🎁 Ежедневки</li></ul>
     <p style="color:#c41e16;font-weight:bold">Введи <span style="color:#ffd700">УДАЛИТЬ</span>:</p>
     <input type="text" id="confirmInput" placeholder="УДАЛИТЬ" oninput="checkConfirmInput()">
     <div class="modal-btns">
@@ -658,25 +653,22 @@
 </div>
 
 <script>
-/* ==================== КОНСТАНТЫ ==================== */
 const SECRET_CODE = '67890';
 const EVENT_PASSWORD = '56890';
 const NTFY = 'https://ntfy.sh/';
 const BRUSIK_REWARD = 2;
 
-/* ==================== СКИНЫ ==================== */
+/* ==================== СКИНЫ — ТЁМНЫЙ ПЁС ТЕПЕРЬ ЭПИК ==================== */
 const SKINS = [
-  // Собачки (обычные)
-  { id:'dog',      emoji:'🐶', name:'Обычный пёс',    price:0,       type:'dog' },
-  { id:'puppy',    emoji:'🐕', name:'Щенок',          price:500,     type:'dog' },
-  { id:'guide',    emoji:'🦮', name:'Поводырь',       price:1500,    type:'dog' },
-  { id:'service',  emoji:'🐕‍🦺', name:'Служебный',      price:3000,    type:'dog' },
-  { id:'poodle',   emoji:'🐩', name:'Пудель',         price:5000,    type:'dog' },
-  { id:'wolf',     emoji:'🐺', name:'Волк',           price:15000,   type:'dog' },
-  { id:'fox',      emoji:'🦊', name:'Лис',            price:25000,   type:'dog' },
-  { id:'husky',    emoji:'🐕‍🦺', name:'Хаски',          price:50000,   type:'dog' },
-  // 🦓 ЛЕГЕНДАРНЫЙ СКИН — ЗЕБРА
-  { id:'zebra',    emoji:'🦓', name:'ЗЕБРА (главный)', price:100000,  type:'zebra' }
+  { id:'dog',    name:'Обычный пёс',              price:0,       type:'dog',   rarity:'common',    filter:'none',                                                       acc:'' },
+  { id:'gold',   name:'Золотой пёс',              price:500,     type:'dog',   rarity:'common',    filter:'sepia(1) saturate(3) hue-rotate(-15deg) brightness(1.15)',   acc:'👑' },
+  { id:'red',    name:'Красный пёс',              price:1500,    type:'dog',   rarity:'common',    filter:'hue-rotate(-30deg) saturate(2)',                             acc:'' },
+  { id:'blue',   name:'Синий пёс',                price:3000,    type:'dog',   rarity:'rare',      filter:'hue-rotate(180deg) saturate(1.5)',                           acc:'' },
+  { id:'green',  name:'Зелёный пёс',              price:5000,    type:'dog',   rarity:'rare',      filter:'hue-rotate(90deg) saturate(2)',                              acc:'' },
+  { id:'purple', name:'Фиолетовый пёс',           price:15000,   type:'dog',   rarity:'epic',      filter:'hue-rotate(260deg) saturate(1.6)',                           acc:'🕶️' },
+  { id:'pink',   name:'Розовый пёс',              price:25000,   type:'dog',   rarity:'epic',      filter:'hue-rotate(300deg) saturate(2) brightness(1.1)',             acc:'🎀' },
+  { id:'shadow', name:'Тёмный пёс',               price:50000,   type:'dog',   rarity:'epic',      filter:'brightness(0.4) contrast(1.5)',                              acc:'😎' },
+  { id:'zebra',  name:'🦓 ЗЕБРА (САМЫЙ РЕДКИЙ)',  price:1000000, type:'zebra', rarity:'mythic',    filter:'grayscale(1) brightness(1.3) contrast(1.8)',                 acc:'🦓' }
 ];
 
 let ownedSkins = JSON.parse(localStorage.getItem('rb_skins') || '["dog"]');
@@ -706,22 +698,29 @@ function renderSkins() {
     card.className = 'skin-card';
     if (owned) card.classList.add('owned');
     if (equipped) card.classList.add('equipped');
-    if (skin.type === 'zebra') card.classList.add('zebra');
+    if (skin.rarity) card.classList.add('rarity-' + skin.rarity);
 
     let badge = '';
     if (equipped) badge = '<div class="skin-badge equipped-b">✅ НАДЕТ</div>';
     else if (owned) badge = '<div class="skin-badge owned-b">КУПЛЕНО</div>';
-    else if (skin.type === 'zebra') badge = '<div class="skin-badge zebra-b">👑 ЛЕГЕНДА</div>';
+    else if (skin.rarity === 'mythic') badge = '<div class="skin-badge mythic-b">🌟 САМЫЙ РЕДКИЙ</div>';
+    else if (skin.rarity === 'legendary') badge = '<div class="skin-badge legendary-b">👑 ЛЕГЕНДА</div>';
+    else if (skin.rarity === 'epic') badge = '<div class="skin-badge epic-b">💜 ЭПИК</div>';
+    else if (skin.rarity === 'rare') badge = '<div class="skin-badge rare-b">💙 РЕДКИЙ</div>';
     else badge = '<div class="skin-badge new-b">НОВЫЙ</div>';
 
+    const filterStyle = (skin.filter && skin.filter !== 'none') ? `filter:${skin.filter};` : '';
     card.innerHTML = `
       ${badge}
-      <div class="skin-emoji">${skin.emoji}</div>
+      <div class="skin-emoji">
+        <span style="${filterStyle}display:inline-block;">🐶</span>
+        ${skin.acc ? `<span class="skin-acc">${skin.acc}</span>` : ''}
+      </div>
       <div class="skin-name">${skin.name}</div>
-      <div class="skin-price">${owned ? (equipped ? '✅ НАДЕТ' : 'Нажми чтобы надеть') : skin.price + ' 💰'}</div>
+      <div class="skin-price">${owned ? (equipped ? '✅ НАДЕТ' : 'Нажми чтобы надеть') : skin.price.toLocaleString('ru-RU') + ' 💰'}</div>
     `;
     card.onclick = () => handleSkinClick(skin.id);
-    if (skin.type === 'zebra') zebraGrid.appendChild(card);
+    if (skin.rarity === 'legendary' || skin.rarity === 'mythic') zebraGrid.appendChild(card);
     else dogGrid.appendChild(card);
   });
 }
@@ -731,21 +730,18 @@ function handleSkinClick(skinId) {
   const owned = ownedSkins.includes(skinId);
   const equipped = equippedSkin === skinId;
 
-  if (equipped) {
-    showToast('ℹ️ Уже надет', skin.name, false);
-    return;
-  }
+  if (equipped) { showToast('ℹ️ Уже надет', skin.name, false); return; }
 
   if (owned) {
     equippedSkin = skinId;
     localStorage.setItem('rb_skin', equippedSkin);
     applySkin();
     renderSkins();
-    showToast('✅ СКИН НАДЕТ', `${skin.emoji} ${skin.name}`, true);
+    showToast('✅ СКИН НАДЕТ', skin.name, true);
+    sendPresence();
     return;
   }
 
-  // Покупка
   if (money < skin.price) {
     showToast('❌ Недостаточно денег', `Нужно ${skin.price.toLocaleString('ru-RU')} 💰`, false);
     return;
@@ -761,14 +757,18 @@ function handleSkinClick(skinId) {
   applySkin();
   renderSkins();
   saveAll();
-  showToast('🎉 СКИН КУПЛЕН!', `${skin.emoji} ${skin.name}`, true);
+  showToast('🎉 СКИН КУПЛЕН!', skin.name, true);
   checkAchievements();
+  sendPresence();
 }
 
 function applySkin() {
   const skin = getEquippedSkin();
   const dog = document.getElementById('brusikDog');
-  if (dog) dog.textContent = skin.emoji;
+  if (dog) {
+    dog.style.filter = (skin.filter && skin.filter !== 'none') ? skin.filter : '';
+    dog.innerHTML = `<span class="dog-face-inner">🐶</span>${skin.acc ? `<span class="dog-acc">${skin.acc}</span>` : ''}`;
+  }
   const nameEl = document.getElementById('brusikSkinName');
   if (nameEl) nameEl.textContent = skin.name;
 }
@@ -780,7 +780,7 @@ function unlockAllSkins() {
   showToast('🎁 ВСЕ СКИНЫ ОТКРЫТЫ!', `${SKINS.length} шт.`, true, false, false, true);
 }
 function lockAllSkins() {
-  if (!confirm('Забрать все скины? Останется только обычный пёс.')) return;
+  if (!confirm('Забрать все скины?')) return;
   ownedSkins = ['dog'];
   equippedSkin = 'dog';
   localStorage.setItem('rb_skins', JSON.stringify(ownedSkins));
@@ -788,6 +788,7 @@ function lockAllSkins() {
   applySkin();
   renderSkins();
   showToast('🔒 ВСЕ СКИНЫ ЗАБРАНЫ', 'Остался только обычный пёс', false, false, true);
+  sendPresence();
 }
 
 /* ==================== ИГРОК ==================== */
@@ -967,14 +968,17 @@ function handleNickChange(payload) {
 
 function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function escapeJs(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"').replace(/\n/g,' '); }
+function getSkinEmoji(skinId) {
+  const skin = getSkinById(skinId);
+  return skin.acc ? `🐶${skin.acc}` : '🐶';
+}
 function renderPlayersList() {
   const list = document.getElementById('playersList');
   if (!list) return;
   list.innerHTML = '';
-  const mySkin = getEquippedSkin();
   const allPlayers = [
-    { id: MY_ID, nick: MY_NICK + ' (ты)', skin: mySkin.emoji, isMe: true, lastSeen: Date.now() },
-    ...[...players.entries()].map(([id, p]) => ({ id, nick: p.nickname, skin: (getSkinById(p.skin)).emoji, isMe: false, lastSeen: p.lastSeen }))
+    { id: MY_ID, nick: MY_NICK + ' (ты)', skin: equippedSkin, isMe: true, lastSeen: Date.now() },
+    ...[...players.entries()].map(([id, p]) => ({ id, nick: p.nickname, skin: p.skin, isMe: false, lastSeen: p.lastSeen }))
   ];
   allPlayers.sort((a, b) => (a.isMe === b.isMe ? 0 : (a.isMe ? -1 : 1)));
   if (allPlayers.length <= 1) {
@@ -988,7 +992,7 @@ function renderPlayersList() {
     const timeText = p.isMe ? 'сейчас' : (secAgo < 5 ? 'только что' : secAgo + 'с назад');
     div.innerHTML = `
       <div class="player-info">
-        <div class="player-name ${p.isMe?'me':''}">${p.isMe?'👑':'🎮'} ${p.skin} ${escapeHtml(p.nick)}</div>
+        <div class="player-name ${p.isMe?'me':''}">${p.isMe?'👑':'🎮'} ${getSkinEmoji(p.skin)} ${escapeHtml(p.nick)}</div>
         <div class="player-id">${p.id}</div>
         <div class="player-time">⏱️ ${timeText}</div>
       </div>
@@ -1577,7 +1581,6 @@ function openDaily() {
   renderDaily();
 }
 
-/* ============ АЧИВКИ ============ */
 const ACHIEVEMENTS = [
   { id:'first_money', icon:'🪙', name:'Первая монетка', desc:'Заработай 1 💰', check:()=>stats.totalEarned>=1 },
   { id:'money_100',   icon:'💵', name:'Сотка', desc:'Заработай 100 💰', check:()=>stats.totalEarned>=100 },
@@ -1602,7 +1605,7 @@ const ACHIEVEMENTS = [
   { id:'brusik_tricks',icon:'🎪', name:'Дрессировщик', desc:'10 трюков Брюсика', check:()=>stats.brusikTricks>=10 },
   { id:'sigma_millionaires', icon:'🐱💎', name:'Брюсик и Сигма Миллионеры', desc:'Заработайте бесконечность денег', check:()=>money >= 999999999999999 },
   { id:'skin_buyer',  icon:'🎨', name:'Модник', desc:'Купи любой скин', check:()=>ownedSkins.length > 1 },
-  { id:'skin_zebra',  icon:'🦓', name:'Главная Зебра', desc:'Купи легендарный скин ЗЕБРЫ', check:()=>ownedSkins.includes('zebra') }
+  { id:'skin_zebra',  icon:'🦓', name:'Главная Зебра', desc:'Купи САМЫЙ РЕДКИЙ скин — ЗЕБРУ за 1 000 000 💰', check:()=>ownedSkins.includes('zebra') }
 ];
 
 function checkAchievements() {
