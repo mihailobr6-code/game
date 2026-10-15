@@ -17,6 +17,8 @@
   .online-badge .dot{width:8px;height:8px;border-radius:50%;background:#00e676;animation:blink 1.5s infinite}
   .online-badge.offline{border-color:#888;color:#888}
   .online-badge.offline .dot{background:#888;animation:none}
+  .online-badge.connecting{border-color:#ff9800;color:#ff9800}
+  .online-badge.connecting .dot{background:#ff9800}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
   .wallet{background:#111;padding:8px 16px;border-radius:10px;font-size:16px;font-weight:bold;border:2px solid #ffd700;color:#ffd700;white-space:nowrap;max-width:280px;overflow:hidden;text-overflow:ellipsis}
   .reset-btn{background:#444;color:#fff;border:2px solid #666;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px}
@@ -30,6 +32,9 @@
   .room-bar button{background:#9c27b0;color:#fff;border:none;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;margin:0}
   .my-name{color:#00e676;font-weight:bold}
   .edit-nick-btn{background:#00e676!important;color:#111!important;font-weight:bold;padding:5px 10px!important;cursor:pointer}
+  .test-btn{background:#2196f3!important}
+  .warn-banner{background:#c41e16;color:#fff;padding:10px;font-size:13px;font-weight:bold;display:none}
+  .warn-banner.show{display:block}
   .menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:15px;padding:20px;max-width:1000px;margin:0 auto}
   .card{background:#2b2b2b;border-radius:12px;padding:18px 15px;cursor:pointer;transition:.2s;border:2px solid #444;display:flex;flex-direction:column;justify-content:center;min-height:130px;position:relative}
   .card:hover{transform:scale(1.03);border-color:#e2231a}
@@ -189,13 +194,9 @@
   .skin-card.owned{border-color:#00e676}
   .skin-card.equipped{border-color:#ffd700;background:linear-gradient(135deg,#2b2200,#33321f);box-shadow:0 0 20px rgba(255,215,0,.5)}
   .skin-card.rarity-rare{border-color:#2196f3}
-  .skin-card.rarity-rare.equipped{box-shadow:0 0 20px rgba(33,150,243,.7)}
   .skin-card.rarity-epic{border-color:#9c27b0}
-  .skin-card.rarity-epic.equipped{box-shadow:0 0 20px rgba(156,39,176,.7)}
   .skin-card.rarity-legendary{border-color:#ff9800}
-  .skin-card.rarity-legendary.equipped{box-shadow:0 0 25px rgba(255,152,0,.8)}
   .skin-card.rarity-mythic{border-color:#00e676;border-width:4px;background:linear-gradient(135deg,#002200,#003300);box-shadow:0 0 25px rgba(0,230,118,.6);animation:mythicGlow 2s infinite}
-  .skin-card.rarity-mythic.equipped{box-shadow:0 0 40px rgba(0,230,118,1);background:linear-gradient(135deg,#004400,#006600)}
   .skin-card.rarity-mythic .skin-name{color:#00e676;text-shadow:0 0 10px #00e676}
   @keyframes mythicGlow{0%,100%{box-shadow:0 0 20px rgba(0,230,118,.5)}50%{box-shadow:0 0 40px rgba(0,230,118,1)}}
   .skin-emoji{position:relative;display:inline-block;font-size:56px;line-height:1;margin:5px 0;filter:drop-shadow(0 5px 10px rgba(0,0,0,.4))}
@@ -313,7 +314,7 @@
 <header>
   <h1>ROBLOX: 3 ИГРЫ</h1>
   <div class="header-right">
-    <div id="onlineBadge" class="online-badge offline"><div class="dot"></div><span id="onlineText">Подключение...</span></div>
+    <div id="onlineBadge" class="online-badge connecting"><div class="dot"></div><span id="onlineText">Подключение...</span></div>
     <div id="activeEventBadge" class="active-event" style="display:none"></div>
     <div class="wallet">💰 <span id="moneyDisplay">0</span></div>
     <button class="secret-btn" onclick="openSecret()">🔐</button>
@@ -321,6 +322,8 @@
     <button class="reset-btn account-btn" onclick="openAccountReset()">💥</button>
   </div>
 </header>
+
+<div class="warn-banner" id="warnBanner">⚠️ САЙТ ОТКРЫТ КАК ФАЙЛ! Мультиплеер НЕ работает! Открой через http:// или https:// (загрузи на хостинг)</div>
 
 <div class="room-bar">
   🎮 Комната: <b id="roomName">shared777</b>
@@ -331,6 +334,7 @@
   Игроков: <b id="playerCount">1</b>
   <input type="text" id="roomInput" placeholder="комната" maxlength="20">
   <button onclick="changeRoom()">Сменить</button>
+  <button class="test-btn" onclick="testConnection()">🧪 Тест</button>
 </div>
 
 <div class="menu" id="menu">
@@ -658,6 +662,56 @@ const EVENT_PASSWORD = '56890';
 const NTFY = 'https://ntfy.sh/';
 const BRUSIK_REWARD = 2;
 
+/* ==================== 🔧 ИСПРАВЛЕННАЯ РАБОТА КОМНАТ ==================== */
+// Хеш-функция для любых символов (кириллица, эмодзи и т.д.)
+function hashString(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const chr = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + chr;
+    hash |= 0;
+  }
+  return Math.abs(hash).toString(36);
+}
+
+// Транслит русских букв в латиницу (для красивых названий комнат)
+function translit(str) {
+  const map = {
+    'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'y',
+    'к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f',
+    'х':'h','ц':'ts','ч':'ch','ш':'sh','щ':'sch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya'
+  };
+  return str.toLowerCase().split('').map(c => map[c] !== undefined ? map[c] : c).join('');
+}
+
+// Получить название комнаты из URL + хеширование
+function getRoomFromURL() {
+  const raw = new URLSearchParams(location.search).get('room') || 'shared777';
+  const cleaned = raw.trim().toLowerCase();
+  if (!cleaned) return 'shared777';
+  // Транслитерация
+  const translited = translit(cleaned);
+  // Оставляем только a-z0-9_- 
+  const safe = translited.replace(/[^a-z0-9_-]/g, '');
+  // Если получилось что-то осмысленное — используем
+  if (safe.length >= 2) return safe.slice(0, 40);
+  // Иначе — хеш
+  return 'room_' + hashString(cleaned);
+}
+
+let ROOM = getRoomFromURL();
+const NTFY_TOPIC = 'roblox3games_' + ROOM;
+
+document.getElementById('roomName').textContent = ROOM;
+
+// Показать оригинальное название из URL для информации
+(function showOriginalRoomName() {
+  const raw = new URLSearchParams(location.search).get('room');
+  if (raw && raw !== ROOM) {
+    document.getElementById('roomName').title = 'Оригинал: ' + raw;
+  }
+})();
+
 /* ==================== СКИНЫ ==================== */
 const SKINS = [
   { id:'dog',    name:'Обычный пёс',              price:0,       type:'dog',   rarity:'common',    filter:'none',                                                       acc:'' },
@@ -812,26 +866,22 @@ function getNickname() {
 const MY_ID = getPlayerId();
 let MY_NICK = getNickname();
 
-function getRoomFromURL() {
-  const url = new URLSearchParams(location.search).get('room') || 'shared777';
-  return url.toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,40) || 'shared777';
-}
-let ROOM = getRoomFromURL();
-const NTFY_TOPIC = 'roblox3games_' + ROOM;
-document.getElementById('roomName').textContent = ROOM;
 document.getElementById('myNameDisplay').textContent = MY_NICK;
 
 let eventSource = null;
-let reconnectAttempts = 0; // 🆕 Счётчик переподключений
+let reconnectAttempts = 0;
+let presenceInterval = null;
 const players = new Map();
 
 function setOnlineStatus(status) {
   const badge = document.getElementById('onlineBadge');
   const text = document.getElementById('onlineText');
-  if (status === 'online') { badge.classList.remove('offline'); text.textContent = 'Онлайн'; }
+  badge.classList.remove('offline','connecting');
+  if (status === 'online') { text.textContent = 'Онлайн'; }
   else if (status === 'offline') { badge.classList.add('offline'); text.textContent = 'Оффлайн'; }
-  else { badge.classList.add('offline'); text.textContent = 'Подключение...'; }
+  else { badge.classList.add('connecting'); text.textContent = 'Подключение...'; }
 }
+
 function publish(payload) {
   payload.sender = MY_ID;
   payload.senderNick = MY_NICK;
@@ -840,20 +890,38 @@ function publish(payload) {
 }
 function sendPresence() { publish({type:'presence', skin: equippedSkin}); }
 
-/* 🆕 УЛУЧШЕННОЕ ПОДКЛЮЧЕНИЕ С АВТОПЕРЕПОДКЛЮЧЕНИЕМ */
+/* 🆕 ПРОВЕРКА HTTPS */
+function checkProtocol() {
+  if (location.protocol === 'file:') {
+    document.getElementById('warnBanner').classList.add('show');
+    return false;
+  }
+  return true;
+}
+
+/* 🆕 УЛУЧШЕННОЕ ПОДКЛЮЧЕНИЕ */
 function connectToEvents() {
   if (eventSource) eventSource.close();
   setOnlineStatus('connecting');
 
-  eventSource = new EventSource(NTFY + NTFY_TOPIC + '/sse');
+  try {
+    eventSource = new EventSource(NTFY + NTFY_TOPIC + '/sse');
+  } catch (err) {
+    setOnlineStatus('offline');
+    console.error('EventSource error:', err);
+    return;
+  }
 
   eventSource.onopen = () => {
     setOnlineStatus('online');
     reconnectAttempts = 0;
-    console.log('✅ Подключено к комнате', ROOM);
+    console.log('✅ Подключено к комнате:', ROOM);
+    console.log('📡 Топик:', NTFY_TOPIC);
+    // Отправляем presence 3 раза для гарантии
     sendPresence();
-    sendPresence();
-    // 🆕 Догружаем свежие ивенты при подключении
+    setTimeout(sendPresence, 500);
+    setTimeout(sendPresence, 1500);
+    // Загружаем свежие ивенты
     setTimeout(loadRecentEvents, 500);
   };
 
@@ -867,11 +935,10 @@ function connectToEvents() {
 
   eventSource.onerror = () => {
     setOnlineStatus('offline');
-    // 🆕 Быстрое переподключение: 1 сек, 2 сек, 3 сек максимум
     const delay = Math.min(3000, 1000 * (reconnectAttempts + 1));
     reconnectAttempts++;
     setTimeout(() => {
-      console.log('🔄 Переподключение...');
+      console.log('🔄 Переподключение к комнате ' + ROOM);
       connectToEvents();
     }, delay);
   };
@@ -903,11 +970,35 @@ function handlePresence(payload) {
 function cleanupPlayers() {
   const now = Date.now();
   let changed = false;
-  players.forEach((p, id) => { if (now - p.lastSeen > 30000) { players.delete(id); changed = true; } });
+  players.forEach((p, id) => { if (now - p.lastSeen > 35000) { players.delete(id); changed = true; } });
   if (changed) updatePlayerCount();
   if (currentGame === 'secret' && adminUnlocked) renderPlayersList();
 }
 function updatePlayerCount() { document.getElementById('playerCount').textContent = players.size + 1; }
+
+/* 🆕 ТЕСТ СОЕДИНЕНИЯ */
+async function testConnection() {
+  showToast('🧪 Тест связи...', 'Проверяем подключение', false, false, false, true);
+  try {
+    // Отправляем тестовое сообщение
+    const testId = 'test_' + Date.now();
+    await fetch(NTFY + NTFY_TOPIC, {
+      method: 'POST',
+      body: JSON.stringify({ type: 'presence', sender: MY_ID, senderNick: MY_NICK, test: true, testId })
+    });
+    // Читаем последние сообщения
+    const res = await fetch(NTFY + NTFY_TOPIC + '/json?poll=1&since=30s');
+    const text = await res.text();
+    const hasMyMessage = text.includes(testId);
+    if (hasMyMessage) {
+      showToast('✅ СВЯЗЬ РАБОТАЕТ!', `Комната "${ROOM}" активна. Игроков: ${players.size + 1}`, true);
+    } else {
+      showToast('⚠️ Связь работает, но...', 'Попробуй обновить через 5 сек', false, false, false, true);
+    }
+  } catch (err) {
+    showToast('❌ ОШИБКА СВЯЗИ!', 'Проверь интернет или открой через https://', false, false, true);
+  }
+}
 
 function openTransferModal(targetId, targetNick) {
   if (targetId === MY_ID) { showToast('😅 Себе нельзя', 'Это твой ID', false); return; }
@@ -1010,7 +1101,7 @@ function renderPlayersList() {
   ];
   allPlayers.sort((a, b) => (a.isMe === b.isMe ? 0 : (a.isMe ? -1 : 1)));
   if (allPlayers.length <= 1) {
-    list.innerHTML = '<div class="no-players">В комнате только ты 😐</div>';
+    list.innerHTML = '<div class="no-players">В комнате только ты 😐<br><span style="font-size:10px;color:#555">Позови друга в ту же комнату</span></div>';
     return;
   }
   allPlayers.forEach(p => {
@@ -1123,11 +1214,24 @@ function checkBan() {
   }
   return false;
 }
+
+/* 🆕 ИСПРАВЛЕННАЯ СМЕНА КОМНАТЫ */
 function changeRoom() {
-  const val = document.getElementById('roomInput').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g,'');
-  if (!val) { alert('Введи название комнаты!'); return; }
+  const rawInput = document.getElementById('roomInput').value.trim();
+  if (!rawInput) { alert('Введи название комнаты!'); return; }
+  const cleaned = rawInput.toLowerCase();
+  const translited = translit(cleaned);
+  const safe = translited.replace(/[^a-z0-9_-]/g, '');
+  let finalRoom;
+  if (safe.length >= 2) {
+    finalRoom = safe.slice(0, 40);
+  } else {
+    finalRoom = 'room_' + hashString(cleaned);
+  }
+  // Сохраняем оригинальное название
+  localStorage.setItem('rb_lastRoom', rawInput);
   const url = new URL(location.href);
-  url.searchParams.set('room', val);
+  url.searchParams.set('room', rawInput);
   location.href = url.toString();
 }
 
@@ -1143,23 +1247,15 @@ function getEventMoneyMult()  { return activeEvent ? (activeEvent.moneyMult  || 
 function getEventMemoryMult() { return activeEvent ? (activeEvent.memoryMult || 1) : 1; }
 function getEventBrusikMult() { return activeEvent ? (activeEvent.brusikMult || 1) : 1; }
 
-/* 🆕 ЗАЩИТА ОТ ДУБЛИКАТОВ + ОБРАБОТКА ЧУЖИХ ИВЕНТОВ */
 function handleRemoteEvent(payload) {
   if (payload.type !== 'event_start') return;
   if (!payload.endTime || payload.endTime < Date.now()) return;
-  
-  // 🛡️ Защита от дубликатов — не запускаем один и тот же ивент дважды
   const eventKey = payload.id + '_' + payload.endTime;
-  if (window._processedEvents && window._processedEvents[eventKey]) {
-    return;
-  }
+  if (window._processedEvents && window._processedEvents[eventKey]) return;
   if (!window._processedEvents) window._processedEvents = {};
   window._processedEvents[eventKey] = true;
-  // Чистим старые записи
   setTimeout(() => { delete window._processedEvents[eventKey]; }, 5000);
-  
   if (activeEvent && Date.now() < eventEndTime) return;
-  
   applyRemoteEvent({
     id: payload.id, icon: payload.icon, name: payload.name, desc: payload.desc,
     moneyMult: payload.moneyMult, memoryMult: payload.memoryMult,
@@ -1211,8 +1307,6 @@ function tryStartEvent() {
   startEvent(EVENTS[Math.floor(Math.random()*EVENTS.length)], customDuration);
   input.value = '';
 }
-
-/* 🆕 ОТПРАВКА ИВЕНТА 3 РАЗА ДЛЯ ГАРАНТИИ ДОСТАВКИ */
 function startEvent(ev, customDuration) {
   activeEvent = ev; activeEvent.isRemote = false;
   stats.eventsStarted = (stats.eventsStarted || 0) + 1;
@@ -1237,7 +1331,6 @@ function startEvent(ev, customDuration) {
     moneyMult: ev.moneyMult || 1, memoryMult: ev.memoryMult || 1,
     brusikMult: ev.brusikMult || 1, instant: ev.instant || 0, duration: eventTotalDuration, endTime: eventEndTime
   };
-  // 🚀 Отправляем 3 раза с задержкой — гарантия доставки всем игрокам
   publish(evPayload);
   setTimeout(() => publish(evPayload), 300);
   setTimeout(() => publish(evPayload), 1200);
@@ -1245,7 +1338,6 @@ function startEvent(ev, customDuration) {
   showToast('🎉 ИВЕНТ ЗАПУЩЕН!', `${ev.icon} ${ev.name}${customText}`, true, 'purple');
   checkAchievements();
 }
-
 function tickEvent() {
   if (!activeEvent) return;
   if (eventEndTime - Date.now() <= 0) { endEvent(); return; }
@@ -1325,8 +1417,6 @@ function updateActiveEventBadge() {
     badge.textContent = `${activeEvent.icon} ${left}с`;
   } else badge.style.display = 'none';
 }
-
-/* 🆕 ЗАГРУЗКА СВЕЖИХ ИВЕНТОВ (дополнительная проверка) */
 async function loadRecentEvents() {
   try {
     const res = await fetch(NTFY + NTFY_TOPIC + '/json?poll=1&since=3m');
@@ -1899,21 +1989,23 @@ document.addEventListener('touchend', function(e) {
   lastTouchEnd = now;
 }, { passive: false });
 
+// Запуск
 applySkin();
 updateMoney();
 updateAchCounter(); updateDailyCard(); updateEventsCard(); checkStreakBreak();
 updateBrusikUI();
 saveAll();
 
+// Проверка что открыто не как file://
+checkProtocol();
+
 if (!checkBan()) {
   connectToEvents();
-  setInterval(sendPresence, 5000);
+  if (presenceInterval) clearInterval(presenceInterval);
+  presenceInterval = setInterval(sendPresence, 5000);
   setInterval(cleanupPlayers, 5000);
-  // 🆕 РЕЗЕРВНАЯ ПРОВЕРКА ИВЕНТОВ каждые 10 секунд
   setInterval(async () => {
-    if (!activeEvent && !checkBan()) {
-      await loadRecentEvents();
-    }
+    if (!activeEvent && !checkBan()) await loadRecentEvents();
   }, 10000);
   setTimeout(loadRecentEvents, 1500);
   setTimeout(updatePlayerCount, 500);
