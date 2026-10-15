@@ -17,12 +17,9 @@
   .online-badge .dot{width:8px;height:8px;border-radius:50%;background:#00e676;animation:blink 1.5s infinite}
   .online-badge.offline{border-color:#888;color:#888}
   .online-badge.offline .dot{background:#888;animation:none}
-  .online-badge.connecting{border-color:#ff9800;color:#ff9800}
-  .online-badge.connecting .dot{background:#ff9800}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
   .wallet{background:#111;padding:8px 16px;border-radius:10px;font-size:16px;font-weight:bold;border:2px solid #ffd700;color:#ffd700;white-space:nowrap;max-width:280px;overflow:hidden;text-overflow:ellipsis}
   .reset-btn{background:#444;color:#fff;border:2px solid #666;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px}
-  .reset-btn:hover{background:#555}
   .account-btn{background:#7b1fa2;border-color:#9c27b0}
   .secret-btn{background:#111;border:2px solid #333;font-size:15px;padding:6px 12px;color:#666}
   .secret-btn:hover{background:#222;color:#ffd700;border-color:#ffd700}
@@ -32,9 +29,6 @@
   .room-bar button{background:#9c27b0;color:#fff;border:none;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;margin:0}
   .my-name{color:#00e676;font-weight:bold}
   .edit-nick-btn{background:#00e676!important;color:#111!important;font-weight:bold;padding:5px 10px!important;cursor:pointer}
-  .test-btn{background:#2196f3!important}
-  .warn-banner{background:#c41e16;color:#fff;padding:10px;font-size:13px;font-weight:bold;display:none}
-  .warn-banner.show{display:block}
   .menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:15px;padding:20px;max-width:1000px;margin:0 auto}
   .card{background:#2b2b2b;border-radius:12px;padding:18px 15px;cursor:pointer;transition:.2s;border:2px solid #444;display:flex;flex-direction:column;justify-content:center;min-height:130px;position:relative}
   .card:hover{transform:scale(1.03);border-color:#e2231a}
@@ -90,12 +84,15 @@
   .player-name.me{color:#ffd700}
   .player-id{color:#666;font-size:10px;font-family:'Courier New',monospace}
   .player-time{color:#666;font-size:11px}
+  .player-room{color:#ba68c8;font-size:11px;font-weight:bold}
   .player-btns{display:flex;gap:5px;flex-wrap:wrap}
-  .kick-btn{background:#c41e16;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:bold;margin:0;min-height:36px}
-  .money-btn{background:linear-gradient(135deg,#ffd700,#ffaa00);color:#111;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:bold;margin:0;min-height:36px}
+  .kick-btn{background:#c41e16;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:bold;margin:0;min-height:36px}
+  .money-btn{background:linear-gradient(135deg,#ffd700,#ffaa00);color:#111;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:bold;margin:0;min-height:36px}
+  .reset-acc-btn{background:#7b1fa2;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:bold;margin:0;min-height:36px}
   .no-players{color:#666;text-align:center;font-size:12px;padding:15px}
-  .kick-modal-overlay,.nick-modal-overlay,.modal-overlay,.kick-overlay,.transfer-modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.9);z-index:4000;justify-content:center;align-items:center;padding:15px}
-  .kick-modal-overlay.show,.nick-modal-overlay.show,.modal-overlay.show,.kick-overlay.show,.transfer-modal-overlay.show{display:flex}
+  .global-count{color:#00bfff;font-size:13px;text-align:center;font-weight:bold;padding:8px;background:#001a33;border-radius:8px;margin-bottom:8px}
+  .kick-modal-overlay,.nick-modal-overlay,.modal-overlay,.kick-overlay,.give-money-modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.9);z-index:4000;justify-content:center;align-items:center;padding:15px}
+  .kick-modal-overlay.show,.nick-modal-overlay.show,.modal-overlay.show,.kick-overlay.show,.give-money-modal-overlay.show{display:flex}
   .kick-modal{background:#1a0000;border:3px solid #c41e16;border-radius:15px;padding:25px 20px;max-width:480px;width:100%;box-shadow:0 0 40px rgba(196,30,22,.6);animation:modalIn .3s;max-height:90vh;overflow-y:auto}
   .kick-modal h2{color:#ff4444;margin-bottom:15px;font-size:20px;text-align:center}
   .kick-target-info{background:#000;border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:15px;text-align:center}
@@ -135,20 +132,20 @@
   .nick-tips{text-align:center;color:#888;font-size:11px;margin-top:15px;padding:10px;background:#000;border-radius:8px}
   .nick-options{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px}
   .nick-options button{background:#222;color:#00e676;border:2px solid #00e676;font-size:12px;padding:6px 12px;min-height:34px;margin:0}
-  .transfer-modal{background:linear-gradient(135deg,#1a1a1a,#2b2b2b);border:3px solid #ffd700;border-radius:15px;padding:25px 20px;max-width:450px;width:100%;box-shadow:0 0 40px rgba(255,215,0,.5);animation:modalIn .3s}
-  .transfer-modal h2{color:#ffd700;margin-bottom:10px;font-size:20px;text-align:center}
-  .transfer-target{background:#000;border:1px solid #333;border-radius:10px;padding:12px;margin:10px 0;text-align:center}
-  .transfer-target .nick{color:#00e676;font-size:18px;font-weight:bold}
-  .transfer-target .id{color:#666;font-size:11px;font-family:'Courier New',monospace;margin-top:4px}
-  .transfer-balance{color:#ffd700;font-size:14px;margin:10px 0;font-weight:bold}
-  .transfer-input{width:100%;padding:14px;background:#000;border:2px solid #ffd700;border-radius:10px;color:#ffd700;font-size:22px;text-align:center;font-weight:bold;font-family:'Courier New',monospace}
-  .transfer-input:focus{outline:none;border-color:#00e676}
-  .transfer-quick{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:12px}
-  .transfer-quick button{background:#222;color:#ffd700;border:2px solid #ffd700;font-size:13px;padding:8px 14px;min-height:38px;margin:0}
-  .transfer-btns{display:flex;gap:10px;margin-top:18px;justify-content:center;flex-wrap:wrap}
-  .transfer-btns button{flex:1;min-width:120px;padding:14px 20px;border-radius:10px;font-size:15px;font-weight:bold;border:none;margin:0}
-  .transfer-cancel{background:#444;color:#fff}
-  .transfer-send{background:linear-gradient(135deg,#ffd700,#ffaa00);color:#111}
+  .give-money-modal{background:linear-gradient(135deg,#1a1a1a,#2b2b2b);border:3px solid #ffd700;border-radius:15px;padding:25px 20px;max-width:450px;width:100%;box-shadow:0 0 40px rgba(255,215,0,.5);animation:modalIn .3s}
+  .give-money-modal h2{color:#ffd700;margin-bottom:10px;font-size:20px;text-align:center}
+  .give-money-target{background:#000;border:1px solid #333;border-radius:10px;padding:12px;margin:10px 0;text-align:center}
+  .give-money-target .nick{color:#00e676;font-size:18px;font-weight:bold}
+  .give-money-target .id{color:#666;font-size:11px;font-family:'Courier New',monospace;margin-top:4px}
+  .give-money-target .room{color:#ba68c8;font-size:11px;margin-top:4px;font-weight:bold}
+  .give-money-note{color:#00bfff;font-size:12px;margin:10px 0;padding:8px;background:#001a33;border-radius:8px}
+  .give-money-input{width:100%;padding:14px;background:#000;border:2px solid #ffd700;border-radius:10px;color:#ffd700;font-size:22px;text-align:center;font-weight:bold;font-family:'Courier New',monospace}
+  .give-money-quick{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+  .give-money-quick button{background:#222;color:#ffd700;border:2px solid #ffd700;font-size:13px;padding:8px 14px;min-height:38px;margin:0}
+  .give-money-btns{display:flex;gap:10px;margin-top:18px;justify-content:center;flex-wrap:wrap}
+  .give-money-btns button{flex:1;min-width:120px;padding:14px 20px;border-radius:10px;font-size:15px;font-weight:bold;border:none;margin:0}
+  .give-money-cancel{background:#444;color:#fff}
+  .give-money-send{background:linear-gradient(135deg,#ffd700,#ffaa00);color:#111}
   .memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:400px;width:100%;margin:15px auto}
   .mem-card{aspect-ratio:1;background:#2b2b2b;border:2px solid #444;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:clamp(24px,8vw,40px);cursor:pointer;transition:.15s}
   .mem-card.flipped{background:#33321f;border-color:#ffd700}
@@ -259,7 +256,6 @@
   .event-list p{font-size:12px;color:#aaa;margin:4px 0}
   .active-event{background:linear-gradient(135deg,#9c27b0,#e91e63);padding:6px 12px;border-radius:10px;font-weight:bold;animation:pulse 1s infinite;font-size:12px;white-space:nowrap}
   .stop-event-btn{background:linear-gradient(135deg,#c41e16,#7b1fa2);color:#fff;font-weight:bold;font-size:16px;padding:14px 30px;border-radius:12px;border:3px solid #ff4444;cursor:pointer;margin-top:15px;width:90%;max-width:320px;min-height:50px;animation:stopPulse 1.5s infinite;box-shadow:0 0 20px rgba(196,30,22,.6);transition:.2s}
-  .stop-event-btn:hover{background:linear-gradient(135deg,#a01812,#6a1b8a);transform:scale(1.03)}
   @keyframes stopPulse{0%,100%{box-shadow:0 0 15px rgba(196,30,22,.5)}50%{box-shadow:0 0 30px rgba(196,30,22,.9)}}
   .modal{background:#2b2b2b;border:2px solid #c41e16;border-radius:15px;padding:25px 20px;max-width:450px;width:100%;animation:modalIn .3s;max-height:90vh;overflow-y:auto}
   @keyframes modalIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
@@ -298,13 +294,10 @@
     .brusik-scene{min-height:360px;padding:15px}
     .brusik-dog{font-size:clamp(90px,24vw,140px)}
     .stop-event-btn{font-size:14px;padding:12px 20px;min-height:44px}
-    .money-btn,.kick-btn{font-size:11px;padding:6px 10px;min-height:32px}
-    .transfer-modal{padding:20px 15px}
-    .transfer-input{font-size:18px;padding:12px}
+    .money-btn,.kick-btn,.reset-acc-btn{font-size:10px;padding:5px 8px;min-height:30px}
     .skins-grid{grid-template-columns:repeat(2,1fr);gap:10px}
     .skin-emoji{font-size:44px}
     .skin-name{font-size:12px}
-    .skin-price{font-size:11px}
   }
   @media(max-width:400px){.menu{grid-template-columns:1fr}}
 </style>
@@ -314,7 +307,7 @@
 <header>
   <h1>ROBLOX: 3 ИГРЫ</h1>
   <div class="header-right">
-    <div id="onlineBadge" class="online-badge connecting"><div class="dot"></div><span id="onlineText">Подключение...</span></div>
+    <div id="onlineBadge" class="online-badge offline"><div class="dot"></div><span id="onlineText">Подключение...</span></div>
     <div id="activeEventBadge" class="active-event" style="display:none"></div>
     <div class="wallet">💰 <span id="moneyDisplay">0</span></div>
     <button class="secret-btn" onclick="openSecret()">🔐</button>
@@ -323,18 +316,15 @@
   </div>
 </header>
 
-<div class="warn-banner" id="warnBanner">⚠️ САЙТ ОТКРЫТ КАК ФАЙЛ! Мультиплеер НЕ работает! Открой через http:// или https:// (загрузи на хостинг)</div>
-
 <div class="room-bar">
   🎮 Комната: <b id="roomName">shared777</b>
   <span style="color:#888">|</span>
   Ты: <span class="my-name" id="myNameDisplay">-</span>
   <button class="edit-nick-btn" onclick="openNickModal()">✏️</button>
   <span style="color:#888">|</span>
-  Игроков: <b id="playerCount">1</b>
+  🌍 Онлайн: <b id="globalPlayerCount">1</b>
   <input type="text" id="roomInput" placeholder="комната" maxlength="20">
   <button onclick="changeRoom()">Сменить</button>
-  <button class="test-btn" onclick="testConnection()">🧪 Тест</button>
 </div>
 
 <div class="menu" id="menu">
@@ -427,7 +417,7 @@
     <div class="admin-panel" id="adminPanel">
       <h3>👑 АДМИН-ПАНЕЛЬ</h3>
       <div class="admin-section">
-        <h4>💰 ВЫДАТЬ ДЕНЬГИ</h4>
+        <h4>💰 ВЫДАТЬ СЕБЕ ДЕНЬГИ</h4>
         <div class="admin-row">
           <input type="number" id="moneyAmount" placeholder="Сумма" min="1" inputmode="numeric">
           <button class="admin-btn" onclick="giveMoney()">💰 Выдать</button>
@@ -453,10 +443,18 @@
         </div>
       </div>
       <div class="admin-section">
-        <h4>🥾 ИГРОКИ В КОМНАТЕ</h4>
+        <h4>🏠 ИГРОКИ В МОЕЙ КОМНАТЕ (${ROOM})</h4>
         <div class="players-list" id="playersList"></div>
+      </div>
+      <div class="admin-section" style="border-color:#00bfff">
+        <h4 style="color:#00bfff">🌍 ВСЕ ИГРОКИ В ИГРЕ</h4>
+        <div class="global-count" id="globalCount">Загрузка...</div>
+        <div class="players-list" id="globalPlayersList"></div>
         <div class="admin-row" style="margin-top:8px">
-          <button class="admin-btn secondary" onclick="renderPlayersList()">🔄 Обновить</button>
+          <button class="admin-btn secondary" onclick="renderGlobalPlayersList()">🔄 Обновить</button>
+        </div>
+        <div style="color:#888;font-size:11px;text-align:center;margin-top:8px;">
+          💡 Здесь видны ВСЕ игроки во ВСЕХ комнатах. Можно дать деньги, выгнать или удалить аккаунт — даже если он в другой комнате!
         </div>
       </div>
       <div class="admin-section">
@@ -587,27 +585,29 @@
   </div>
 </div>
 
-<div class="transfer-modal-overlay" id="transferModal">
-  <div class="transfer-modal">
-    <h2>💰 ПЕРЕВЕСТИ ДЕНЬГИ</h2>
-    <div class="transfer-target">
-      <div class="nick">🎮 <span id="transferTargetNick">-</span></div>
-      <div class="id" id="transferTargetId">-</div>
+<div class="give-money-modal-overlay" id="giveMoneyModal">
+  <div class="give-money-modal">
+    <h2>💰 ДАТЬ ДЕНЬГИ ИГРОКУ</h2>
+    <div class="give-money-target">
+      <div class="nick">🎮 <span id="giveMoneyTargetNick">-</span></div>
+      <div class="id" id="giveMoneyTargetIdDisplay">-</div>
+      <div class="room" id="giveMoneyTargetRoom">🏠 -</div>
     </div>
-    <div class="transfer-balance">Твой баланс: <span id="transferMyBalance">0</span> 💰</div>
-    <input type="hidden" id="transferTargetIdInput">
-    <input type="hidden" id="transferTargetNickInput">
-    <input type="number" id="transferAmount" class="transfer-input" placeholder="Сумма" min="1" inputmode="numeric">
-    <div class="transfer-quick">
-      <button onclick="setTransferAmount(10)">10</button>
-      <button onclick="setTransferAmount(100)">100</button>
-      <button onclick="setTransferAmount(1000)">1000</button>
-      <button onclick="setTransferAmount(10000)">10К</button>
-      <button onclick="setTransferAll()">ВСЁ</button>
+    <div class="give-money-note">💡 Только админ может давать деньги игрокам</div>
+    <input type="hidden" id="giveMoneyTargetId">
+    <input type="hidden" id="giveMoneyTargetNickInput">
+    <input type="hidden" id="giveMoneyTargetRoomInput">
+    <input type="number" id="giveMoneyAmount" class="give-money-input" placeholder="Сумма" min="1" inputmode="numeric">
+    <div class="give-money-quick">
+      <button onclick="setGiveMoneyAmount(10)">10</button>
+      <button onclick="setGiveMoneyAmount(100)">100</button>
+      <button onclick="setGiveMoneyAmount(1000)">1000</button>
+      <button onclick="setGiveMoneyAmount(10000)">10К</button>
+      <button onclick="setGiveMoneyAmount(1000000)">1МЛН</button>
     </div>
-    <div class="transfer-btns">
-      <button class="transfer-cancel" onclick="closeTransferModal()">Отмена</button>
-      <button class="transfer-send" onclick="confirmTransfer()">💰 Отправить</button>
+    <div class="give-money-btns">
+      <button class="give-money-cancel" onclick="closeGiveMoneyModal()">Отмена</button>
+      <button class="give-money-send" onclick="confirmGiveMoney()">💰 Выдать</button>
     </div>
   </div>
 </div>
@@ -618,9 +618,11 @@
     <div class="kick-target-info">
       <div class="nick">🎮 <span id="kickModalTarget">-</span></div>
       <div class="id" id="kickModalTargetIdDisplay">-</div>
+      <div class="id" id="kickModalTargetRoomDisplay" style="color:#ba68c8">🏠 -</div>
     </div>
     <input type="hidden" id="kickModalTargetId">
     <input type="hidden" id="kickModalTargetNick">
+    <input type="hidden" id="kickModalTargetRoom">
     <div class="duration-label">⏱️ ДЛИТЕЛЬНОСТЬ БАНА</div>
     <div class="duration-grid">
       <div class="duration-option"><input type="radio" name="kickDuration" id="dur1" value="1"><label for="dur1"><span class="dur-icon">⏱️</span>1 мин</label></div>
@@ -661,56 +663,8 @@ const SECRET_CODE = '67890';
 const EVENT_PASSWORD = '56890';
 const NTFY = 'https://ntfy.sh/';
 const BRUSIK_REWARD = 2;
-
-/* ==================== 🔧 ИСПРАВЛЕННАЯ РАБОТА КОМНАТ ==================== */
-// Хеш-функция для любых символов (кириллица, эмодзи и т.д.)
-function hashString(str) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const chr = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + chr;
-    hash |= 0;
-  }
-  return Math.abs(hash).toString(36);
-}
-
-// Транслит русских букв в латиницу (для красивых названий комнат)
-function translit(str) {
-  const map = {
-    'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'y',
-    'к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f',
-    'х':'h','ц':'ts','ч':'ch','ш':'sh','щ':'sch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya'
-  };
-  return str.toLowerCase().split('').map(c => map[c] !== undefined ? map[c] : c).join('');
-}
-
-// Получить название комнаты из URL + хеширование
-function getRoomFromURL() {
-  const raw = new URLSearchParams(location.search).get('room') || 'shared777';
-  const cleaned = raw.trim().toLowerCase();
-  if (!cleaned) return 'shared777';
-  // Транслитерация
-  const translited = translit(cleaned);
-  // Оставляем только a-z0-9_- 
-  const safe = translited.replace(/[^a-z0-9_-]/g, '');
-  // Если получилось что-то осмысленное — используем
-  if (safe.length >= 2) return safe.slice(0, 40);
-  // Иначе — хеш
-  return 'room_' + hashString(cleaned);
-}
-
-let ROOM = getRoomFromURL();
-const NTFY_TOPIC = 'roblox3games_' + ROOM;
-
-document.getElementById('roomName').textContent = ROOM;
-
-// Показать оригинальное название из URL для информации
-(function showOriginalRoomName() {
-  const raw = new URLSearchParams(location.search).get('room');
-  if (raw && raw !== ROOM) {
-    document.getElementById('roomName').title = 'Оригинал: ' + raw;
-  }
-})();
+// 🌍 ГЛОБАЛЬНЫЙ ТОПИК — для всех игроков во всех комнатах
+const GLOBAL_TOPIC = 'roblox3games_global_allplayers_v1';
 
 /* ==================== СКИНЫ ==================== */
 const SKINS = [
@@ -785,7 +739,6 @@ function handleSkinClick(skinId) {
   const equipped = equippedSkin === skinId;
 
   if (equipped) { showToast('ℹ️ Уже надет', skin.name, false); return; }
-
   if (owned) {
     equippedSkin = skinId;
     localStorage.setItem('rb_skin', equippedSkin);
@@ -795,13 +748,11 @@ function handleSkinClick(skinId) {
     sendPresence();
     return;
   }
-
   if (money < skin.price) {
     showToast('❌ Недостаточно денег', `Нужно ${skin.price.toLocaleString('ru-RU')} 💰`, false);
     return;
   }
   if (!confirm(`Купить скин "${skin.name}" за ${skin.price.toLocaleString('ru-RU')} 💰?`)) return;
-
   money -= skin.price;
   ownedSkins.push(skinId);
   equippedSkin = skinId;
@@ -866,20 +817,28 @@ function getNickname() {
 const MY_ID = getPlayerId();
 let MY_NICK = getNickname();
 
+function getRoomFromURL() {
+  const url = new URLSearchParams(location.search).get('room') || 'shared777';
+  return url.toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,40) || 'shared777';
+}
+let ROOM = getRoomFromURL();
+const NTFY_TOPIC = 'roblox3games_' + ROOM;
+document.getElementById('roomName').textContent = ROOM;
 document.getElementById('myNameDisplay').textContent = MY_NICK;
 
 let eventSource = null;
+let globalEventSource = null;
 let reconnectAttempts = 0;
-let presenceInterval = null;
-const players = new Map();
+let globalReconnectAttempts = 0;
+const players = new Map();        // игроки в моей комнате
+const globalPlayers = new Map();  // 🌍 все игроки во всех комнатах
 
 function setOnlineStatus(status) {
   const badge = document.getElementById('onlineBadge');
   const text = document.getElementById('onlineText');
-  badge.classList.remove('offline','connecting');
-  if (status === 'online') { text.textContent = 'Онлайн'; }
+  if (status === 'online') { badge.classList.remove('offline'); text.textContent = 'Онлайн'; }
   else if (status === 'offline') { badge.classList.add('offline'); text.textContent = 'Оффлайн'; }
-  else { badge.classList.add('connecting'); text.textContent = 'Подключение...'; }
+  else { badge.classList.add('offline'); text.textContent = 'Подключение...'; }
 }
 
 function publish(payload) {
@@ -888,43 +847,49 @@ function publish(payload) {
   payload.timestamp = Date.now();
   return fetch(NTFY + NTFY_TOPIC, { method: 'POST', body: JSON.stringify(payload) }).catch(()=>{});
 }
-function sendPresence() { publish({type:'presence', skin: equippedSkin}); }
 
-/* 🆕 ПРОВЕРКА HTTPS */
-function checkProtocol() {
-  if (location.protocol === 'file:') {
-    document.getElementById('warnBanner').classList.add('show');
-    return false;
-  }
-  return true;
+// 🌍 Публикация в топик любой комнаты (для команд чужим игрокам)
+function publishToRoom(targetRoom, payload) {
+  payload.sender = MY_ID;
+  payload.senderNick = MY_NICK;
+  payload.timestamp = Date.now();
+  return fetch(NTFY + 'roblox3games_' + targetRoom, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }).catch(()=>{});
 }
 
-/* 🆕 УЛУЧШЕННОЕ ПОДКЛЮЧЕНИЕ */
+// 🌍 Presence: отправляем и в свою комнату, и в глобальный топик
+function sendPresence() {
+  // в свою комнату
+  publish({type:'presence', skin: equippedSkin});
+  // в глобальный топик
+  fetch(NTFY + GLOBAL_TOPIC, {
+    method: 'POST',
+    body: JSON.stringify({
+      type: 'global_presence',
+      sender: MY_ID,
+      senderNick: MY_NICK,
+      skin: equippedSkin,
+      room: ROOM,
+      timestamp: Date.now()
+    })
+  }).catch(()=>{});
+}
+
 function connectToEvents() {
   if (eventSource) eventSource.close();
   setOnlineStatus('connecting');
-
-  try {
-    eventSource = new EventSource(NTFY + NTFY_TOPIC + '/sse');
-  } catch (err) {
-    setOnlineStatus('offline');
-    console.error('EventSource error:', err);
-    return;
-  }
-
+  eventSource = new EventSource(NTFY + NTFY_TOPIC + '/sse');
   eventSource.onopen = () => {
     setOnlineStatus('online');
     reconnectAttempts = 0;
     console.log('✅ Подключено к комнате:', ROOM);
-    console.log('📡 Топик:', NTFY_TOPIC);
-    // Отправляем presence 3 раза для гарантии
     sendPresence();
     setTimeout(sendPresence, 500);
     setTimeout(sendPresence, 1500);
-    // Загружаем свежие ивенты
     setTimeout(loadRecentEvents, 500);
   };
-
   eventSource.onmessage = (e) => {
     try {
       const wrapper = JSON.parse(e.data);
@@ -932,15 +897,35 @@ function connectToEvents() {
       handleIncoming(JSON.parse(wrapper.message));
     } catch (err) {}
   };
-
   eventSource.onerror = () => {
     setOnlineStatus('offline');
     const delay = Math.min(3000, 1000 * (reconnectAttempts + 1));
     reconnectAttempts++;
-    setTimeout(() => {
-      console.log('🔄 Переподключение к комнате ' + ROOM);
-      connectToEvents();
-    }, delay);
+    setTimeout(connectToEvents, delay);
+  };
+}
+
+// 🌍 Подключение к глобальному топику (все игроки со всего мира)
+function connectToGlobal() {
+  if (globalEventSource) globalEventSource.close();
+  globalEventSource = new EventSource(NTFY + GLOBAL_TOPIC + '/sse');
+  globalEventSource.onopen = () => {
+    globalReconnectAttempts = 0;
+    console.log('🌍 Подключено к глобальному топику');
+    sendPresence();
+    setTimeout(loadRecentGlobal, 500);
+  };
+  globalEventSource.onmessage = (e) => {
+    try {
+      const wrapper = JSON.parse(e.data);
+      if (wrapper.event !== 'message') return;
+      handleGlobalIncoming(JSON.parse(wrapper.message));
+    } catch (err) {}
+  };
+  globalEventSource.onerror = () => {
+    const delay = Math.min(3000, 1000 * (globalReconnectAttempts + 1));
+    globalReconnectAttempts++;
+    setTimeout(connectToGlobal, delay);
   };
 }
 
@@ -952,7 +937,23 @@ function handleIncoming(payload) {
   else if (payload.type === 'event_stop') handleRemoteStop(payload);
   else if (payload.type === 'kick') handleKick(payload);
   else if (payload.type === 'nick_change') handleNickChange(payload);
-  else if (payload.type === 'money_transfer') handleMoneyTransfer(payload);
+  else if (payload.type === 'money_give') handleMoneyGive(payload);
+  else if (payload.type === 'account_reset') handleAccountReset(payload);
+}
+
+// 🌍 Обработка глобальных сообщений
+function handleGlobalIncoming(payload) {
+  if (!payload || payload.sender === MY_ID) return;
+  if (payload.type === 'global_presence') {
+    globalPlayers.set(payload.sender, {
+      nickname: payload.senderNick || ('Игрок_' + payload.sender.slice(-4)),
+      skin: payload.skin || 'dog',
+      room: payload.room || 'shared777',
+      lastSeen: Date.now()
+    });
+    updateGlobalCount();
+    if (currentGame === 'secret' && adminUnlocked) renderGlobalPlayersList();
+  }
 }
 
 function handlePresence(payload) {
@@ -963,78 +964,100 @@ function handlePresence(payload) {
     skin: payload.skin || (existing ? existing.skin : 'dog'),
     lastSeen: Date.now()
   });
-  updatePlayerCount();
   if (currentGame === 'secret' && adminUnlocked) renderPlayersList();
 }
 
 function cleanupPlayers() {
   const now = Date.now();
-  let changed = false;
-  players.forEach((p, id) => { if (now - p.lastSeen > 35000) { players.delete(id); changed = true; } });
-  if (changed) updatePlayerCount();
-  if (currentGame === 'secret' && adminUnlocked) renderPlayersList();
-}
-function updatePlayerCount() { document.getElementById('playerCount').textContent = players.size + 1; }
-
-/* 🆕 ТЕСТ СОЕДИНЕНИЯ */
-async function testConnection() {
-  showToast('🧪 Тест связи...', 'Проверяем подключение', false, false, false, true);
-  try {
-    // Отправляем тестовое сообщение
-    const testId = 'test_' + Date.now();
-    await fetch(NTFY + NTFY_TOPIC, {
-      method: 'POST',
-      body: JSON.stringify({ type: 'presence', sender: MY_ID, senderNick: MY_NICK, test: true, testId })
-    });
-    // Читаем последние сообщения
-    const res = await fetch(NTFY + NTFY_TOPIC + '/json?poll=1&since=30s');
-    const text = await res.text();
-    const hasMyMessage = text.includes(testId);
-    if (hasMyMessage) {
-      showToast('✅ СВЯЗЬ РАБОТАЕТ!', `Комната "${ROOM}" активна. Игроков: ${players.size + 1}`, true);
-    } else {
-      showToast('⚠️ Связь работает, но...', 'Попробуй обновить через 5 сек', false, false, false, true);
-    }
-  } catch (err) {
-    showToast('❌ ОШИБКА СВЯЗИ!', 'Проверь интернет или открой через https://', false, false, true);
+  let changed1 = false, changed2 = false;
+  players.forEach((p, id) => { if (now - p.lastSeen > 30000) { players.delete(id); changed1 = true; } });
+  globalPlayers.forEach((p, id) => { if (now - p.lastSeen > 40000) { globalPlayers.delete(id); changed2 = true; } });
+  if (changed1 && currentGame === 'secret' && adminUnlocked) renderPlayersList();
+  if (changed2) {
+    updateGlobalCount();
+    if (currentGame === 'secret' && adminUnlocked) renderGlobalPlayersList();
   }
 }
+function updateGlobalCount() {
+  document.getElementById('globalPlayerCount').textContent = globalPlayers.size + 1;
+  const gc = document.getElementById('globalCount');
+  if (gc) gc.textContent = `🌍 Всего онлайн: ${globalPlayers.size + 1} (в моей комнате: ${players.size + 1})`;
+}
 
-function openTransferModal(targetId, targetNick) {
-  if (targetId === MY_ID) { showToast('😅 Себе нельзя', 'Это твой ID', false); return; }
-  document.getElementById('transferModal').classList.add('show');
-  document.getElementById('transferTargetNick').textContent = targetNick;
-  document.getElementById('transferTargetId').textContent = targetId;
-  document.getElementById('transferTargetIdInput').value = targetId;
-  document.getElementById('transferTargetNickInput').value = targetNick;
-  document.getElementById('transferMyBalance').textContent = money.toLocaleString('ru-RU');
-  document.getElementById('transferAmount').value = '';
-  setTimeout(() => document.getElementById('transferAmount').focus(), 200);
+/* ==================== 🆕 ДАТЬ ДЕНЬГИ ИГРОКУ (в любой комнате) ==================== */
+function openGiveMoneyModal(targetId, targetNick, targetRoom) {
+  if (!adminUnlocked) { showToast('❌ Только админ!', 'Открой админ-панель', false); return; }
+  if (targetId === MY_ID) { showToast('😅 Себе нельзя', 'Используй админ-панель', false); return; }
+  document.getElementById('giveMoneyModal').classList.add('show');
+  document.getElementById('giveMoneyTargetNick').textContent = targetNick;
+  document.getElementById('giveMoneyTargetIdDisplay').textContent = targetId;
+  document.getElementById('giveMoneyTargetRoom').textContent = '🏠 Комната: ' + (targetRoom || ROOM);
+  document.getElementById('giveMoneyTargetId').value = targetId;
+  document.getElementById('giveMoneyTargetNickInput').value = targetNick;
+  document.getElementById('giveMoneyTargetRoomInput').value = targetRoom || ROOM;
+  document.getElementById('giveMoneyAmount').value = '';
+  setTimeout(() => document.getElementById('giveMoneyAmount').focus(), 200);
 }
-function closeTransferModal() { document.getElementById('transferModal').classList.remove('show'); }
-function setTransferAmount(amount) { document.getElementById('transferAmount').value = amount; }
-function setTransferAll() { document.getElementById('transferAmount').value = Math.floor(money); }
-function confirmTransfer() {
-  const targetId = document.getElementById('transferTargetIdInput').value;
-  const targetNick = document.getElementById('transferTargetNickInput').value;
-  const amount = parseInt(document.getElementById('transferAmount').value);
+function closeGiveMoneyModal() { document.getElementById('giveMoneyModal').classList.remove('show'); }
+function setGiveMoneyAmount(amount) { document.getElementById('giveMoneyAmount').value = amount; }
+function confirmGiveMoney() {
+  if (!adminUnlocked) { showToast('❌ Нет доступа', 'Только админ', false); return; }
+  const targetId = document.getElementById('giveMoneyTargetId').value;
+  const targetNick = document.getElementById('giveMoneyTargetNickInput').value;
+  const targetRoom = document.getElementById('giveMoneyTargetRoomInput').value;
+  const amount = parseInt(document.getElementById('giveMoneyAmount').value);
   if (isNaN(amount) || amount <= 0) { showToast('❌ Ошибка', 'Введи сумму больше 0', false); return; }
-  if (amount > money) { showToast('❌ Недостаточно денег', `У тебя только ${Math.floor(money).toLocaleString('ru-RU')} 💰`, false); return; }
-  money -= amount; updateMoney(); saveAll();
-  const transferPayload = { type: 'money_transfer', target: targetId, fromNick: MY_NICK, fromId: MY_ID, amount: amount };
-  publish(transferPayload);
-  setTimeout(() => publish(transferPayload), 500);
-  setTimeout(() => publish(transferPayload), 1500);
-  closeTransferModal();
-  showToast('💰 ПЕРЕВОД ОТПРАВЛЕН!', `${targetNick} получит ${amount.toLocaleString('ru-RU')} 💰`, true, false, false, true);
+  if (amount > 999999999999999) { showToast('❌ Слишком много', 'Максимум 999 999 999 999 999', false); return; }
+  const givePayload = { type: 'money_give', target: targetId, fromNick: MY_NICK, amount: amount };
+  // 🎯 Отправляем в топик КОМНАТЫ ИГРОКА (а не в свою!)
+  publishToRoom(targetRoom, givePayload);
+  setTimeout(() => publishToRoom(targetRoom, givePayload), 500);
+  setTimeout(() => publishToRoom(targetRoom, givePayload), 1500);
+  closeGiveMoneyModal();
+  showToast('💰 ДЕНЬГИ ВЫДАНЫ!', `${targetNick} (комната ${targetRoom}) получит ${amount.toLocaleString('ru-RU')} 💰`, true, false, false, true);
 }
-function handleMoneyTransfer(payload) {
+function handleMoneyGive(payload) {
   if (payload.target !== MY_ID) return;
   const amount = parseInt(payload.amount) || 0;
   if (amount <= 0) return;
   money += amount; stats.totalEarned += amount;
   updateMoney(); saveAll(); checkAchievements();
-  showToast(`💰 ДЕНЬГИ ОТ ${payload.fromNick || 'игрока'}!`, `+${amount.toLocaleString('ru-RU')} 💰`, true, false, false, true);
+  showToast(`💰 ДЕНЬГИ ОТ АДМИНА!`, `+${amount.toLocaleString('ru-RU')} 💰 (от ${payload.fromNick || 'админа'})`, true, false, false, true);
+}
+
+/* ==================== 🆕 УДАЛИТЬ АККАУНТ ИГРОКА (в любой комнате) ==================== */
+function confirmDeleteAccount(targetId, targetNick, targetRoom) {
+  if (!adminUnlocked) { showToast('❌ Только админ!', 'Открой админ-панель', false); return; }
+  if (targetId === MY_ID) { showToast('😅 Себя нельзя', 'Используй свою кнопку сброса', false); return; }
+  if (!confirm(`🗑️ УДАЛИТЬ АККАУНТ игрока "${targetNick}" (комната: ${targetRoom || ROOM})?\n\nВЕСЬ его прогресс (деньги, ачивки, скины) будет уничтожен!`)) return;
+  const resetPayload = { type: 'account_reset', target: targetId, fromNick: MY_NICK };
+  publishToRoom(targetRoom || ROOM, resetPayload);
+  setTimeout(() => publishToRoom(targetRoom || ROOM, resetPayload), 500);
+  setTimeout(() => publishToRoom(targetRoom || ROOM, resetPayload), 1500);
+  showToast('🗑️ КОМАНДА ОТПРАВЛЕНА', `Аккаунт "${targetNick}" будет удалён`, false, false, true);
+}
+function handleAccountReset(payload) {
+  if (payload.target !== MY_ID) return;
+  const fromNick = payload.fromNick || 'Админ';
+  showDeleteScreen(fromNick);
+}
+function showDeleteScreen(fromNick) {
+  if (eventTimerInterval) { clearInterval(eventTimerInterval); eventTimerInterval = null; }
+  if (eventSource) { eventSource.close(); eventSource = null; }
+  if (globalEventSource) { globalEventSource.close(); globalEventSource = null; }
+  localStorage.clear();
+  sessionStorage.clear();
+  document.body.innerHTML = `
+    <div style="display:flex;justify-content:center;align-items:center;min-height:100vh;background:#1a0000;font-family:Arial;color:#fff;text-align:center;padding:20px;">
+      <div style="background:#2b0000;border:3px solid #c41e16;border-radius:20px;padding:40px 25px;max-width:450px;box-shadow:0 0 50px rgba(196,30,22,0.8);">
+        <div style="font-size:80px;margin-bottom:15px;">🗑️</div>
+        <div style="color:#ff4444;font-size:28px;font-weight:bold;letter-spacing:2px;margin-bottom:15px;text-shadow:0 0 20px rgba(255,68,68,0.8);">АККАУНТ УДАЛЁН</div>
+        <p style="color:#ff8888;margin:15px 0;">Админ ${fromNick} удалил твой аккаунт</p>
+        <p style="color:#aaa;font-size:13px;">Весь прогресс уничтожен: деньги, ачивки, скины, ежедневка</p>
+        <button onclick="location.reload()" style="background:#c41e16;color:#fff;border:none;padding:14px 30px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;margin-top:25px;">🔄 Начать заново</button>
+      </div>
+    </div>
+  `;
 }
 
 function openNickModal() {
@@ -1083,6 +1106,12 @@ function handleNickChange(payload) {
     p.lastSeen = Date.now();
     if (currentGame === 'secret' && adminUnlocked) renderPlayersList();
   }
+  if (globalPlayers.has(payload.sender)) {
+    const p = globalPlayers.get(payload.sender);
+    p.nickname = payload.newNick;
+    p.lastSeen = Date.now();
+    if (currentGame === 'secret' && adminUnlocked) renderGlobalPlayersList();
+  }
 }
 
 function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -1091,17 +1120,20 @@ function getSkinEmoji(skinId) {
   const skin = getSkinById(skinId);
   return skin.acc ? `🐶${skin.acc}` : '🐶';
 }
+
+/* ==================== СПИСОК ИГРОКОВ В КОМНАТЕ ==================== */
 function renderPlayersList() {
   const list = document.getElementById('playersList');
   if (!list) return;
+  if (!adminUnlocked) { list.innerHTML = '<div class="no-players">🔒 Открой админ-панель</div>'; return; }
   list.innerHTML = '';
   const allPlayers = [
-    { id: MY_ID, nick: MY_NICK + ' (ты)', skin: equippedSkin, isMe: true, lastSeen: Date.now() },
-    ...[...players.entries()].map(([id, p]) => ({ id, nick: p.nickname, skin: p.skin, isMe: false, lastSeen: p.lastSeen }))
+    { id: MY_ID, nick: MY_NICK + ' (ты)', skin: equippedSkin, isMe: true, lastSeen: Date.now(), room: ROOM },
+    ...[...players.entries()].map(([id, p]) => ({ id, nick: p.nickname, skin: p.skin, isMe: false, lastSeen: p.lastSeen, room: ROOM }))
   ];
   allPlayers.sort((a, b) => (a.isMe === b.isMe ? 0 : (a.isMe ? -1 : 1)));
   if (allPlayers.length <= 1) {
-    list.innerHTML = '<div class="no-players">В комнате только ты 😐<br><span style="font-size:10px;color:#555">Позови друга в ту же комнату</span></div>';
+    list.innerHTML = '<div class="no-players">В комнате только ты 😐</div>';
     return;
   }
   allPlayers.forEach(p => {
@@ -1115,10 +1147,11 @@ function renderPlayersList() {
         <div class="player-id">${p.id}</div>
         <div class="player-time">⏱️ ${timeText}</div>
       </div>
-      ${p.isMe ? '' : `
+      ${p.isMe ? '<div style="color:#ffd700;font-size:11px;">(это ты)</div>' : `
         <div class="player-btns">
-          <button class="money-btn" onclick="openTransferModal('${p.id}','${escapeJs(p.nick)}')">💰 Перевести</button>
-          <button class="kick-btn" onclick="kickPlayer('${p.id}','${escapeJs(p.nick)}')">🥾 Выгнать</button>
+          <button class="money-btn" onclick="openGiveMoneyModal('${p.id}','${escapeJs(p.nick)}','${p.room}')" title="Дать деньги">💰</button>
+          <button class="reset-acc-btn" onclick="confirmDeleteAccount('${p.id}','${escapeJs(p.nick)}','${p.room}')" title="Удалить аккаунт">🗑️</button>
+          <button class="kick-btn" onclick="kickPlayer('${p.id}','${escapeJs(p.nick)}','${p.room}')" title="Выгнать">🥾</button>
         </div>
       `}
     `;
@@ -1126,14 +1159,67 @@ function renderPlayersList() {
   });
 }
 
-function kickPlayer(targetId, targetNick) {
+/* ==================== 🌍 ГЛОБАЛЬНЫЙ СПИСОК ИГРОКОВ ==================== */
+function renderGlobalPlayersList() {
+  const list = document.getElementById('globalPlayersList');
+  if (!list) return;
+  if (!adminUnlocked) { list.innerHTML = '<div class="no-players">🔒 Открой админ-панель</div>'; return; }
+  list.innerHTML = '';
+
+  const allPlayers = [
+    { id: MY_ID, nick: MY_NICK + ' (ты)', skin: equippedSkin, isMe: true, lastSeen: Date.now(), room: ROOM, inMyRoom: true },
+    ...[...globalPlayers.entries()].map(([id, p]) => ({
+      id, nick: p.nickname, skin: p.skin, isMe: false, lastSeen: p.lastSeen, room: p.room, inMyRoom: p.room === ROOM
+    }))
+  ];
+
+  // Сортируем: сначала моя комната, потом остальные
+  allPlayers.sort((a, b) => {
+    if (a.isMe !== b.isMe) return a.isMe ? -1 : 1;
+    if (a.inMyRoom !== b.inMyRoom) return a.inMyRoom ? -1 : 1;
+    return 0;
+  });
+
+  if (allPlayers.length <= 1) {
+    list.innerHTML = '<div class="no-players">В мире только ты 😐<br><span style="font-size:10px;color:#555">Другие игроки появятся здесь автоматически</span></div>';
+    return;
+  }
+
+  allPlayers.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'player-item';
+    const secAgo = Math.floor((Date.now() - p.lastSeen) / 1000);
+    const timeText = p.isMe ? 'сейчас' : (secAgo < 5 ? 'только что' : secAgo + 'с назад');
+    const roomBadge = p.inMyRoom ? '🏠 Моя комната' : '🌍 ' + p.room;
+    div.innerHTML = `
+      <div class="player-info">
+        <div class="player-name ${p.isMe?'me':''}">${p.isMe?'👑':'🎮'} ${getSkinEmoji(p.skin)} ${escapeHtml(p.nick)}</div>
+        <div class="player-id">${p.id}</div>
+        <div class="player-room">${roomBadge}</div>
+        <div class="player-time">⏱️ ${timeText}</div>
+      </div>
+      ${p.isMe ? '<div style="color:#ffd700;font-size:11px;">(это ты)</div>' : `
+        <div class="player-btns">
+          <button class="money-btn" onclick="openGiveMoneyModal('${p.id}','${escapeJs(p.nick)}','${p.room}')" title="Дать деньги">💰</button>
+          <button class="reset-acc-btn" onclick="confirmDeleteAccount('${p.id}','${escapeJs(p.nick)}','${p.room}')" title="Удалить аккаунт">🗑️</button>
+          <button class="kick-btn" onclick="kickPlayer('${p.id}','${escapeJs(p.nick)}','${p.room}')" title="Выгнать">🥾</button>
+        </div>
+      `}
+    `;
+    list.appendChild(div);
+  });
+}
+
+function kickPlayer(targetId, targetNick, targetRoom) {
   if (!adminUnlocked) { showToast('❌ Нет доступа', 'Только админ', false); return; }
   if (targetId === MY_ID) { showToast('😅 Себя нельзя', 'Ты админ', false); return; }
   document.getElementById('kickModal').classList.add('show');
   document.getElementById('kickModalTarget').textContent = targetNick;
   document.getElementById('kickModalTargetIdDisplay').textContent = targetId;
+  document.getElementById('kickModalTargetRoomDisplay').textContent = '🏠 Комната: ' + (targetRoom || ROOM);
   document.getElementById('kickModalTargetId').value = targetId;
   document.getElementById('kickModalTargetNick').value = targetNick;
+  document.getElementById('kickModalTargetRoom').value = targetRoom || ROOM;
   document.getElementById('kickReasonInput').value = 'Нарушение правил';
   document.getElementById('dur5').checked = true;
 }
@@ -1141,6 +1227,7 @@ function closeKickModal() { document.getElementById('kickModal').classList.remov
 function confirmKick() {
   const targetId = document.getElementById('kickModalTargetId').value;
   const targetNick = document.getElementById('kickModalTargetNick').value;
+  const targetRoom = document.getElementById('kickModalTargetRoom').value || ROOM;
   const reason = document.getElementById('kickReasonInput').value.trim() || 'Нарушение правил';
   const durationRadio = document.querySelector('input[name="kickDuration"]:checked');
   if (!durationRadio) { alert('Выбери длительность!'); return; }
@@ -1149,12 +1236,13 @@ function confirmKick() {
   if (val === 'forever') { banMs = 365 * 24 * 60 * 60 * 1000 * 100; durationText = 'навсегда'; }
   else { const minutes = parseInt(val); banMs = minutes * 60 * 1000; durationText = formatDuration(minutes); }
   const kickPayload = {type:'kick', target: targetId, targetNick, reason, banMs, durationText};
-  publish(kickPayload);
-  setTimeout(() => publish(kickPayload), 500);
-  setTimeout(() => publish(kickPayload), 1500);
+  publishToRoom(targetRoom, kickPayload);
+  setTimeout(() => publishToRoom(targetRoom, kickPayload), 500);
+  setTimeout(() => publishToRoom(targetRoom, kickPayload), 1500);
   players.delete(targetId);
-  renderPlayersList(); updatePlayerCount(); closeKickModal();
-  showToast('🥾 ИГРОК ВЫГНАН', `${targetNick} — бан ${durationText}`, false, false, true);
+  globalPlayers.delete(targetId);
+  renderPlayersList(); renderGlobalPlayersList(); updateGlobalCount(); closeKickModal();
+  showToast('🥾 ИГРОК ВЫГНАН', `${targetNick} (комната ${targetRoom}) — бан ${durationText}`, false, false, true);
 }
 function formatDuration(minutes) {
   if (minutes < 60) return minutes + ' мин';
@@ -1178,6 +1266,7 @@ function showKickedScreen(reason, banUntil, durationText) {
   document.getElementById('kickDurationText').textContent = '⏱️ Срок бана: ' + (durationText || '5 мин');
   document.getElementById('kickOverlay').classList.add('show');
   if (eventSource) { eventSource.close(); eventSource = null; }
+  if (globalEventSource) { globalEventSource.close(); globalEventSource = null; }
   setOnlineStatus('offline');
   const timerEl = document.getElementById('kickTimer');
   function tick() {
@@ -1214,24 +1303,11 @@ function checkBan() {
   }
   return false;
 }
-
-/* 🆕 ИСПРАВЛЕННАЯ СМЕНА КОМНАТЫ */
 function changeRoom() {
-  const rawInput = document.getElementById('roomInput').value.trim();
-  if (!rawInput) { alert('Введи название комнаты!'); return; }
-  const cleaned = rawInput.toLowerCase();
-  const translited = translit(cleaned);
-  const safe = translited.replace(/[^a-z0-9_-]/g, '');
-  let finalRoom;
-  if (safe.length >= 2) {
-    finalRoom = safe.slice(0, 40);
-  } else {
-    finalRoom = 'room_' + hashString(cleaned);
-  }
-  // Сохраняем оригинальное название
-  localStorage.setItem('rb_lastRoom', rawInput);
+  const val = document.getElementById('roomInput').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g,'');
+  if (!val) { alert('Введи название комнаты!'); return; }
   const url = new URL(location.href);
-  url.searchParams.set('room', rawInput);
+  url.searchParams.set('room', val);
   location.href = url.toString();
 }
 
@@ -1262,7 +1338,6 @@ function handleRemoteEvent(payload) {
     brusikMult: payload.brusikMult, instant: payload.instant
   }, payload.endTime);
 }
-
 function applyRemoteEvent(ev, endTime) {
   activeEvent = ev; activeEvent.isRemote = true;
   stats.eventsStarted = (stats.eventsStarted || 0) + 1;
@@ -1275,7 +1350,6 @@ function applyRemoteEvent(ev, endTime) {
   showToast('🌍 ИВЕНТ ОТ ДРУГОГО ИГРОКА', `${ev.icon} ${ev.name} — ${remaining}с`, true, 'blue');
   checkAchievements();
 }
-
 function handleRemoteStop(payload) {
   if (!activeEvent) return;
   if (payload.eventId && activeEvent.id !== payload.eventId) return;
@@ -1285,7 +1359,6 @@ function handleRemoteStop(payload) {
   updateActiveEventBadge(); updateEventsCard(); renderEventStatus();
   showToast('⏹️ ИВЕНТ ОСТАНОВЛЕН', `${evName} — другим игроком`, false, false, true);
 }
-
 function openEvents() {
   document.getElementById('menu').style.display = 'none';
   document.querySelectorAll('.game').forEach(g => g.classList.remove('active'));
@@ -1432,6 +1505,22 @@ async function loadRecentEvents() {
     }
   } catch (err) {}
 }
+// 🌍 Загрузка последних глобальных presence
+async function loadRecentGlobal() {
+  try {
+    const res = await fetch(NTFY + GLOBAL_TOPIC + '/json?poll=1&since=2m');
+    const text = await res.text();
+    if (!text.trim()) return;
+    const lines = text.trim().split('\n');
+    for (let i = lines.length - 1; i >= 0; i--) {
+      try {
+        const wrapper = JSON.parse(lines[i]);
+        if (wrapper.event !== 'message') continue;
+        handleGlobalIncoming(JSON.parse(wrapper.message));
+      } catch(e) {}
+    }
+  } catch (err) {}
+}
 
 let adminUnlocked = false;
 function openSecret() {
@@ -1445,7 +1534,7 @@ function openSecret() {
     document.getElementById('secretLockIcon').textContent = '👑';
     document.getElementById('secretTitle').textContent = 'АДМИН-РЕЖИМ';
     document.getElementById('secretHint').textContent = 'Полный доступ!';
-    updateAdminInfo(); renderPlayersList();
+    updateAdminInfo(); renderPlayersList(); renderGlobalPlayersList(); updateGlobalCount();
   } else {
     document.getElementById('adminPanel').classList.remove('show');
     document.getElementById('secretLockedPart').style.display = 'block';
@@ -1465,7 +1554,7 @@ function checkSecret() {
     document.getElementById('secretHint').textContent = 'Полный доступ!';
     document.getElementById('secretLockedPart').style.display = 'none';
     document.getElementById('adminPanel').classList.add('show');
-    updateAdminInfo(); renderPlayersList();
+    updateAdminInfo(); renderPlayersList(); renderGlobalPlayersList(); updateGlobalCount();
     showToast('🔓 ДОСТУП ОТКРЫТ!', '👑 Админ-режим', false, false, false, true);
   } else {
     input.value = '';
@@ -1557,27 +1646,20 @@ function petBrusik(e) {
   const now = Date.now();
   if (now - brusikLastPet < 100) return;
   brusikLastPet = now;
-
   const dog = document.getElementById('brusikDog');
   const wrap = document.getElementById('brusikDogWrap');
   const hint = document.getElementById('brusikHint');
   hint.style.display = 'none';
-
   dog.classList.remove('petting', 'happy');
   void dog.offsetWidth;
   dog.classList.add('petting');
-
   const rect = wrap.getBoundingClientRect();
   let clickX = 0, clickY = 0;
   if (e && e.clientX !== undefined && e.clientX !== 0) {
     clickX = e.clientX - (rect.left + rect.width/2);
     clickY = e.clientY - (rect.top + rect.height/2);
-  } else {
-    clickX = (Math.random()-0.5)*100;
-    clickY = (Math.random()-0.5)*60;
-  }
+  } else { clickX = (Math.random()-0.5)*100; clickY = (Math.random()-0.5)*60; }
   spawnHeart(clickX, clickY);
-
   const mult = brusikMultiplier * getEventBrusikMult();
   const reward = BRUSIK_REWARD * mult;
   money += reward;
@@ -1586,34 +1668,22 @@ function petBrusik(e) {
   stats.brusikPets++;
   brusikSessionPets++;
   brusikMood += 8;
-  if (brusikMood >= 100) {
-    brusikMood = 0;
-    doBrusikTrick();
-  }
+  if (brusikMood >= 100) { brusikMood = 0; doBrusikTrick(); }
   updateMoney();
   updateBrusikUI();
   saveAll();
   checkAchievements();
 }
-
 function doBrusikTrick() {
   const dog = document.getElementById('brusikDog');
   dog.classList.add('happy');
   setTimeout(() => dog.classList.remove('happy'), 600);
-
   const bonus = BRUSIK_REWARD * 50 * brusikMultiplier * getEventBrusikMult() * getEventMoneyMult();
-  money += bonus;
-  stats.totalEarned += bonus;
-  stats.brusikEarned += bonus;
-  stats.brusikTricks++;
+  money += bonus; stats.totalEarned += bonus; stats.brusikEarned += bonus; stats.brusikTricks++;
   updateMoney();
-
   showToast('🐶 ТРЮК БРЮСИКА!', `🎉 +${Math.floor(bonus)} 💰 бонус`, false, false, false, true, false);
-  for (let i = 0; i < 8; i++) {
-    setTimeout(() => spawnHeart((Math.random()-0.5)*150, (Math.random()-0.5)*100), i*80);
-  }
+  for (let i = 0; i < 8; i++) setTimeout(() => spawnHeart((Math.random()-0.5)*150, (Math.random()-0.5)*100), i*80);
 }
-
 function spawnHeart(x, y) {
   const wrap = document.getElementById('brusikDogWrap');
   const heart = document.createElement('div');
@@ -1629,7 +1699,6 @@ function spawnHeart(x, y) {
   wrap.appendChild(heart);
   setTimeout(() => heart.remove(), 1100);
 }
-
 function updateBrusikUI() {
   document.getElementById('brusikPets').textContent = brusikSessionPets;
   document.getElementById('brusikTotalPets').textContent = stats.brusikPets;
@@ -1638,19 +1707,13 @@ function updateBrusikUI() {
   document.getElementById('brusikMoodFill').style.width = brusikMood + '%';
   applySkin();
 }
-
 function resetBrusik() {
   if (!confirm('Сбросить прогресс Брюсика?')) return;
-  stats.brusikPets = 0;
-  stats.brusikEarned = 0;
-  stats.brusikTricks = 0;
-  brusikSessionPets = 0;
-  brusikMood = 0;
-  saveAll();
-  updateBrusikUI();
+  stats.brusikPets = 0; stats.brusikEarned = 0; stats.brusikTricks = 0;
+  brusikSessionPets = 0; brusikMood = 0;
+  saveAll(); updateBrusikUI();
   showToast('🔄 Прогресс сброшен', 'Брюсик снова голоден!', false);
 }
-
 function msUntilMidnight() {
   const now = new Date();
   return new Date(now.getFullYear(), now.getMonth(), now.getDate()+1) - now;
@@ -1972,14 +2035,14 @@ function showToast(title, name, green = false, purple = false, red = false, gold
 document.getElementById('accountModal').addEventListener('click', function(e) { if (e.target === this) closeAccountReset(); });
 document.getElementById('kickModal').addEventListener('click', function(e) { if (e.target === this) closeKickModal(); });
 document.getElementById('nickModal').addEventListener('click', function(e) { if (e.target === this) closeNickModal(); });
-document.getElementById('transferModal').addEventListener('click', function(e) { if (e.target === this) closeTransferModal(); });
+document.getElementById('giveMoneyModal').addEventListener('click', function(e) { if (e.target === this) closeGiveMoneyModal(); });
 
 setInterval(() => {
   if (currentGame === 'daily') { updateTimer(); renderDaily(); }
   if (currentGame === 'events') renderEventStatus();
   updateActiveEventBadge();
   updateEventsCard();
-  if (currentGame === 'secret' && adminUnlocked) { updateAdminInfo(); renderPlayersList(); }
+  if (currentGame === 'secret' && adminUnlocked) { updateAdminInfo(); renderPlayersList(); renderGlobalPlayersList(); }
 }, 500);
 
 let lastTouchEnd = 0;
@@ -1989,26 +2052,27 @@ document.addEventListener('touchend', function(e) {
   lastTouchEnd = now;
 }, { passive: false });
 
-// Запуск
 applySkin();
 updateMoney();
 updateAchCounter(); updateDailyCard(); updateEventsCard(); checkStreakBreak();
 updateBrusikUI();
+updateGlobalCount();
 saveAll();
-
-// Проверка что открыто не как file://
-checkProtocol();
 
 if (!checkBan()) {
   connectToEvents();
-  if (presenceInterval) clearInterval(presenceInterval);
-  presenceInterval = setInterval(sendPresence, 5000);
+  connectToGlobal();
+  setInterval(sendPresence, 5000);
   setInterval(cleanupPlayers, 5000);
   setInterval(async () => {
     if (!activeEvent && !checkBan()) await loadRecentEvents();
   }, 10000);
+  setInterval(async () => {
+    await loadRecentGlobal();
+  }, 15000);
   setTimeout(loadRecentEvents, 1500);
-  setTimeout(updatePlayerCount, 500);
+  setTimeout(loadRecentGlobal, 2000);
+  setTimeout(updateGlobalCount, 500);
 }
 </script>
 
