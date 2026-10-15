@@ -658,7 +658,7 @@ const EVENT_PASSWORD = '56890';
 const NTFY = 'https://ntfy.sh/';
 const BRUSIK_REWARD = 2;
 
-/* ==================== СКИНЫ — ТЁМНЫЙ ПЁС ТЕПЕРЬ ЭПИК ==================== */
+/* ==================== СКИНЫ ==================== */
 const SKINS = [
   { id:'dog',    name:'Обычный пёс',              price:0,       type:'dog',   rarity:'common',    filter:'none',                                                       acc:'' },
   { id:'gold',   name:'Золотой пёс',              price:500,     type:'dog',   rarity:'common',    filter:'sepia(1) saturate(3) hue-rotate(-15deg) brightness(1.15)',   acc:'👑' },
@@ -822,7 +822,9 @@ document.getElementById('roomName').textContent = ROOM;
 document.getElementById('myNameDisplay').textContent = MY_NICK;
 
 let eventSource = null;
+let reconnectAttempts = 0; // 🆕 Счётчик переподключений
 const players = new Map();
+
 function setOnlineStatus(status) {
   const badge = document.getElementById('onlineBadge');
   const text = document.getElementById('onlineText');
@@ -837,11 +839,24 @@ function publish(payload) {
   return fetch(NTFY + NTFY_TOPIC, { method: 'POST', body: JSON.stringify(payload) }).catch(()=>{});
 }
 function sendPresence() { publish({type:'presence', skin: equippedSkin}); }
+
+/* 🆕 УЛУЧШЕННОЕ ПОДКЛЮЧЕНИЕ С АВТОПЕРЕПОДКЛЮЧЕНИЕМ */
 function connectToEvents() {
   if (eventSource) eventSource.close();
   setOnlineStatus('connecting');
+
   eventSource = new EventSource(NTFY + NTFY_TOPIC + '/sse');
-  eventSource.onopen = () => { setOnlineStatus('online'); sendPresence(); sendPresence(); };
+
+  eventSource.onopen = () => {
+    setOnlineStatus('online');
+    reconnectAttempts = 0;
+    console.log('✅ Подключено к комнате', ROOM);
+    sendPresence();
+    sendPresence();
+    // 🆕 Догружаем свежие ивенты при подключении
+    setTimeout(loadRecentEvents, 500);
+  };
+
   eventSource.onmessage = (e) => {
     try {
       const wrapper = JSON.parse(e.data);
@@ -849,8 +864,19 @@ function connectToEvents() {
       handleIncoming(JSON.parse(wrapper.message));
     } catch (err) {}
   };
-  eventSource.onerror = () => { setOnlineStatus('offline'); setTimeout(connectToEvents, 3000); };
+
+  eventSource.onerror = () => {
+    setOnlineStatus('offline');
+    // 🆕 Быстрое переподключение: 1 сек, 2 сек, 3 сек максимум
+    const delay = Math.min(3000, 1000 * (reconnectAttempts + 1));
+    reconnectAttempts++;
+    setTimeout(() => {
+      console.log('🔄 Переподключение...');
+      connectToEvents();
+    }, delay);
+  };
 }
+
 function handleIncoming(payload) {
   if (!payload || !payload.type) return;
   if (payload.sender === MY_ID) return;
@@ -861,6 +887,7 @@ function handleIncoming(payload) {
   else if (payload.type === 'nick_change') handleNickChange(payload);
   else if (payload.type === 'money_transfer') handleMoneyTransfer(payload);
 }
+
 function handlePresence(payload) {
   if (!payload.sender) return;
   const existing = players.get(payload.sender);
@@ -872,6 +899,7 @@ function handlePresence(payload) {
   updatePlayerCount();
   if (currentGame === 'secret' && adminUnlocked) renderPlayersList();
 }
+
 function cleanupPlayers() {
   const now = Date.now();
   let changed = false;
@@ -1115,16 +1143,30 @@ function getEventMoneyMult()  { return activeEvent ? (activeEvent.moneyMult  || 
 function getEventMemoryMult() { return activeEvent ? (activeEvent.memoryMult || 1) : 1; }
 function getEventBrusikMult() { return activeEvent ? (activeEvent.brusikMult || 1) : 1; }
 
+/* 🆕 ЗАЩИТА ОТ ДУБЛИКАТОВ + ОБРАБОТКА ЧУЖИХ ИВЕНТОВ */
 function handleRemoteEvent(payload) {
   if (payload.type !== 'event_start') return;
   if (!payload.endTime || payload.endTime < Date.now()) return;
+  
+  // 🛡️ Защита от дубликатов — не запускаем один и тот же ивент дважды
+  const eventKey = payload.id + '_' + payload.endTime;
+  if (window._processedEvents && window._processedEvents[eventKey]) {
+    return;
+  }
+  if (!window._processedEvents) window._processedEvents = {};
+  window._processedEvents[eventKey] = true;
+  // Чистим старые записи
+  setTimeout(() => { delete window._processedEvents[eventKey]; }, 5000);
+  
   if (activeEvent && Date.now() < eventEndTime) return;
+  
   applyRemoteEvent({
     id: payload.id, icon: payload.icon, name: payload.name, desc: payload.desc,
     moneyMult: payload.moneyMult, memoryMult: payload.memoryMult,
     brusikMult: payload.brusikMult, instant: payload.instant
   }, payload.endTime);
 }
+
 function applyRemoteEvent(ev, endTime) {
   activeEvent = ev; activeEvent.isRemote = true;
   stats.eventsStarted = (stats.eventsStarted || 0) + 1;
@@ -1137,6 +1179,7 @@ function applyRemoteEvent(ev, endTime) {
   showToast('🌍 ИВЕНТ ОТ ДРУГОГО ИГРОКА', `${ev.icon} ${ev.name} — ${remaining}с`, true, 'blue');
   checkAchievements();
 }
+
 function handleRemoteStop(payload) {
   if (!activeEvent) return;
   if (payload.eventId && activeEvent.id !== payload.eventId) return;
@@ -1146,6 +1189,7 @@ function handleRemoteStop(payload) {
   updateActiveEventBadge(); updateEventsCard(); renderEventStatus();
   showToast('⏹️ ИВЕНТ ОСТАНОВЛЕН', `${evName} — другим игроком`, false, false, true);
 }
+
 function openEvents() {
   document.getElementById('menu').style.display = 'none';
   document.querySelectorAll('.game').forEach(g => g.classList.remove('active'));
@@ -1167,6 +1211,8 @@ function tryStartEvent() {
   startEvent(EVENTS[Math.floor(Math.random()*EVENTS.length)], customDuration);
   input.value = '';
 }
+
+/* 🆕 ОТПРАВКА ИВЕНТА 3 РАЗА ДЛЯ ГАРАНТИИ ДОСТАВКИ */
 function startEvent(ev, customDuration) {
   activeEvent = ev; activeEvent.isRemote = false;
   stats.eventsStarted = (stats.eventsStarted || 0) + 1;
@@ -1191,11 +1237,15 @@ function startEvent(ev, customDuration) {
     moneyMult: ev.moneyMult || 1, memoryMult: ev.memoryMult || 1,
     brusikMult: ev.brusikMult || 1, instant: ev.instant || 0, duration: eventTotalDuration, endTime: eventEndTime
   };
+  // 🚀 Отправляем 3 раза с задержкой — гарантия доставки всем игрокам
   publish(evPayload);
+  setTimeout(() => publish(evPayload), 300);
+  setTimeout(() => publish(evPayload), 1200);
   saveAll(); renderEventStatus(); updateActiveEventBadge(); updateEventsCard();
   showToast('🎉 ИВЕНТ ЗАПУЩЕН!', `${ev.icon} ${ev.name}${customText}`, true, 'purple');
   checkAchievements();
 }
+
 function tickEvent() {
   if (!activeEvent) return;
   if (eventEndTime - Date.now() <= 0) { endEvent(); return; }
@@ -1275,9 +1325,11 @@ function updateActiveEventBadge() {
     badge.textContent = `${activeEvent.icon} ${left}с`;
   } else badge.style.display = 'none';
 }
+
+/* 🆕 ЗАГРУЗКА СВЕЖИХ ИВЕНТОВ (дополнительная проверка) */
 async function loadRecentEvents() {
   try {
-    const res = await fetch(NTFY + NTFY_TOPIC + '/json?poll=1&since=2m');
+    const res = await fetch(NTFY + NTFY_TOPIC + '/json?poll=1&since=3m');
     const text = await res.text();
     if (!text.trim()) return;
     const lines = text.trim().split('\n');
@@ -1857,6 +1909,12 @@ if (!checkBan()) {
   connectToEvents();
   setInterval(sendPresence, 5000);
   setInterval(cleanupPlayers, 5000);
+  // 🆕 РЕЗЕРВНАЯ ПРОВЕРКА ИВЕНТОВ каждые 10 секунд
+  setInterval(async () => {
+    if (!activeEvent && !checkBan()) {
+      await loadRecentEvents();
+    }
+  }, 10000);
   setTimeout(loadRecentEvents, 1500);
   setTimeout(updatePlayerCount, 500);
 }
