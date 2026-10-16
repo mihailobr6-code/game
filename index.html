@@ -2,2079 +2,1030 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#e2231a">
-<title>Roblox: 3 игры</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HJ,KJRC</title>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%;touch-action:manipulation}
-  body{font-family:Arial,sans-serif;background:#1a1a1a;color:#fff;text-align:center;min-height:100vh;user-select:none;-webkit-user-select:none;overflow-x:hidden}
-  input,textarea{user-select:text;-webkit-user-select:text}
-  header{background:#e2231a;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:500;box-shadow:0 2px 10px rgba(0,0,0,.4)}
-  header h1{font-size:20px;letter-spacing:2px}
-  .header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .online-badge{background:#111;color:#00e676;padding:6px 12px;border-radius:10px;font-size:12px;font-weight:bold;border:2px solid #00e676;display:flex;align-items:center;gap:5px}
-  .online-badge .dot{width:8px;height:8px;border-radius:50%;background:#00e676;animation:blink 1.5s infinite}
-  .online-badge.offline{border-color:#888;color:#888}
-  .online-badge.offline .dot{background:#888;animation:none}
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-  .wallet{background:#111;padding:8px 16px;border-radius:10px;font-size:16px;font-weight:bold;border:2px solid #ffd700;color:#ffd700;white-space:nowrap;max-width:280px;overflow:hidden;text-overflow:ellipsis}
-  .reset-btn{background:#444;color:#fff;border:2px solid #666;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px}
-  .account-btn{background:#7b1fa2;border-color:#9c27b0}
-  .secret-btn{background:#111;border:2px solid #333;font-size:15px;padding:6px 12px;color:#666}
-  .secret-btn:hover{background:#222;color:#ffd700;border-color:#ffd700}
-  .room-bar{background:#111;padding:8px 12px;font-size:12px;color:#ba68c8;border-bottom:1px solid #333;display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap}
-  .room-bar b{color:#ffd700}
-  .room-bar input{background:#222;border:1px solid #9c27b0;color:#fff;padding:4px 10px;border-radius:6px;font-size:12px;width:120px}
-  .room-bar button{background:#9c27b0;color:#fff;border:none;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;margin:0}
-  .my-name{color:#00e676;font-weight:bold}
-  .edit-nick-btn{background:#00e676!important;color:#111!important;font-weight:bold;padding:5px 10px!important;cursor:pointer}
-  .menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:15px;padding:20px;max-width:1000px;margin:0 auto}
-  .card{background:#2b2b2b;border-radius:12px;padding:18px 15px;cursor:pointer;transition:.2s;border:2px solid #444;display:flex;flex-direction:column;justify-content:center;min-height:130px;position:relative}
-  .card:hover{transform:scale(1.03);border-color:#e2231a}
-  .card:active{transform:scale(.98)}
-  .card h2{margin-bottom:8px;font-size:18px}
-  .card p{font-size:13px;color:#ccc}
-  .card .reward{margin-top:8px;color:#ffd700;font-size:13px}
-  .card.daily{border-color:#00c853}
-  .card.daily .badge{position:absolute;top:-8px;right:-8px;background:#00c853;color:#fff;font-size:10px;padding:4px 8px;border-radius:10px;font-weight:bold;animation:pulse 1.5s infinite}
-  .card.events{transition:.3s}
-  .card.events.idle{border-color:#555;background:#232323}
-  .card.events.active{border-color:#00e676;background:linear-gradient(135deg,#1e3a24,#2b3a24);box-shadow:0 0 20px rgba(0,230,118,.5);animation:eventCardPulse 1.5s infinite}
-  @keyframes eventCardPulse{0%,100%{box-shadow:0 0 15px rgba(0,230,118,.4)}50%{box-shadow:0 0 30px rgba(0,230,118,.9)}}
-  .event-badge{position:absolute;top:-8px;right:-8px;font-size:10px;padding:4px 8px;border-radius:10px;font-weight:bold;color:#fff}
-  .event-badge.on{background:#00e676;color:#111;animation:pulse 1.2s infinite}
-  .event-badge.off{background:#555}
-  .event-menu-status{margin-top:8px;padding:6px;border-radius:8px;font-size:12px;font-weight:bold}
-  .event-menu-status.on{background:#00e676;color:#111}
-  .event-menu-status.off{background:#333;color:#888;border:1px solid #444}
-  .event-menu-timer{font-size:18px;font-weight:bold;color:#ffd700;margin-top:4px;font-family:'Courier New',monospace}
-  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
-  .game{display:none;padding:20px 15px}
-  .game.active{display:block}
-  button{background:#e2231a;color:#fff;border:none;padding:12px 24px;border-radius:8px;cursor:pointer;font-size:16px;margin:5px;transition:.15s;min-height:44px;touch-action:manipulation}
-  button:hover{background:#c41e16}
-  button:active{transform:scale(.96)}
-  input{padding:12px;border-radius:8px;border:1px solid #555;background:#222;color:#fff;font-size:16px;width:160px;min-height:44px}
-  .back{margin-bottom:15px}
-  .shop-btn{background:#ffd700;color:#111;font-weight:bold}
-  .danger-btn{background:#444;color:#fff;border:2px solid #c41e16}
-  .secret-box{max-width:560px;margin:20px auto;background:linear-gradient(135deg,#1a1a1a,#2b2b2b);border:2px solid #ffd700;border-radius:15px;padding:25px 20px;box-shadow:0 0 30px rgba(255,215,0,.3)}
-  .secret-box h2{color:#ffd700;margin-bottom:15px}
-  .secret-locked{font-size:50px;margin:15px 0}
-  .secret-input{width:100%;max-width:260px;text-align:center;font-size:24px;font-weight:bold;letter-spacing:8px;border:2px solid #ffd700;background:#111;color:#ffd700;margin:15px 0;font-family:'Courier New',monospace}
-  .secret-submit{background:linear-gradient(135deg,#ffd700,#ffaa00);color:#111;font-weight:bold;font-size:16px;padding:12px 30px}
-  .admin-panel{display:none;background:#0d0d0d;border:2px solid #ffd700;border-radius:12px;padding:20px;margin-top:15px;text-align:left}
-  .admin-panel.show{display:block}
-  .admin-panel h3{color:#ffd700;text-align:center;margin-bottom:15px;font-size:18px}
-  .admin-section{background:#000;border:1px solid #333;border-radius:10px;padding:12px;margin:12px 0}
-  .admin-section h4{color:#00e676;font-size:14px;margin-bottom:10px;text-align:center;letter-spacing:1px}
-  .admin-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;justify-content:center;align-items:center}
-  .admin-row input{flex:1;min-width:120px;max-width:200px;text-align:center;font-size:18px;background:#000;color:#00e676;border:2px solid #00e676;font-weight:bold}
-  .admin-btn{background:#00e676;color:#111;font-weight:bold;padding:10px 20px;font-size:15px}
-  .admin-btn.danger{background:#c41e16;color:#fff}
-  .admin-btn.secondary{background:#444;color:#fff}
-  .quick-money{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px}
-  .quick-money button{background:#222;color:#00e676;border:2px solid #00e676;font-size:13px;padding:8px 14px;min-height:38px;margin:0}
-  .admin-info{background:#000;color:#00e676;padding:10px;border-radius:8px;margin-top:10px;font-size:13px;text-align:center;font-family:'Courier New',monospace}
-  .players-list{margin-top:8px}
-  .player-item{display:flex;justify-content:space-between;align-items:center;background:#111;border:1px solid #333;border-radius:8px;padding:8px 12px;margin:6px 0;gap:8px;flex-wrap:wrap}
-  .player-info{text-align:left;flex:1;min-width:0}
-  .player-name{color:#00e676;font-weight:bold;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .player-name.me{color:#ffd700}
-  .player-id{color:#666;font-size:10px;font-family:'Courier New',monospace}
-  .player-time{color:#666;font-size:11px}
-  .player-room{color:#ba68c8;font-size:11px;font-weight:bold}
-  .player-btns{display:flex;gap:5px;flex-wrap:wrap}
-  .kick-btn{background:#c41e16;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:bold;margin:0;min-height:36px}
-  .money-btn{background:linear-gradient(135deg,#ffd700,#ffaa00);color:#111;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:bold;margin:0;min-height:36px}
-  .reset-acc-btn{background:#7b1fa2;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:bold;margin:0;min-height:36px}
-  .no-players{color:#666;text-align:center;font-size:12px;padding:15px}
-  .global-count{color:#00bfff;font-size:13px;text-align:center;font-weight:bold;padding:8px;background:#001a33;border-radius:8px;margin-bottom:8px}
-  .kick-modal-overlay,.nick-modal-overlay,.modal-overlay,.kick-overlay,.give-money-modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.9);z-index:4000;justify-content:center;align-items:center;padding:15px}
-  .kick-modal-overlay.show,.nick-modal-overlay.show,.modal-overlay.show,.kick-overlay.show,.give-money-modal-overlay.show{display:flex}
-  .kick-modal{background:#1a0000;border:3px solid #c41e16;border-radius:15px;padding:25px 20px;max-width:480px;width:100%;box-shadow:0 0 40px rgba(196,30,22,.6);animation:modalIn .3s;max-height:90vh;overflow-y:auto}
-  .kick-modal h2{color:#ff4444;margin-bottom:15px;font-size:20px;text-align:center}
-  .kick-target-info{background:#000;border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:15px;text-align:center}
-  .kick-target-info .nick{color:#ffd700;font-size:18px;font-weight:bold}
-  .kick-target-info .id{color:#666;font-size:11px;font-family:'Courier New',monospace;margin-top:4px}
-  .duration-label{color:#ff8888;font-size:13px;font-weight:bold;margin:12px 0 8px;text-align:center}
-  .duration-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:15px}
-  .duration-option{position:relative}
-  .duration-option input[type=radio]{position:absolute;opacity:0;pointer-events:none}
-  .duration-option label{display:block;padding:12px 8px;background:#000;border:2px solid #444;border-radius:10px;cursor:pointer;transition:.15s;text-align:center;font-size:14px;color:#ccc}
-  .duration-option input:checked+label{background:#c41e16;border-color:#ff4444;color:#fff;font-weight:bold;box-shadow:0 0 15px rgba(196,30,22,.6);transform:scale(1.03)}
-  .duration-option .dur-icon{display:block;font-size:20px;margin-bottom:4px}
-  .kick-reason-label{color:#ff8888;font-size:13px;font-weight:bold;margin:12px 0 8px;text-align:center}
-  .kick-reason-input{width:100%;padding:12px;background:#000;border:2px solid #444;border-radius:10px;color:#fff;font-size:14px;text-align:center}
-  .kick-modal-btns{display:flex;gap:10px;margin-top:20px;justify-content:center;flex-wrap:wrap}
-  .kick-modal-btns button{flex:1;min-width:120px;padding:14px 20px;border-radius:10px;font-size:15px;font-weight:bold;border:none}
-  .cancel-kick{background:#444;color:#fff}
-  .confirm-kick{background:#c41e16;color:#fff}
-  .kick-box{background:#1a0000;border:3px solid #c41e16;border-radius:20px;padding:40px 25px;max-width:450px;width:100%;box-shadow:0 0 50px rgba(196,30,22,.8);animation:kickShake .5s}
-  @keyframes kickShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
-  .kick-icon{font-size:80px;margin-bottom:15px}
-  .kick-title{color:#ff4444;font-size:28px;font-weight:bold;letter-spacing:2px;margin-bottom:15px;text-shadow:0 0 20px rgba(255,68,68,.8)}
-  .kick-reason{color:#ffaa00;font-size:16px;margin:15px 0;background:#000;padding:12px;border-radius:10px;border:1px solid #333}
-  .kick-duration-line{color:#ffaa00;font-size:14px;margin:8px 0}
-  .kick-timer{color:#fff;font-size:14px;margin-top:20px}
-  .kick-timer b{color:#ff4444;font-size:20px}
-  .nick-modal{background:linear-gradient(135deg,#1a1a1a,#2b2b2b);border:3px solid #00e676;border-radius:15px;padding:25px 20px;max-width:450px;width:100%;box-shadow:0 0 40px rgba(0,230,118,.5);animation:modalIn .3s}
-  .nick-modal h2{color:#00e676;margin-bottom:10px;font-size:20px;text-align:center}
-  .nick-preview{background:#000;border:1px solid #333;border-radius:10px;padding:12px;margin:10px 0;text-align:center}
-  .nick-preview-value{color:#ffd700;font-size:20px;font-weight:bold;margin-top:5px;word-break:break-all}
-  .nick-input{width:100%;padding:14px;background:#000;border:2px solid #444;border-radius:10px;color:#fff;font-size:18px;text-align:center;font-weight:bold}
-  .nick-input:focus{outline:none;border-color:#00e676}
-  .nick-btns{display:flex;gap:10px;margin-top:15px;justify-content:center;flex-wrap:wrap}
-  .nick-btns button{flex:1;min-width:120px;padding:14px 20px;border-radius:10px;font-size:15px;font-weight:bold;border:none;margin:0}
-  .nick-cancel{background:#444;color:#fff}
-  .nick-save{background:#00e676;color:#111}
-  .nick-tips{text-align:center;color:#888;font-size:11px;margin-top:15px;padding:10px;background:#000;border-radius:8px}
-  .nick-options{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px}
-  .nick-options button{background:#222;color:#00e676;border:2px solid #00e676;font-size:12px;padding:6px 12px;min-height:34px;margin:0}
-  .give-money-modal{background:linear-gradient(135deg,#1a1a1a,#2b2b2b);border:3px solid #ffd700;border-radius:15px;padding:25px 20px;max-width:450px;width:100%;box-shadow:0 0 40px rgba(255,215,0,.5);animation:modalIn .3s}
-  .give-money-modal h2{color:#ffd700;margin-bottom:10px;font-size:20px;text-align:center}
-  .give-money-target{background:#000;border:1px solid #333;border-radius:10px;padding:12px;margin:10px 0;text-align:center}
-  .give-money-target .nick{color:#00e676;font-size:18px;font-weight:bold}
-  .give-money-target .id{color:#666;font-size:11px;font-family:'Courier New',monospace;margin-top:4px}
-  .give-money-target .room{color:#ba68c8;font-size:11px;margin-top:4px;font-weight:bold}
-  .give-money-note{color:#00bfff;font-size:12px;margin:10px 0;padding:8px;background:#001a33;border-radius:8px}
-  .give-money-input{width:100%;padding:14px;background:#000;border:2px solid #ffd700;border-radius:10px;color:#ffd700;font-size:22px;text-align:center;font-weight:bold;font-family:'Courier New',monospace}
-  .give-money-quick{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:12px}
-  .give-money-quick button{background:#222;color:#ffd700;border:2px solid #ffd700;font-size:13px;padding:8px 14px;min-height:38px;margin:0}
-  .give-money-btns{display:flex;gap:10px;margin-top:18px;justify-content:center;flex-wrap:wrap}
-  .give-money-btns button{flex:1;min-width:120px;padding:14px 20px;border-radius:10px;font-size:15px;font-weight:bold;border:none;margin:0}
-  .give-money-cancel{background:#444;color:#fff}
-  .give-money-send{background:linear-gradient(135deg,#ffd700,#ffaa00);color:#111}
-  .memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:400px;width:100%;margin:15px auto}
-  .mem-card{aspect-ratio:1;background:#2b2b2b;border:2px solid #444;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:clamp(24px,8vw,40px);cursor:pointer;transition:.15s}
-  .mem-card.flipped{background:#33321f;border-color:#ffd700}
-  .mem-card.matched{background:#1e3a24;border-color:#00c853;cursor:default;opacity:.75}
-  .mem-info{margin:12px;font-size:16px}
-  .mem-info span{color:#ffd700;font-weight:bold}
-  .mem-win{color:#00e676;font-size:20px;font-weight:bold;margin:15px;animation:pulse 1s infinite}
-  .brusik-scene{background:linear-gradient(180deg,#87CEEB 0%,#4a90e2 100%);border-radius:20px;padding:20px;margin:15px auto;max-width:600px;position:relative;overflow:hidden;min-height:420px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
-  .brusik-sun{position:absolute;top:15px;right:15px;font-size:50px;animation:sunSpin 20s linear infinite}
-  @keyframes sunSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-  .brusik-cloud{position:absolute;font-size:40px;opacity:.85;animation:cloudFloat 15s linear infinite}
-  .brusik-cloud.c2{top:60px;animation-duration:25s;font-size:32px}
-  .brusik-cloud.c3{top:110px;animation-duration:20s;animation-delay:-5s;font-size:36px}
-  @keyframes cloudFloat{from{left:-80px}to{left:110%}}
-  .brusik-ground{position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(180deg,#7cb342,#558b2f);border-radius:20px 20px 0 0}
-  .brusik-grass{position:absolute;bottom:70px;left:0;right:0;font-size:24px;letter-spacing:20px;opacity:.5}
-  .brusik-dog-wrap{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-top:80px;cursor:pointer;user-select:none;z-index:5}
-  .brusik-dog{font-size:clamp(100px,26vw,160px);line-height:1;transition:transform .15s;filter:drop-shadow(0 10px 20px rgba(0,0,0,.3));display:inline-block;position:relative;animation:dogIdle 3s ease-in-out infinite}
-  @keyframes dogIdle{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-5px) rotate(-2deg)}75%{transform:translateY(-5px) rotate(2deg)}}
-  .brusik-dog.petting{animation:dogPet .3s ease-out}
-  @keyframes dogPet{0%{transform:scale(1) rotate(0)}50%{transform:scale(1.15) rotate(-5deg)}100%{transform:scale(1) rotate(0)}}
-  .brusik-dog.happy{animation:dogHappy .6s ease-out}
-  @keyframes dogHappy{0%{transform:scale(1)}25%{transform:scale(1.2) rotate(-10deg)}50%{transform:scale(1.15) translateY(-20px) rotate(10deg)}75%{transform:scale(1.1) rotate(-5deg)}100%{transform:scale(1) rotate(0)}}
-  .dog-face-inner{display:inline-block;transition:filter .3s}
-  .dog-acc{position:absolute;font-size:.4em;top:5%;right:-10%;filter:drop-shadow(0 3px 6px rgba(0,0,0,.5));animation:accFloat 3s ease-in-out infinite;pointer-events:none}
-  @keyframes accFloat{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-5px) rotate(5deg)}}
-  .brusik-heart{position:absolute;font-size:24px;pointer-events:none;animation:heartFly 1s ease-out forwards;z-index:100}
-  @keyframes heartFly{0%{opacity:1;transform:translate(0,0) scale(0.5)}50%{opacity:1;transform:translate(var(--hx),var(--hy)) scale(1.2)}100%{opacity:0;transform:translate(var(--hx2),var(--hy2)) scale(0.3)}}
-  .brusik-score{font-size:18px;font-weight:bold;margin:10px 0;color:#fff;text-shadow:0 2px 5px rgba(0,0,0,.5)}
-  .brusik-score span{color:#ffd700;font-size:22px}
-  .brusik-mood-bar{width:90%;max-width:400px;height:20px;background:rgba(0,0,0,.4);border-radius:10px;margin:10px auto;overflow:hidden;border:2px solid rgba(255,255,255,.4)}
-  .brusik-mood-fill{height:100%;background:linear-gradient(90deg,#ff6b9d,#ffd700,#00e676);width:0%;transition:width .3s;border-radius:8px}
-  .brusik-mood-label{color:#fff;font-size:13px;text-shadow:0 1px 3px rgba(0,0,0,.7);margin-bottom:5px;font-weight:bold}
-  .brusik-hint{background:rgba(0,0,0,.5);padding:8px 15px;border-radius:20px;color:#fff;font-size:13px;display:inline-block;margin-top:10px;animation:pulse 2s infinite}
-  .brusik-stats{display:flex;gap:15px;justify-content:center;flex-wrap:wrap;margin:15px 0;font-size:14px}
-  .brusik-stat{background:rgba(0,0,0,.3);padding:8px 15px;border-radius:10px;color:#fff;border:2px solid rgba(255,255,255,.2)}
-  .brusik-stat b{color:#ffd700;font-size:16px}
-  .brusik-skin-name{color:#fff;font-size:16px;font-weight:bold;margin:8px 0;text-shadow:0 2px 5px rgba(0,0,0,.6)}
-  .brusik-skin-name span{color:#ffd700}
-  .skins-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;max-width:900px;margin:20px auto;padding:0 10px}
-  .skin-card{background:#2b2b2b;border:3px solid #444;border-radius:14px;padding:14px 10px;cursor:pointer;transition:.2s;position:relative;text-align:center}
-  .skin-card:hover{transform:scale(1.03);border-color:#e2231a}
-  .skin-card.owned{border-color:#00e676}
-  .skin-card.equipped{border-color:#ffd700;background:linear-gradient(135deg,#2b2200,#33321f);box-shadow:0 0 20px rgba(255,215,0,.5)}
-  .skin-card.rarity-rare{border-color:#2196f3}
-  .skin-card.rarity-epic{border-color:#9c27b0}
-  .skin-card.rarity-legendary{border-color:#ff9800}
-  .skin-card.rarity-mythic{border-color:#00e676;border-width:4px;background:linear-gradient(135deg,#002200,#003300);box-shadow:0 0 25px rgba(0,230,118,.6);animation:mythicGlow 2s infinite}
-  .skin-card.rarity-mythic .skin-name{color:#00e676;text-shadow:0 0 10px #00e676}
-  @keyframes mythicGlow{0%,100%{box-shadow:0 0 20px rgba(0,230,118,.5)}50%{box-shadow:0 0 40px rgba(0,230,118,1)}}
-  .skin-emoji{position:relative;display:inline-block;font-size:56px;line-height:1;margin:5px 0;filter:drop-shadow(0 5px 10px rgba(0,0,0,.4))}
-  .skin-acc{position:absolute;font-size:24px;top:-8px;right:-12px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
-  .skin-name{font-weight:bold;font-size:14px;margin:6px 0;color:#fff}
-  .skin-price{color:#ffd700;font-size:13px;font-weight:bold}
-  .skin-badge{position:absolute;top:-8px;right:-8px;padding:4px 10px;border-radius:10px;font-size:10px;font-weight:bold;color:#fff}
-  .skin-badge.owned-b{background:#00e676;color:#111}
-  .skin-badge.equipped-b{background:#ffd700;color:#111;animation:pulse 1.2s infinite}
-  .skin-badge.new-b{background:#c41e16}
-  .skin-badge.rare-b{background:#2196f3}
-  .skin-badge.epic-b{background:#9c27b0}
-  .skin-badge.legendary-b{background:#ff9800}
-  .skin-badge.mythic-b{background:linear-gradient(135deg,#00e676,#00c853);color:#000;animation:pulse 1s infinite;font-size:11px;padding:5px 12px}
-  .skins-header{color:#ffd700;font-size:20px;font-weight:bold;margin:20px 0 10px}
-  .skins-hint{color:#aaa;font-size:13px;margin:8px 0 20px}
-  .ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;max-width:900px;margin:20px auto}
-  .ach{background:#2b2b2b;border:2px solid #444;border-radius:10px;padding:14px;text-align:left;transition:.2s}
-  .ach.unlocked{border-color:#ffd700;background:#33321f;box-shadow:0 0 10px rgba(255,215,0,.3)}
-  .ach .icon{font-size:28px}
-  .ach .name{font-weight:bold;margin:5px 0;font-size:15px}
-  .ach.unlocked .name{color:#ffd700}
-  .ach:not(.unlocked) .name{color:#888}
-  .ach .desc{font-size:12px;color:#bbb}
-  .daily-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;max-width:800px;margin:20px auto}
-  .day{background:#2b2b2b;border:2px solid #444;border-radius:10px;padding:10px 4px;text-align:center;position:relative}
-  .day .day-num{font-size:10px;color:#aaa;margin-bottom:3px}
-  .day .day-icon{font-size:22px;margin:3px 0}
-  .day .day-reward{font-size:11px;color:#ffd700;font-weight:bold}
-  .day.claimed{border-color:#00c853;background:#1e3a24}
-  .day.claimed::after{content:'✓';position:absolute;top:3px;right:5px;color:#00c853;font-weight:bold;font-size:12px}
-  .day.current{border-color:#ffd700;background:#33321f;box-shadow:0 0 15px rgba(255,215,0,.4);transform:scale(1.05)}
-  .daily-info{margin:12px;font-size:15px}
-  .daily-info .streak{color:#ffd700;font-weight:bold}
-  .daily-info .timer{color:#00bfff}
-  .big-claim{background:#00c853;font-size:18px;padding:15px 30px;border-radius:12px;font-weight:bold;margin:15px;width:90%;max-width:350px}
-  .big-claim:disabled{background:#555;cursor:not-allowed;color:#aaa}
-  .events-box{max-width:520px;margin:20px auto;background:#2b2b2b;border:2px solid #9c27b0;border-radius:12px;padding:20px}
-  .events-box h3{color:#ba68c8;margin-bottom:12px;font-size:16px}
-  .events-box input{width:100%;max-width:260px;margin:6px}
-  .event-password-btn{background:#9c27b0;padding:14px 28px;font-weight:bold;width:90%;max-width:280px}
-  .duration-row{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:12px 0;padding:12px;background:#1a1a1a;border-radius:10px;border:2px dashed #9c27b0}
-  .duration-row label{font-size:14px;color:#ba68c8;font-weight:bold}
-  .duration-row input{width:100px;text-align:center}
-  .duration-hint{font-size:11px;color:#888;width:100%;margin-top:5px}
-  .quick-btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:6px}
-  .quick-btns button{background:#444;font-size:12px;padding:8px 12px;border:2px solid #666;margin:0;min-height:38px}
-  .event-status{margin-top:15px;padding:12px;border-radius:10px;background:#1a1a1a;border:2px solid #444;min-height:60px}
-  .event-status.active{border-color:#ffd700;background:linear-gradient(135deg,#2b2200,#33321f);animation:eventGlow 2s infinite}
-  .event-status.remote{border-color:#00bfff;background:linear-gradient(135deg,#002233,#1a2a33);animation:remoteGlow 2s infinite}
-  @keyframes eventGlow{0%,100%{box-shadow:0 0 10px rgba(255,215,0,.3)}50%{box-shadow:0 0 25px rgba(255,215,0,.7)}}
-  @keyframes remoteGlow{0%,100%{box-shadow:0 0 10px rgba(0,191,255,.3)}50%{box-shadow:0 0 25px rgba(0,191,255,.7)}}
-  .event-name{font-size:18px;font-weight:bold;color:#ffd700;margin:6px 0}
-  .event-desc{color:#ccc;font-size:13px}
-  .event-timer{font-size:22px;font-weight:bold;color:#00e676;margin-top:8px}
-  .event-progress{height:8px;background:#333;border-radius:4px;overflow:hidden;margin-top:10px}
-  .event-progress-bar{height:100%;background:linear-gradient(90deg,#00e676,#ffd700);transition:width .3s}
-  .event-list{text-align:left;max-width:520px;margin:15px auto;background:#222;border-radius:10px;padding:12px}
-  .event-list h4{color:#ba68c8;margin-bottom:8px;font-size:14px}
-  .event-list p{font-size:12px;color:#aaa;margin:4px 0}
-  .active-event{background:linear-gradient(135deg,#9c27b0,#e91e63);padding:6px 12px;border-radius:10px;font-weight:bold;animation:pulse 1s infinite;font-size:12px;white-space:nowrap}
-  .stop-event-btn{background:linear-gradient(135deg,#c41e16,#7b1fa2);color:#fff;font-weight:bold;font-size:16px;padding:14px 30px;border-radius:12px;border:3px solid #ff4444;cursor:pointer;margin-top:15px;width:90%;max-width:320px;min-height:50px;animation:stopPulse 1.5s infinite;box-shadow:0 0 20px rgba(196,30,22,.6);transition:.2s}
-  @keyframes stopPulse{0%,100%{box-shadow:0 0 15px rgba(196,30,22,.5)}50%{box-shadow:0 0 30px rgba(196,30,22,.9)}}
-  .modal{background:#2b2b2b;border:2px solid #c41e16;border-radius:15px;padding:25px 20px;max-width:450px;width:100%;animation:modalIn .3s;max-height:90vh;overflow-y:auto}
-  @keyframes modalIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
-  .modal h2{color:#c41e16;margin-bottom:12px;font-size:20px}
-  .modal p{margin:8px 0;font-size:13px;color:#ccc}
-  .modal ul{text-align:left;margin:12px auto;max-width:280px;font-size:13px;color:#aaa}
-  .modal li{margin:4px 0}
-  .modal input{width:100%;text-align:center;font-size:18px;font-weight:bold;letter-spacing:4px;border:2px solid #c41e16;margin:12px 0}
-  .modal-btns{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
-  .modal .confirm-reset{background:#c41e16;font-weight:bold;padding:12px 20px}
-  .modal .confirm-reset:disabled{background:#555;cursor:not-allowed}
-  .modal .cancel-reset{background:#444;padding:12px 20px}
-  .toast{position:fixed;top:80px;right:15px;left:15px;background:linear-gradient(135deg,#ffd700,#ffaa00);color:#111;padding:14px 18px;border-radius:10px;font-weight:bold;box-shadow:0 5px 20px rgba(0,0,0,.5);transform:translateY(-200px);transition:.4s;z-index:6000;max-width:400px;margin:0 auto;pointer-events:none}
-  .toast.show{transform:translateY(0)}
-  .toast .t-title{font-size:11px;opacity:.7}
-  .toast .t-name{font-size:15px}
-  .toast.green{background:linear-gradient(135deg,#00e676,#00c853);color:#fff}
-  .toast.purple{background:linear-gradient(135deg,#ba68c8,#9c27b0);color:#fff}
-  .toast.blue{background:linear-gradient(135deg,#00bfff,#0091ea);color:#fff}
-  .toast.red{background:linear-gradient(135deg,#c41e16,#7b1fa2);color:#fff}
-  .toast.gold{background:linear-gradient(135deg,#ffd700,#ffaa00);color:#111}
-  .toast.pink{background:linear-gradient(135deg,#ff6b9d,#ff4081);color:#fff}
-  @media(max-width:700px){
-    header{padding:8px 10px;gap:6px}
-    header h1{font-size:14px}
-    .header-right{gap:5px}
-    .wallet{font-size:11px;padding:5px 8px;max-width:180px}
-    .reset-btn{font-size:10px;padding:5px 8px}
-    .online-badge{font-size:10px;padding:5px 8px}
-    .secret-btn{font-size:13px;padding:5px 10px}
-    .menu{grid-template-columns:repeat(2,1fr);gap:10px;padding:12px}
-    .card{padding:14px 10px;min-height:115px}
-    .card h2{font-size:15px}
-    .card p,.card .reward{font-size:11px}
-    .game{padding:12px 10px}
-    .brusik-scene{min-height:360px;padding:15px}
-    .brusik-dog{font-size:clamp(90px,24vw,140px)}
-    .stop-event-btn{font-size:14px;padding:12px 20px;min-height:44px}
-    .money-btn,.kick-btn,.reset-acc-btn{font-size:10px;padding:5px 8px;min-height:30px}
-    .skins-grid{grid-template-columns:repeat(2,1fr);gap:10px}
-    .skin-emoji{font-size:44px}
-    .skin-name{font-size:12px}
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Comic Sans MS', 'Segoe UI', sans-serif;
   }
-  @media(max-width:400px){.menu{grid-template-columns:1fr}}
+
+  body {
+    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+    min-height: 100vh;
+    color: white;
+    overflow-x: hidden;
+    padding: 20px;
+  }
+
+  /* ===== ВЕРХНЯЯ ПАНЕЛЬ ===== */
+  .top-bar {
+    max-width: 900px;
+    margin: 0 auto 20px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 15px;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  }
+
+  .stats {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .stat {
+    background: rgba(255,255,255,0.1);
+    padding: 8px 15px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  .stat span { color: #ffd93d; }
+
+  .player-name {
+    background: linear-gradient(135deg, #f5c26b, #d4a056);
+    color: #000;
+    padding: 8px 15px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+
+  .player-name:hover { transform: scale(1.05); }
+
+  /* ===== МЕНЮ ===== */
+  .menu {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .menu h2 {
+    font-size: 32px;
+    margin-bottom: 30px;
+    text-shadow: 0 0 20px rgba(255,200,50,0.6);
+  }
+
+  .game-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .game-btn {
+    padding: 30px 20px;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    color: white;
+    transition: all 0.2s;
+    box-shadow: 0 8px 0 rgba(0,0,0,0.3);
+    text-align: center;
+  }
+
+  .game-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 0 rgba(0,0,0,0.3);
+  }
+
+  .game-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 4px 0 rgba(0,0,0,0.3);
+  }
+
+  .btn-clicker { background: linear-gradient(135deg, #28a745, #4cd964); }
+  .btn-memory { background: linear-gradient(135deg, #4a69bd, #6a89cc); }
+  .btn-guess  { background: linear-gradient(135deg, #c44569, #e84393); }
+  .btn-admin  { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+
+  /* ===== ОКНО ИГРЫ ===== */
+  .window {
+    display: none;
+    max-width: 700px;
+    margin: 20px auto;
+    background: rgba(20,20,35,0.95);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+    position: relative;
+    animation: pop 0.3s ease;
+  }
+
+  @keyframes pop {
+    from { transform: scale(0.85); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+
+  .window.active { display: block; }
+
+  .window-header {
+    font-size: 24px;
+    text-align: center;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+
+  .header-clicker { background: linear-gradient(90deg, #28a745, #4cd964); }
+  .header-memory  { background: linear-gradient(90deg, #4a69bd, #6a89cc); }
+  .header-guess   { background: linear-gradient(90deg, #c44569, #e84393); }
+  .header-admin   { background: linear-gradient(90deg, #c0392b, #e74c3c); }
+
+  .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #e74c3c;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 5;
+  }
+
+  .close-btn:hover { background: #c0392b; }
+
+  /* ===== КЛИКЕР ===== */
+  .clicker-area { text-align: center; }
+
+  #subak {
+    font-size: 100px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #f5c26b, #d4a056);
+    border: 6px solid #a67c3a;
+    cursor: pointer;
+    transition: transform 0.05s;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+    box-shadow: 0 10px 30px rgba(245,194,107,0.5);
+  }
+
+  #subak:active { transform: scale(0.9); }
+
+  .clicker-info {
+    font-size: 18px;
+    margin-top: 15px;
+    color: #ffd93d;
+  }
+
+  /* ===== ПАМЯТЬ ===== */
+  .memory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .card {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #6a89cc, #4a69bd);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    cursor: pointer;
+    transition: all 0.3s;
+    user-select: none;
+    color: transparent;
+  }
+
+  .card.opened {
+    background: linear-gradient(135deg, #f5f5f5, #ddd);
+    color: inherit;
+  }
+
+  .card.matched {
+    background: linear-gradient(135deg, #4cd964, #28a745);
+    color: inherit;
+    cursor: default;
+  }
+
+  /* ===== УГАДАЙ ЧИСЛО ===== */
+  .guess-area { text-align: center; }
+
+  .guess-area input {
+    width: 80%;
+    max-width: 300px;
+    padding: 15px;
+    font-size: 20px;
+    border-radius: 12px;
+    border: 2px solid #e84393;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    text-align: center;
+    margin: 15px 0;
+    outline: none;
+  }
+
+  .guess-area button {
+    padding: 15px 40px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #c44569, #e84393);
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 5px 0 rgba(0,0,0,0.3);
+    transition: all 0.15s;
+  }
+
+  .guess-area button:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.3);
+  }
+
+  #guessHint {
+    margin-top: 15px;
+    font-size: 18px;
+    min-height: 30px;
+    color: #ffd93d;
+  }
+
+  /* ===== АДМИН ===== */
+  .admin-area input,
+  .admin-area select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 10px;
+    border: 2px solid #e74c3c;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 15px;
+    outline: none;
+  }
+
+  .admin-area select option {
+    background: #1a1a2e;
+    color: white;
+  }
+
+  .admin-btn {
+    width: 100%;
+    padding: 12px;
+    margin: 6px 0;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+
+  .admin-btn:active { transform: scale(0.97); }
+
+  .ab-money  { background: linear-gradient(135deg, #28a745, #4cd964); }
+  .ab-ach    { background: linear-gradient(135deg, #d4a056, #f5c26b); color: #000; }
+  .ab-speed  { background: linear-gradient(135deg, #4a69bd, #6a89cc); }
+  .ab-clear  { background: linear-gradient(135deg, #7f8c8d, #95a5a6); }
+  .ab-danger { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+
+  .admin-section {
+    border-top: 2px dashed rgba(255,255,255,0.15);
+    margin-top: 15px;
+    padding-top: 15px;
+  }
+
+  .admin-section-title {
+    text-align: center;
+    color: #ffd93d;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 15px;
+  }
+
+  /* ===== СПИСОК ИГРОКОВ ===== */
+  .player-list {
+    max-height: 200px;
+    overflow-y: auto;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    padding: 8px;
+    margin-bottom: 10px;
+  }
+
+  .player-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    margin: 4px 0;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+
+  .player-item .name { font-weight: bold; color: #f5c26b; }
+  .player-item .money { color: #4cd964; }
+
+  /* ===== МОДАЛЬНОЕ ОКНО ВВОДА ИМЕНИ ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: linear-gradient(135deg, #1a1a2e, #0f3460);
+    padding: 30px;
+    border-radius: 20px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    border: 2px solid #f5c26b;
+    animation: pop 0.3s ease;
+  }
+
+  .modal h3 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    color: #f5c26b;
+  }
+
+  .modal input {
+    width: 100%;
+    padding: 14px;
+    font-size: 18px;
+    border-radius: 12px;
+    border: 2px solid #f5c26b;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    text-align: center;
+    outline: none;
+    margin-bottom: 15px;
+  }
+
+  .modal button {
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #28a745, #4cd964);
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.3);
+  }
+
+  .modal button:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.3); }
+
+  /* ===== УВЕДОМЛЕНИЯ ===== */
+  .notifications {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .notif {
+    background: rgba(0,0,0,0.85);
+    padding: 15px 25px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    border-left: 5px solid #ffd93d;
+    animation: slideIn 0.3s ease;
+    max-width: 90vw;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== МОБИЛЬНАЯ ВЕРСИЯ ===== */
+  @media (max-width: 600px) {
+    .stat, .player-name { font-size: 12px; padding: 6px 10px; }
+    .menu h2 { font-size: 24px; }
+    .game-btn { font-size: 16px; padding: 20px 15px; }
+    #subak { font-size: 70px; width: 160px; height: 160px; }
+    .memory-grid { gap: 6px; }
+    .card { font-size: 28px; }
+  }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>ROBLOX: 3 ИГРЫ</h1>
-  <div class="header-right">
-    <div id="onlineBadge" class="online-badge offline"><div class="dot"></div><span id="onlineText">Подключение...</span></div>
-    <div id="activeEventBadge" class="active-event" style="display:none"></div>
-    <div class="wallet">💰 <span id="moneyDisplay">0</span></div>
-    <button class="secret-btn" onclick="openSecret()">🔐</button>
-    <button class="reset-btn" onclick="resetMoney()">🔄 💰</button>
-    <button class="reset-btn account-btn" onclick="openAccountReset()">💥</button>
-  </div>
-</header>
-
-<div class="room-bar">
-  🎮 Комната: <b id="roomName">shared777</b>
-  <span style="color:#888">|</span>
-  Ты: <span class="my-name" id="myNameDisplay">-</span>
-  <button class="edit-nick-btn" onclick="openNickModal()">✏️</button>
-  <span style="color:#888">|</span>
-  🌍 Онлайн: <b id="globalPlayerCount">1</b>
-  <input type="text" id="roomInput" placeholder="комната" maxlength="20">
-  <button onclick="changeRoom()">Сменить</button>
-</div>
-
-<div class="menu" id="menu">
-  <div class="card daily" id="dailyCard" onclick="openDaily()">
-    <div class="badge" id="dailyBadge">🎁 ЗАБРАТЬ!</div>
-    <h2>🎁 Ежедневка</h2><p>Заходи каждый день</p>
-    <div class="reward">Серия: <span id="menuStreak">0</span> дн.</div>
-  </div>
-  <div class="card events idle" id="eventsCard" onclick="openEvents()">
-    <div class="event-badge off" id="eventsCardBadge">НЕТ</div>
-    <h2>🎉 Ивенты</h2>
-    <div class="event-menu-status off" id="eventsCardStatus">🔴 Не активен</div>
-    <div id="eventsCardInfo" style="margin-top:6px"></div>
-  </div>
-  <div class="card" onclick="showGame('brusik')" style="border-color:#ff6b9d">
-    <h2>🐶 Брюсик Барбусик</h2><p>Гладь собачку!</p>
-    <div class="reward">+2 💰 за поглаживание</div>
-  </div>
-  <div class="card" onclick="openSkins()" style="border-color:#9c27b0">
-    <h2>🎨 Скины Брюсика</h2><p>Меняй облик собачки</p>
-    <div class="reward">🦓 Есть ЗЕБРА!</div>
-  </div>
-  <div class="card" onclick="showGame('memory')">
-    <h2>🧠 Найди пару</h2><p>Ищи парные карточки</p>
-    <div class="reward">+15 💰 за пару</div>
-  </div>
-  <div class="card" onclick="showGame('guess')">
-    <h2>🔢 Угадай число</h2><p>От 1 до 100</p>
-    <div class="reward">до +100 💰</div>
-  </div>
-  <div class="card" onclick="openShop()" style="border-color:#ffd700">
-    <h2>🛒 Магазин</h2><p>Трать деньги на бонусы</p>
-    <div class="reward">Покупай улучшения</div>
-  </div>
-  <div class="card" onclick="openAch()" style="border-color:#00bfff">
-    <h2>🏆 Ачивки</h2><p>Открыто: <span id="achCounter">0</span>/<span id="achTotal">0</span></p>
-    <div class="reward">Собери все достижения</div>
-  </div>
-</div>
-
-<div id="skins" class="game">
-  <button class="back" onclick="showMenu()">← Назад</button>
-  <h2>🎨 Скины Брюсика</h2>
-  <p class="skins-hint">Одно лицо 🐶 — разные стили!</p>
-  <div class="skins-header">🐶 Стили</div>
-  <div class="skins-grid" id="dogSkinsGrid"></div>
-  <div class="skins-header" style="margin-top:30px">👑 Легендарные скины</div>
-  <div class="skins-grid" id="zebraSkinsGrid"></div>
-</div>
-
-<div id="brusik" class="game">
-  <button class="back" onclick="showMenu()">← Назад</button>
-  <h2>🐶 Брюсик Барбусик</h2>
-  <p style="color:#aaa;font-size:13px;margin:8px 0">Гладь собачку — 2 монетки за поглаживание!</p>
-  <div class="brusik-scene" id="brusikScene">
-    <div class="brusik-sun">☀️</div>
-    <div class="brusik-cloud c1">☁️</div>
-    <div class="brusik-cloud c2">☁️</div>
-    <div class="brusik-cloud c3">☁️</div>
-    <div class="brusik-ground"></div>
-    <div class="brusik-grass">🌱🌿🌱🌿🌱🌿🌱🌿🌱🌿</div>
-    <div class="brusik-score">Поглаживаний: <span id="brusikPets">0</span></div>
-    <div class="brusik-skin-name">Скин: <span id="brusikSkinName">Обычный пёс</span></div>
-    <div class="brusik-mood-label">Настроение Брюсика:</div>
-    <div class="brusik-mood-bar"><div class="brusik-mood-fill" id="brusikMoodFill"></div></div>
-    <div class="brusik-dog-wrap" id="brusikDogWrap" onclick="petBrusik(event)">
-      <div class="brusik-dog" id="brusikDog"></div>
-      <div class="brusik-hint" id="brusikHint">👆 Гладь меня!</div>
-    </div>
-  </div>
-  <div class="brusik-stats">
-    <div class="brusik-stat">🐾 Всего: <b id="brusikTotalPets">0</b></div>
-    <div class="brusik-stat">💝 Трюков: <b id="brusikTricks">0</b></div>
-    <div class="brusik-stat">💰 Заработано: <b id="brusikEarned">0</b></div>
-  </div>
-  <button onclick="openSkins()" class="shop-btn" style="padding:14px 30px;font-size:16px">🎨 Сменить скин</button><br>
-  <button class="danger-btn" onclick="resetBrusik()">🔄 Сбросить прогресс Брюсика</button>
-</div>
-
-<div id="secret" class="game">
-  <button class="back" onclick="showMenu()">← Назад</button>
-  <div class="secret-box">
-    <div class="secret-locked" id="secretLockIcon">🔒</div>
-    <h2 id="secretTitle">СЕКРЕТНЫЙ ДОСТУП</h2>
-    <p style="color:#aaa;font-size:13px" id="secretHint">Введи секретный код</p>
-    <div id="secretLockedPart">
-      <input type="password" id="secretInput" class="secret-input" placeholder="•••••" maxlength="10" inputmode="numeric" onkeydown="if(event.key==='Enter')checkSecret()">
-      <br><button class="secret-submit" onclick="checkSecret()">🔓 Открыть</button>
-    </div>
-    <div class="admin-panel" id="adminPanel">
-      <h3>👑 АДМИН-ПАНЕЛЬ</h3>
-      <div class="admin-section">
-        <h4>💰 ВЫДАТЬ СЕБЕ ДЕНЬГИ</h4>
-        <div class="admin-row">
-          <input type="number" id="moneyAmount" placeholder="Сумма" min="1" inputmode="numeric">
-          <button class="admin-btn" onclick="giveMoney()">💰 Выдать</button>
-        </div>
-        <div class="quick-money">
-          <button onclick="quickGive(100)">+100</button>
-          <button onclick="quickGive(1000)">+1К</button>
-          <button onclick="quickGive(10000)">+10К</button>
-          <button onclick="quickGive(1000000)">+1МЛН</button>
-          <button onclick="quickGive(1000000000)">+1МЛРД</button>
-          <button onclick="quickGive(999999999999999)">+∞</button>
-        </div>
-        <div class="admin-info">Баланс: <span id="adminMoney">0</span> 💰</div>
-        <div class="admin-row" style="margin-top:10px">
-          <button class="admin-btn secondary" onclick="setMoney(0)">Обнулить</button>
-        </div>
-      </div>
-      <div class="admin-section">
-        <h4>🎨 СКИНЫ</h4>
-        <div class="admin-row">
-          <button class="admin-btn" onclick="unlockAllSkins()">🎁 Открыть все</button>
-          <button class="admin-btn danger" onclick="lockAllSkins()">🔒 Забрать все</button>
-        </div>
-      </div>
-      <div class="admin-section">
-        <h4>🏠 ИГРОКИ В МОЕЙ КОМНАТЕ (${ROOM})</h4>
-        <div class="players-list" id="playersList"></div>
-      </div>
-      <div class="admin-section" style="border-color:#00bfff">
-        <h4 style="color:#00bfff">🌍 ВСЕ ИГРОКИ В ИГРЕ</h4>
-        <div class="global-count" id="globalCount">Загрузка...</div>
-        <div class="players-list" id="globalPlayersList"></div>
-        <div class="admin-row" style="margin-top:8px">
-          <button class="admin-btn secondary" onclick="renderGlobalPlayersList()">🔄 Обновить</button>
-        </div>
-        <div style="color:#888;font-size:11px;text-align:center;margin-top:8px;">
-          💡 Здесь видны ВСЕ игроки во ВСЕХ комнатах. Можно дать деньги, выгнать или удалить аккаунт — даже если он в другой комнате!
-        </div>
-      </div>
-      <div class="admin-section">
-        <h4>⚙️ УПРАВЛЕНИЕ</h4>
-        <div class="admin-row">
-          <button class="admin-btn danger" onclick="lockSecret()">🔒 Заблокировать</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="events" class="game">
-  <button class="back" onclick="showMenu()">← Назад</button>
-  <h2>🎉 Ивенты</h2>
-  <div class="events-box">
-    <h3>🔐 Введи пароль</h3>
-    <input type="password" id="eventPassword" placeholder="Пароль" maxlength="20" inputmode="numeric"><br>
-    <div class="duration-row">
-      <label>⏱️ Длительность (сек):</label>
-      <input type="number" id="eventDuration" min="5" max="3600" placeholder="авто" inputmode="numeric">
-      <div class="quick-btns">
-        <button onclick="setDuration(15)">15с</button>
-        <button onclick="setDuration(30)">30с</button>
-        <button onclick="setDuration(60)">1м</button>
-        <button onclick="setDuration(120)">2м</button>
-        <button onclick="setDuration(300)">5м</button>
-        <button onclick="setDuration('')">Авто</button>
-      </div>
-      <div class="duration-hint">Пусто = стандартная длительность</div>
-    </div>
-    <button class="event-password-btn" onclick="tryStartEvent()">🚀 Запустить (для всех!)</button>
-    <p style="font-size:11px;color:#00bfff;margin-top:8px">🌍 Ивент увидят все в комнате!</p>
-    <div class="event-status" id="eventStatus"><p class="event-desc">Ивент не активен. Введи пароль.</p></div>
-    <button id="stopEventBtn" class="stop-event-btn" onclick="stopEventManually()" style="display:none">⏹️ ОСТАНОВИТЬ ИВЕНТ</button>
-  </div>
-  <div class="event-list">
-    <h4>📋 Возможные ивенты:</h4>
-    <p>💎 <b>x2 Деньги</b> — все награды удваиваются</p>
-    <p>🧠 <b>Супер-память</b> — память x3</p>
-    <p>🐶 <b>Брюсик-мания</b> — поглаживания x3</p>
-    <p>💰 <b>Денежный дождь</b> — +500 💰 всем</p>
-    <p>🌟 <b>Мега-ивент</b> — x3 на всё + 1000 💰</p>
-  </div>
-</div>
-
-<div id="daily" class="game">
-  <button class="back" onclick="showMenu()">← Назад</button>
-  <h2>🎁 Ежедневная награда</h2>
-  <div class="daily-info">🔥 Серия: <span class="streak" id="dailyStreak">0</span> дн.</div>
-  <div class="daily-grid" id="dailyGrid"></div>
-  <button class="big-claim" id="claimBtn" onclick="claimDaily()">🎁 Забрать награду</button>
-  <p class="daily-info timer" id="dailyTimer"></p>
-</div>
-
-<div id="memory" class="game">
-  <button class="back" onclick="showMenu()">← Назад</button>
-  <h2>🧠 Найди пару</h2>
-  <div class="mem-info">Ходы: <span id="memoryMoves">0</span> | Пары: <span id="memoryPairs">0</span>/8</div>
-  <div class="memory-grid" id="memoryGrid"></div>
-  <div id="memoryWin"></div>
-  <button onclick="startMemory()">🔄 Заново</button>
-</div>
-
-<div id="guess" class="game">
-  <button class="back" onclick="showMenu()">← Назад</button>
-  <h2>Угадай число</h2>
-  <p>Загадал число от 1 до 100</p>
-  <input type="number" id="guessInput" min="1" max="100" placeholder="Число" inputmode="numeric"><br>
-  <button onclick="checkGuess()">Проверить</button>
-  <button class="danger-btn" onclick="newGuessGame()">Новая</button>
-  <p id="guessMessage">Попыток: 0</p>
-</div>
-
-<div id="shop" class="game">
-  <button class="back" onclick="showMenu()">← Назад</button>
-  <h2>🛒 Магазин</h2>
-  <p>Баланс: <span id="shopMoney">0</span> 💰</p>
-  <div id="shopItems"></div>
-  <div style="margin-top:25px">
-    <button class="danger-btn" onclick="resetMoney()">🔄 Сброс денег</button>
-    <button class="danger-btn" onclick="openAccountReset()" style="background:#7b1fa2;border-color:#9c27b0">💥 СБРОС АККАУНТА</button>
-  </div>
-</div>
-
-<div id="achievements" class="game">
-  <button class="back" onclick="showMenu()">← Назад</button>
-  <h2>🏆 Ачивки</h2>
-  <p>Открыто: <span id="achCounter2">0</span> / <span id="achTotal2">0</span></p>
-  <div class="ach-grid" id="achGrid"></div>
-</div>
-
-<div class="modal-overlay" id="accountModal">
+<!-- МОДАЛЬНОЕ ОКНО ВВОДА ИМЕНИ -->
+<div class="modal-overlay active" id="nameModal">
   <div class="modal">
-    <h2>💥 СБРОС АККАУНТА</h2>
-    <p>⚠️ Удалит ВСЁ безвозвратно</p>
-    <ul><li>💰 Деньги</li><li>👆 Улучшения</li><li>🐶 Прогресс Брюсика</li><li>🎨 Скины</li><li>📊 Статистику</li><li>🏆 Ачивки</li><li>🎁 Ежедневки</li></ul>
-    <p style="color:#c41e16;font-weight:bold">Введи <span style="color:#ffd700">УДАЛИТЬ</span>:</p>
-    <input type="text" id="confirmInput" placeholder="УДАЛИТЬ" oninput="checkConfirmInput()">
-    <div class="modal-btns">
-      <button class="cancel-reset" onclick="closeAccountReset()">Отмена</button>
-      <button class="confirm-reset" id="confirmResetBtn" onclick="confirmAccountReset()" disabled>💥 УДАЛИТЬ</button>
+    <h3>👋 Введи своё имя</h3>
+    <input type="text" id="nameInput" placeholder="Твоё имя..." maxlength="15">
+    <button onclick="saveName()">ИГРАТЬ!</button>
+  </div>
+</div>
+
+<!-- УВЕДОМЛЕНИЯ -->
+<div class="notifications" id="notifications"></div>
+
+<!-- ВЕРХНЯЯ ПАНЕЛЬ -->
+<div class="top-bar">
+  <div class="stats">
+    <div class="player-name" id="playerNameDisplay" onclick="changeName()">👤 Игрок</div>
+    <div class="stat">💰 <span id="statMoney">100</span></div>
+    <div class="stat">👆 <span id="statClicks">0</span></div>
+    <div class="stat">🏆 <span id="statWins">0</span></div>
+  </div>
+</div>
+
+<!-- ГЛАВНОЕ МЕНЮ -->
+<div class="menu" id="mainMenu">
+  <h2>Выбери игру 👇</h2>
+  <div class="game-buttons">
+    <button class="game-btn btn-clicker" onclick="openGame('clicker')">
+      👆 КЛИКЕР<br><small style="font-size:13px;font-weight:normal">Брюсик Барюсик</small>
+    </button>
+    <button class="game-btn btn-memory" onclick="openGame('memory')">
+      🧠 НАЙТИ ПАРУ<br><small style="font-size:13px;font-weight:normal">Открывай карточки</small>
+    </button>
+    <button class="game-btn btn-guess" onclick="openGame('guess')">
+      🔢 УГАДАЙ ЧИСЛО<br><small style="font-size:13px;font-weight:normal">1 до 100</small>
+    </button>
+    <button class="game-btn btn-admin" onclick="openGame('admin')">
+      ⚙️ АДМИН ПАНЕЛЬ<br><small style="font-size:13px;font-weight:normal">Всё что угодно</small>
+    </button>
+  </div>
+</div>
+
+<!-- ====== ИГРА 1: КЛИКЕР ====== -->
+<div class="window" id="win-clicker">
+  <button class="close-btn" onclick="closeGame('clicker')">✕</button>
+  <div class="window-header header-clicker">🐹 БРЮСИК БАРЮСИК — КЛИКАЙ ПО САБАКЕ!</div>
+  <div class="clicker-area">
+    <div id="subak" onclick="doClick()">🐶</div>
+    <div class="clicker-info">
+      Кликов: <span id="clickerCount">0</span><br>
+      Монет за клик: <span id="clickPower">1</span>
     </div>
   </div>
 </div>
 
-<div class="nick-modal-overlay" id="nickModal">
-  <div class="nick-modal">
-    <h2>✏️ СМЕНИТЬ НИК</h2>
-    <p style="color:#aaa;font-size:13px">2-20 символов</p>
-    <div class="nick-preview">
-      <span style="color:#888;font-size:12px">Будет так:</span>
-      <div class="nick-preview-value" id="nickPreview">НовыйНик</div>
-    </div>
-    <input type="text" id="newNickInput" class="nick-input" placeholder="Новый ник" maxlength="20" oninput="updateNickPreview()" onkeydown="if(event.key==='Enter')saveNick()">
-    <div class="nick-options">
-      <button onclick="randomNick()">🎲 Случайный</button>
-      <button onclick="addEmojiNick('🔥')">🔥</button>
-      <button onclick="addEmojiNick('⚡')">⚡</button>
-      <button onclick="addEmojiNick('👑')">👑</button>
-      <button onclick="addEmojiNick('🦓')">🦓</button>
-    </div>
-    <div class="nick-btns">
-      <button class="nick-cancel" onclick="closeNickModal()">Отмена</button>
-      <button class="nick-save" onclick="saveNick()">✅ Сохранить</button>
-    </div>
-    <div class="nick-tips">💡 Ник сохранится навсегда</div>
+<!-- ====== ИГРА 2: НАЙТИ ПАРУ ====== -->
+<div class="window" id="win-memory">
+  <button class="close-btn" onclick="closeGame('memory')">✕</button>
+  <div class="window-header header-memory">🧠 НАЙДИ ПАРУ</div>
+  <div class="memory-grid" id="memoryGrid"></div>
+  <p style="text-align:center;margin-top:15px;color:#ffd93d">
+    Пар найдено: <span id="pairsFound">0</span> / 8
+  </p>
+</div>
+
+<!-- ====== ИГРА 3: УГАДАЙ ЧИСЛО ====== -->
+<div class="window" id="win-guess">
+  <button class="close-btn" onclick="closeGame('guess')">✕</button>
+  <div class="window-header header-guess">🔢 УГАДАЙ ЧИСЛО 1-100</div>
+  <div class="guess-area">
+    <p style="margin-bottom:10px">Я загадал число от 1 до 100. Угадаешь?</p>
+    <input type="number" id="guessInput" placeholder="Введи число..." min="1" max="100">
+    <br>
+    <button onclick="checkGuess()">ПРОВЕРИТЬ!</button>
+    <div id="guessHint"></div>
+    <p style="margin-top:20px;font-size:14px;color:#aaa">
+      Попыток: <span id="guessTries">0</span>
+    </p>
   </div>
 </div>
 
-<div class="give-money-modal-overlay" id="giveMoneyModal">
-  <div class="give-money-modal">
-    <h2>💰 ДАТЬ ДЕНЬГИ ИГРОКУ</h2>
-    <div class="give-money-target">
-      <div class="nick">🎮 <span id="giveMoneyTargetNick">-</span></div>
-      <div class="id" id="giveMoneyTargetIdDisplay">-</div>
-      <div class="room" id="giveMoneyTargetRoom">🏠 -</div>
+<!-- ====== АДМИН ПАНЕЛЬ ====== -->
+<div class="window" id="win-admin">
+  <button class="close-btn" onclick="closeGame('admin')">✕</button>
+  <div class="window-header header-admin">⚙️ АДМИН ПАНЕЛЬ</div>
+  <div class="admin-area">
+    <p style="text-align:center;margin-bottom:15px;color:#aaa;font-size:14px">
+      🔒 Только для администраторов
+    </p>
+    <input type="password" id="adminPass" placeholder="Введи пароль админа...">
+
+    <!-- ВЫДАЧА ДЕНЕГ ИГРОКАМ -->
+    <div class="admin-section">
+      <div class="admin-section-title">💸 ВЫДАТЬ ДЕНЬГИ ИГРОКУ</div>
+
+      <div class="player-list" id="playerList">
+        <p style="text-align:center;color:#aaa;font-size:13px;padding:10px">
+          Пока никого нет... (введи пароль)
+        </p>
+      </div>
+
+      <input type="text" id="targetName" placeholder="Имя игрока (например: Вася)...">
+      <input type="number" id="moneyAmount" placeholder="Сумма (например: 500)..." value="100">
+      <button class="admin-btn ab-money" onclick="adminAction('giveMoney')">💰 Выдать деньги игроку</button>
+      <button class="admin-btn ab-danger" onclick="adminAction('takeMoney')">💸 Забрать деньги у игрока</button>
     </div>
-    <div class="give-money-note">💡 Только админ может давать деньги игрокам</div>
-    <input type="hidden" id="giveMoneyTargetId">
-    <input type="hidden" id="giveMoneyTargetNickInput">
-    <input type="hidden" id="giveMoneyTargetRoomInput">
-    <input type="number" id="giveMoneyAmount" class="give-money-input" placeholder="Сумма" min="1" inputmode="numeric">
-    <div class="give-money-quick">
-      <button onclick="setGiveMoneyAmount(10)">10</button>
-      <button onclick="setGiveMoneyAmount(100)">100</button>
-      <button onclick="setGiveMoneyAmount(1000)">1000</button>
-      <button onclick="setGiveMoneyAmount(10000)">10К</button>
-      <button onclick="setGiveMoneyAmount(1000000)">1МЛН</button>
-    </div>
-    <div class="give-money-btns">
-      <button class="give-money-cancel" onclick="closeGiveMoneyModal()">Отмена</button>
-      <button class="give-money-send" onclick="confirmGiveMoney()">💰 Выдать</button>
+
+    <!-- ОБЩИЕ ДЕЙСТВИЯ -->
+    <div class="admin-section">
+      <div class="admin-section-title">⚡ ДЕЙСТВИЯ</div>
+      <button class="admin-btn ab-money" onclick="adminAction('money')">💰 Себе +1000 монет</button>
+      <button class="admin-btn ab-ach" onclick="adminAction('ach')">🏅 Выдать себе достижение</button>
+      <button class="admin-btn ab-speed" onclick="adminAction('godclick')">⚡ +10 к силе клика</button>
+      <button class="admin-btn ab-speed" onclick="adminAction('reset')">🔄 Сбросить МОЙ прогресс</button>
+      <button class="admin-btn ab-clear" onclick="adminAction('clear')">🗑️ Очистить уведомления</button>
     </div>
   </div>
-</div>
-
-<div class="kick-modal-overlay" id="kickModal">
-  <div class="kick-modal">
-    <h2>🥾 ВЫГНАТЬ ИГРОКА</h2>
-    <div class="kick-target-info">
-      <div class="nick">🎮 <span id="kickModalTarget">-</span></div>
-      <div class="id" id="kickModalTargetIdDisplay">-</div>
-      <div class="id" id="kickModalTargetRoomDisplay" style="color:#ba68c8">🏠 -</div>
-    </div>
-    <input type="hidden" id="kickModalTargetId">
-    <input type="hidden" id="kickModalTargetNick">
-    <input type="hidden" id="kickModalTargetRoom">
-    <div class="duration-label">⏱️ ДЛИТЕЛЬНОСТЬ БАНА</div>
-    <div class="duration-grid">
-      <div class="duration-option"><input type="radio" name="kickDuration" id="dur1" value="1"><label for="dur1"><span class="dur-icon">⏱️</span>1 мин</label></div>
-      <div class="duration-option"><input type="radio" name="kickDuration" id="dur5" value="5" checked><label for="dur5"><span class="dur-icon">⏰</span>5 мин</label></div>
-      <div class="duration-option"><input type="radio" name="kickDuration" id="dur30" value="30"><label for="dur30"><span class="dur-icon">🕐</span>30 мин</label></div>
-      <div class="duration-option"><input type="radio" name="kickDuration" id="dur60" value="60"><label for="dur60"><span class="dur-icon">🕑</span>1 час</label></div>
-      <div class="duration-option"><input type="radio" name="kickDuration" id="dur1440" value="1440"><label for="dur1440"><span class="dur-icon">📅</span>1 день</label></div>
-      <div class="duration-option"><input type="radio" name="kickDuration" id="dur10080" value="10080"><label for="dur10080"><span class="dur-icon">📆</span>7 дней</label></div>
-      <div class="duration-option"><input type="radio" name="kickDuration" id="durForever" value="forever"><label for="durForever"><span class="dur-icon">♾️</span>НАВСЕГДА</label></div>
-    </div>
-    <div class="kick-reason-label">📝 ПРИЧИНА</div>
-    <input type="text" id="kickReasonInput" class="kick-reason-input" maxlength="60" value="Нарушение правил">
-    <div class="kick-modal-btns">
-      <button class="cancel-kick" onclick="closeKickModal()">Отмена</button>
-      <button class="confirm-kick" onclick="confirmKick()">🥾 ВЫГНАТЬ</button>
-    </div>
-  </div>
-</div>
-
-<div class="kick-overlay" id="kickOverlay">
-  <div class="kick-box">
-    <div class="kick-icon">🥾</div>
-    <div class="kick-title">ВЫ ИСКЛЮЧЕНЫ</div>
-    <p style="color:#ff8888">Админ выгнал вас из комнаты</p>
-    <div class="kick-reason" id="kickReason">📝 Причина: нарушение правил</div>
-    <div class="kick-duration-line" id="kickDurationText">⏱️ Срок бана: 5 мин</div>
-    <div class="kick-timer">Разбан через<br><b id="kickTimer">05:00</b></div>
-  </div>
-</div>
-
-<div id="toast" class="toast">
-  <div class="t-title" id="toastTitle">🏆 НОВАЯ АЧИВКА!</div>
-  <div class="t-name" id="toastName"></div>
 </div>
 
 <script>
-const SECRET_CODE = '67890';
-const EVENT_PASSWORD = '56890';
-const NTFY = 'https://ntfy.sh/';
-const BRUSIK_REWARD = 2;
-// 🌍 ГЛОБАЛЬНЫЙ ТОПИК — для всех игроков во всех комнатах
-const GLOBAL_TOPIC = 'roblox3games_global_allplayers_v1';
+// ==================================================
+//  🎮 HJ,KJRC — ГЛАВНЫЙ СКРИПТ
+// ==================================================
 
-/* ==================== СКИНЫ ==================== */
-const SKINS = [
-  { id:'dog',    name:'Обычный пёс',              price:0,       type:'dog',   rarity:'common',    filter:'none',                                                       acc:'' },
-  { id:'gold',   name:'Золотой пёс',              price:500,     type:'dog',   rarity:'common',    filter:'sepia(1) saturate(3) hue-rotate(-15deg) brightness(1.15)',   acc:'👑' },
-  { id:'red',    name:'Красный пёс',              price:1500,    type:'dog',   rarity:'common',    filter:'hue-rotate(-30deg) saturate(2)',                             acc:'' },
-  { id:'blue',   name:'Синий пёс',                price:3000,    type:'dog',   rarity:'rare',      filter:'hue-rotate(180deg) saturate(1.5)',                           acc:'' },
-  { id:'green',  name:'Зелёный пёс',              price:5000,    type:'dog',   rarity:'rare',      filter:'hue-rotate(90deg) saturate(2)',                              acc:'' },
-  { id:'purple', name:'Фиолетовый пёс',           price:15000,   type:'dog',   rarity:'epic',      filter:'hue-rotate(260deg) saturate(1.6)',                           acc:'🕶️' },
-  { id:'pink',   name:'Розовый пёс',              price:25000,   type:'dog',   rarity:'epic',      filter:'hue-rotate(300deg) saturate(2) brightness(1.1)',             acc:'🎀' },
-  { id:'shadow', name:'Тёмный пёс',               price:50000,   type:'dog',   rarity:'epic',      filter:'brightness(0.4) contrast(1.5)',                              acc:'😎' },
-  { id:'zebra',  name:'🦓 ЗЕБРА (САМЫЙ РЕДКИЙ)',  price:1000000, type:'zebra', rarity:'mythic',    filter:'grayscale(1) brightness(1.3) contrast(1.8)',                 acc:'🦓' }
-];
+// ===== ГЛОБАЛЬНАЯ БАЗА ИГРОКОВ (общая на всех) =====
+const PLAYERS_KEY = 'HJ_KJRC_players_db';
 
-let ownedSkins = JSON.parse(localStorage.getItem('rb_skins') || '["dog"]');
-let equippedSkin = localStorage.getItem('rb_skin') || 'dog';
-
-function getSkinById(id) { return SKINS.find(s => s.id === id) || SKINS[0]; }
-function getEquippedSkin() { return getSkinById(equippedSkin); }
-
-function openSkins() {
-  document.getElementById('menu').style.display = 'none';
-  document.querySelectorAll('.game').forEach(g => g.classList.remove('active'));
-  document.getElementById('skins').classList.add('active');
-  currentGame = 'skins';
-  renderSkins();
-}
-
-function renderSkins() {
-  const dogGrid = document.getElementById('dogSkinsGrid');
-  const zebraGrid = document.getElementById('zebraSkinsGrid');
-  dogGrid.innerHTML = '';
-  zebraGrid.innerHTML = '';
-
-  SKINS.forEach(skin => {
-    const owned = ownedSkins.includes(skin.id);
-    const equipped = equippedSkin === skin.id;
-    const card = document.createElement('div');
-    card.className = 'skin-card';
-    if (owned) card.classList.add('owned');
-    if (equipped) card.classList.add('equipped');
-    if (skin.rarity) card.classList.add('rarity-' + skin.rarity);
-
-    let badge = '';
-    if (equipped) badge = '<div class="skin-badge equipped-b">✅ НАДЕТ</div>';
-    else if (owned) badge = '<div class="skin-badge owned-b">КУПЛЕНО</div>';
-    else if (skin.rarity === 'mythic') badge = '<div class="skin-badge mythic-b">🌟 САМЫЙ РЕДКИЙ</div>';
-    else if (skin.rarity === 'legendary') badge = '<div class="skin-badge legendary-b">👑 ЛЕГЕНДА</div>';
-    else if (skin.rarity === 'epic') badge = '<div class="skin-badge epic-b">💜 ЭПИК</div>';
-    else if (skin.rarity === 'rare') badge = '<div class="skin-badge rare-b">💙 РЕДКИЙ</div>';
-    else badge = '<div class="skin-badge new-b">НОВЫЙ</div>';
-
-    const filterStyle = (skin.filter && skin.filter !== 'none') ? `filter:${skin.filter};` : '';
-    card.innerHTML = `
-      ${badge}
-      <div class="skin-emoji">
-        <span style="${filterStyle}display:inline-block;">🐶</span>
-        ${skin.acc ? `<span class="skin-acc">${skin.acc}</span>` : ''}
-      </div>
-      <div class="skin-name">${skin.name}</div>
-      <div class="skin-price">${owned ? (equipped ? '✅ НАДЕТ' : 'Нажми чтобы надеть') : skin.price.toLocaleString('ru-RU') + ' 💰'}</div>
-    `;
-    card.onclick = () => handleSkinClick(skin.id);
-    if (skin.rarity === 'legendary' || skin.rarity === 'mythic') zebraGrid.appendChild(card);
-    else dogGrid.appendChild(card);
-  });
-}
-
-function handleSkinClick(skinId) {
-  const skin = getSkinById(skinId);
-  const owned = ownedSkins.includes(skinId);
-  const equipped = equippedSkin === skinId;
-
-  if (equipped) { showToast('ℹ️ Уже надет', skin.name, false); return; }
-  if (owned) {
-    equippedSkin = skinId;
-    localStorage.setItem('rb_skin', equippedSkin);
-    applySkin();
-    renderSkins();
-    showToast('✅ СКИН НАДЕТ', skin.name, true);
-    sendPresence();
-    return;
-  }
-  if (money < skin.price) {
-    showToast('❌ Недостаточно денег', `Нужно ${skin.price.toLocaleString('ru-RU')} 💰`, false);
-    return;
-  }
-  if (!confirm(`Купить скин "${skin.name}" за ${skin.price.toLocaleString('ru-RU')} 💰?`)) return;
-  money -= skin.price;
-  ownedSkins.push(skinId);
-  equippedSkin = skinId;
-  localStorage.setItem('rb_skins', JSON.stringify(ownedSkins));
-  localStorage.setItem('rb_skin', equippedSkin);
-  updateMoney();
-  applySkin();
-  renderSkins();
-  saveAll();
-  showToast('🎉 СКИН КУПЛЕН!', skin.name, true);
-  checkAchievements();
-  sendPresence();
-}
-
-function applySkin() {
-  const skin = getEquippedSkin();
-  const dog = document.getElementById('brusikDog');
-  if (dog) {
-    dog.style.filter = (skin.filter && skin.filter !== 'none') ? skin.filter : '';
-    dog.innerHTML = `<span class="dog-face-inner">🐶</span>${skin.acc ? `<span class="dog-acc">${skin.acc}</span>` : ''}`;
-  }
-  const nameEl = document.getElementById('brusikSkinName');
-  if (nameEl) nameEl.textContent = skin.name;
-}
-
-function unlockAllSkins() {
-  ownedSkins = SKINS.map(s => s.id);
-  localStorage.setItem('rb_skins', JSON.stringify(ownedSkins));
-  renderSkins();
-  showToast('🎁 ВСЕ СКИНЫ ОТКРЫТЫ!', `${SKINS.length} шт.`, true, false, false, true);
-}
-function lockAllSkins() {
-  if (!confirm('Забрать все скины?')) return;
-  ownedSkins = ['dog'];
-  equippedSkin = 'dog';
-  localStorage.setItem('rb_skins', JSON.stringify(ownedSkins));
-  localStorage.setItem('rb_skin', equippedSkin);
-  applySkin();
-  renderSkins();
-  showToast('🔒 ВСЕ СКИНЫ ЗАБРАНЫ', 'Остался только обычный пёс', false, false, true);
-  sendPresence();
-}
-
-/* ==================== ИГРОК ==================== */
-function getPlayerId() {
-  let id = sessionStorage.getItem('rb_pid');
-  if (!id) {
-    id = 'p' + Date.now().toString(36).slice(-4) + Math.random().toString(36).slice(2, 6);
-    sessionStorage.setItem('rb_pid', id);
-  }
-  return id;
-}
-const NICKNAMES = ['Хакер','Про','Геймер','Босс','Лев','Тигр','Орёл','Дракон','Робот','Кибер','Мастер','Самурай','Ниндзя','Пират','Космонавт','Волшебник'];
-function getNickname() {
-  let nick = localStorage.getItem('rb_nickname');
-  if (!nick) {
-    nick = NICKNAMES[Math.floor(Math.random()*NICKNAMES.length)] + ' #' + Math.floor(Math.random()*900+100);
-    localStorage.setItem('rb_nickname', nick);
-  }
-  return nick;
-}
-const MY_ID = getPlayerId();
-let MY_NICK = getNickname();
-
-function getRoomFromURL() {
-  const url = new URLSearchParams(location.search).get('room') || 'shared777';
-  return url.toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,40) || 'shared777';
-}
-let ROOM = getRoomFromURL();
-const NTFY_TOPIC = 'roblox3games_' + ROOM;
-document.getElementById('roomName').textContent = ROOM;
-document.getElementById('myNameDisplay').textContent = MY_NICK;
-
-let eventSource = null;
-let globalEventSource = null;
-let reconnectAttempts = 0;
-let globalReconnectAttempts = 0;
-const players = new Map();        // игроки в моей комнате
-const globalPlayers = new Map();  // 🌍 все игроки во всех комнатах
-
-function setOnlineStatus(status) {
-  const badge = document.getElementById('onlineBadge');
-  const text = document.getElementById('onlineText');
-  if (status === 'online') { badge.classList.remove('offline'); text.textContent = 'Онлайн'; }
-  else if (status === 'offline') { badge.classList.add('offline'); text.textContent = 'Оффлайн'; }
-  else { badge.classList.add('offline'); text.textContent = 'Подключение...'; }
-}
-
-function publish(payload) {
-  payload.sender = MY_ID;
-  payload.senderNick = MY_NICK;
-  payload.timestamp = Date.now();
-  return fetch(NTFY + NTFY_TOPIC, { method: 'POST', body: JSON.stringify(payload) }).catch(()=>{});
-}
-
-// 🌍 Публикация в топик любой комнаты (для команд чужим игрокам)
-function publishToRoom(targetRoom, payload) {
-  payload.sender = MY_ID;
-  payload.senderNick = MY_NICK;
-  payload.timestamp = Date.now();
-  return fetch(NTFY + 'roblox3games_' + targetRoom, {
-    method: 'POST',
-    body: JSON.stringify(payload)
-  }).catch(()=>{});
-}
-
-// 🌍 Presence: отправляем и в свою комнату, и в глобальный топик
-function sendPresence() {
-  // в свою комнату
-  publish({type:'presence', skin: equippedSkin});
-  // в глобальный топик
-  fetch(NTFY + GLOBAL_TOPIC, {
-    method: 'POST',
-    body: JSON.stringify({
-      type: 'global_presence',
-      sender: MY_ID,
-      senderNick: MY_NICK,
-      skin: equippedSkin,
-      room: ROOM,
-      timestamp: Date.now()
-    })
-  }).catch(()=>{});
-}
-
-function connectToEvents() {
-  if (eventSource) eventSource.close();
-  setOnlineStatus('connecting');
-  eventSource = new EventSource(NTFY + NTFY_TOPIC + '/sse');
-  eventSource.onopen = () => {
-    setOnlineStatus('online');
-    reconnectAttempts = 0;
-    console.log('✅ Подключено к комнате:', ROOM);
-    sendPresence();
-    setTimeout(sendPresence, 500);
-    setTimeout(sendPresence, 1500);
-    setTimeout(loadRecentEvents, 500);
-  };
-  eventSource.onmessage = (e) => {
-    try {
-      const wrapper = JSON.parse(e.data);
-      if (wrapper.event !== 'message') return;
-      handleIncoming(JSON.parse(wrapper.message));
-    } catch (err) {}
-  };
-  eventSource.onerror = () => {
-    setOnlineStatus('offline');
-    const delay = Math.min(3000, 1000 * (reconnectAttempts + 1));
-    reconnectAttempts++;
-    setTimeout(connectToEvents, delay);
-  };
-}
-
-// 🌍 Подключение к глобальному топику (все игроки со всего мира)
-function connectToGlobal() {
-  if (globalEventSource) globalEventSource.close();
-  globalEventSource = new EventSource(NTFY + GLOBAL_TOPIC + '/sse');
-  globalEventSource.onopen = () => {
-    globalReconnectAttempts = 0;
-    console.log('🌍 Подключено к глобальному топику');
-    sendPresence();
-    setTimeout(loadRecentGlobal, 500);
-  };
-  globalEventSource.onmessage = (e) => {
-    try {
-      const wrapper = JSON.parse(e.data);
-      if (wrapper.event !== 'message') return;
-      handleGlobalIncoming(JSON.parse(wrapper.message));
-    } catch (err) {}
-  };
-  globalEventSource.onerror = () => {
-    const delay = Math.min(3000, 1000 * (globalReconnectAttempts + 1));
-    globalReconnectAttempts++;
-    setTimeout(connectToGlobal, delay);
-  };
-}
-
-function handleIncoming(payload) {
-  if (!payload || !payload.type) return;
-  if (payload.sender === MY_ID) return;
-  if (payload.type === 'presence') handlePresence(payload);
-  else if (payload.type === 'event_start') handleRemoteEvent(payload);
-  else if (payload.type === 'event_stop') handleRemoteStop(payload);
-  else if (payload.type === 'kick') handleKick(payload);
-  else if (payload.type === 'nick_change') handleNickChange(payload);
-  else if (payload.type === 'money_give') handleMoneyGive(payload);
-  else if (payload.type === 'account_reset') handleAccountReset(payload);
-}
-
-// 🌍 Обработка глобальных сообщений
-function handleGlobalIncoming(payload) {
-  if (!payload || payload.sender === MY_ID) return;
-  if (payload.type === 'global_presence') {
-    globalPlayers.set(payload.sender, {
-      nickname: payload.senderNick || ('Игрок_' + payload.sender.slice(-4)),
-      skin: payload.skin || 'dog',
-      room: payload.room || 'shared777',
-      lastSeen: Date.now()
-    });
-    updateGlobalCount();
-    if (currentGame === 'secret' && adminUnlocked) renderGlobalPlayersList();
-  }
-}
-
-function handlePresence(payload) {
-  if (!payload.sender) return;
-  const existing = players.get(payload.sender);
-  players.set(payload.sender, {
-    nickname: payload.senderNick || (existing ? existing.nickname : ('Игрок_' + payload.sender.slice(-4))),
-    skin: payload.skin || (existing ? existing.skin : 'dog'),
-    lastSeen: Date.now()
-  });
-  if (currentGame === 'secret' && adminUnlocked) renderPlayersList();
-}
-
-function cleanupPlayers() {
-  const now = Date.now();
-  let changed1 = false, changed2 = false;
-  players.forEach((p, id) => { if (now - p.lastSeen > 30000) { players.delete(id); changed1 = true; } });
-  globalPlayers.forEach((p, id) => { if (now - p.lastSeen > 40000) { globalPlayers.delete(id); changed2 = true; } });
-  if (changed1 && currentGame === 'secret' && adminUnlocked) renderPlayersList();
-  if (changed2) {
-    updateGlobalCount();
-    if (currentGame === 'secret' && adminUnlocked) renderGlobalPlayersList();
-  }
-}
-function updateGlobalCount() {
-  document.getElementById('globalPlayerCount').textContent = globalPlayers.size + 1;
-  const gc = document.getElementById('globalCount');
-  if (gc) gc.textContent = `🌍 Всего онлайн: ${globalPlayers.size + 1} (в моей комнате: ${players.size + 1})`;
-}
-
-/* ==================== 🆕 ДАТЬ ДЕНЬГИ ИГРОКУ (в любой комнате) ==================== */
-function openGiveMoneyModal(targetId, targetNick, targetRoom) {
-  if (!adminUnlocked) { showToast('❌ Только админ!', 'Открой админ-панель', false); return; }
-  if (targetId === MY_ID) { showToast('😅 Себе нельзя', 'Используй админ-панель', false); return; }
-  document.getElementById('giveMoneyModal').classList.add('show');
-  document.getElementById('giveMoneyTargetNick').textContent = targetNick;
-  document.getElementById('giveMoneyTargetIdDisplay').textContent = targetId;
-  document.getElementById('giveMoneyTargetRoom').textContent = '🏠 Комната: ' + (targetRoom || ROOM);
-  document.getElementById('giveMoneyTargetId').value = targetId;
-  document.getElementById('giveMoneyTargetNickInput').value = targetNick;
-  document.getElementById('giveMoneyTargetRoomInput').value = targetRoom || ROOM;
-  document.getElementById('giveMoneyAmount').value = '';
-  setTimeout(() => document.getElementById('giveMoneyAmount').focus(), 200);
-}
-function closeGiveMoneyModal() { document.getElementById('giveMoneyModal').classList.remove('show'); }
-function setGiveMoneyAmount(amount) { document.getElementById('giveMoneyAmount').value = amount; }
-function confirmGiveMoney() {
-  if (!adminUnlocked) { showToast('❌ Нет доступа', 'Только админ', false); return; }
-  const targetId = document.getElementById('giveMoneyTargetId').value;
-  const targetNick = document.getElementById('giveMoneyTargetNickInput').value;
-  const targetRoom = document.getElementById('giveMoneyTargetRoomInput').value;
-  const amount = parseInt(document.getElementById('giveMoneyAmount').value);
-  if (isNaN(amount) || amount <= 0) { showToast('❌ Ошибка', 'Введи сумму больше 0', false); return; }
-  if (amount > 999999999999999) { showToast('❌ Слишком много', 'Максимум 999 999 999 999 999', false); return; }
-  const givePayload = { type: 'money_give', target: targetId, fromNick: MY_NICK, amount: amount };
-  // 🎯 Отправляем в топик КОМНАТЫ ИГРОКА (а не в свою!)
-  publishToRoom(targetRoom, givePayload);
-  setTimeout(() => publishToRoom(targetRoom, givePayload), 500);
-  setTimeout(() => publishToRoom(targetRoom, givePayload), 1500);
-  closeGiveMoneyModal();
-  showToast('💰 ДЕНЬГИ ВЫДАНЫ!', `${targetNick} (комната ${targetRoom}) получит ${amount.toLocaleString('ru-RU')} 💰`, true, false, false, true);
-}
-function handleMoneyGive(payload) {
-  if (payload.target !== MY_ID) return;
-  const amount = parseInt(payload.amount) || 0;
-  if (amount <= 0) return;
-  money += amount; stats.totalEarned += amount;
-  updateMoney(); saveAll(); checkAchievements();
-  showToast(`💰 ДЕНЬГИ ОТ АДМИНА!`, `+${amount.toLocaleString('ru-RU')} 💰 (от ${payload.fromNick || 'админа'})`, true, false, false, true);
-}
-
-/* ==================== 🆕 УДАЛИТЬ АККАУНТ ИГРОКА (в любой комнате) ==================== */
-function confirmDeleteAccount(targetId, targetNick, targetRoom) {
-  if (!adminUnlocked) { showToast('❌ Только админ!', 'Открой админ-панель', false); return; }
-  if (targetId === MY_ID) { showToast('😅 Себя нельзя', 'Используй свою кнопку сброса', false); return; }
-  if (!confirm(`🗑️ УДАЛИТЬ АККАУНТ игрока "${targetNick}" (комната: ${targetRoom || ROOM})?\n\nВЕСЬ его прогресс (деньги, ачивки, скины) будет уничтожен!`)) return;
-  const resetPayload = { type: 'account_reset', target: targetId, fromNick: MY_NICK };
-  publishToRoom(targetRoom || ROOM, resetPayload);
-  setTimeout(() => publishToRoom(targetRoom || ROOM, resetPayload), 500);
-  setTimeout(() => publishToRoom(targetRoom || ROOM, resetPayload), 1500);
-  showToast('🗑️ КОМАНДА ОТПРАВЛЕНА', `Аккаунт "${targetNick}" будет удалён`, false, false, true);
-}
-function handleAccountReset(payload) {
-  if (payload.target !== MY_ID) return;
-  const fromNick = payload.fromNick || 'Админ';
-  showDeleteScreen(fromNick);
-}
-function showDeleteScreen(fromNick) {
-  if (eventTimerInterval) { clearInterval(eventTimerInterval); eventTimerInterval = null; }
-  if (eventSource) { eventSource.close(); eventSource = null; }
-  if (globalEventSource) { globalEventSource.close(); globalEventSource = null; }
-  localStorage.clear();
-  sessionStorage.clear();
-  document.body.innerHTML = `
-    <div style="display:flex;justify-content:center;align-items:center;min-height:100vh;background:#1a0000;font-family:Arial;color:#fff;text-align:center;padding:20px;">
-      <div style="background:#2b0000;border:3px solid #c41e16;border-radius:20px;padding:40px 25px;max-width:450px;box-shadow:0 0 50px rgba(196,30,22,0.8);">
-        <div style="font-size:80px;margin-bottom:15px;">🗑️</div>
-        <div style="color:#ff4444;font-size:28px;font-weight:bold;letter-spacing:2px;margin-bottom:15px;text-shadow:0 0 20px rgba(255,68,68,0.8);">АККАУНТ УДАЛЁН</div>
-        <p style="color:#ff8888;margin:15px 0;">Админ ${fromNick} удалил твой аккаунт</p>
-        <p style="color:#aaa;font-size:13px;">Весь прогресс уничтожен: деньги, ачивки, скины, ежедневка</p>
-        <button onclick="location.reload()" style="background:#c41e16;color:#fff;border:none;padding:14px 30px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;margin-top:25px;">🔄 Начать заново</button>
-      </div>
-    </div>
-  `;
-}
-
-function openNickModal() {
-  document.getElementById('nickModal').classList.add('show');
-  const input = document.getElementById('newNickInput');
-  input.value = MY_NICK;
-  updateNickPreview();
-  setTimeout(() => { input.focus(); input.select(); }, 200);
-}
-function closeNickModal() { document.getElementById('nickModal').classList.remove('show'); }
-function updateNickPreview() {
-  const val = document.getElementById('newNickInput').value.trim();
-  document.getElementById('nickPreview').textContent = val || 'НовыйНик';
-}
-function randomNick() {
-  const nick = NICKNAMES[Math.floor(Math.random()*NICKNAMES.length)] + ' #' + Math.floor(Math.random()*900+100);
-  document.getElementById('newNickInput').value = nick;
-  updateNickPreview();
-}
-function addEmojiNick(emoji) {
-  const input = document.getElementById('newNickInput');
-  let val = input.value.trim();
-  if (!val.includes(emoji)) input.value = val + ' ' + emoji;
-  updateNickPreview();
-}
-function saveNick() {
-  let newNick = document.getElementById('newNickInput').value.trim();
-  if (newNick.length < 2) { showToast('❌ Слишком короткий', 'Минимум 2 символа', false); return; }
-  if (newNick.length > 20) { showToast('❌ Слишком длинный', 'Максимум 20', false); return; }
-  newNick = newNick.replace(/[<>"'&]/g,'').trim();
-  if (newNick.length < 2) { showToast('❌ Некорректный', 'Только буквы/цифры', false); return; }
-  MY_NICK = newNick;
-  localStorage.setItem('rb_nickname', MY_NICK);
-  document.getElementById('myNameDisplay').textContent = MY_NICK;
-  publish({type:'nick_change', newNick: MY_NICK});
-  sendPresence();
-  closeNickModal();
-  showToast('✅ НИК ИЗМЕНЁН', `Теперь ты: ${MY_NICK}`, true);
-  renderPlayersList();
-}
-function handleNickChange(payload) {
-  if (!payload.sender || !payload.newNick) return;
-  if (players.has(payload.sender)) {
-    const p = players.get(payload.sender);
-    p.nickname = payload.newNick;
-    p.lastSeen = Date.now();
-    if (currentGame === 'secret' && adminUnlocked) renderPlayersList();
-  }
-  if (globalPlayers.has(payload.sender)) {
-    const p = globalPlayers.get(payload.sender);
-    p.nickname = payload.newNick;
-    p.lastSeen = Date.now();
-    if (currentGame === 'secret' && adminUnlocked) renderGlobalPlayersList();
-  }
-}
-
-function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function escapeJs(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"').replace(/\n/g,' '); }
-function getSkinEmoji(skinId) {
-  const skin = getSkinById(skinId);
-  return skin.acc ? `🐶${skin.acc}` : '🐶';
-}
-
-/* ==================== СПИСОК ИГРОКОВ В КОМНАТЕ ==================== */
-function renderPlayersList() {
-  const list = document.getElementById('playersList');
-  if (!list) return;
-  if (!adminUnlocked) { list.innerHTML = '<div class="no-players">🔒 Открой админ-панель</div>'; return; }
-  list.innerHTML = '';
-  const allPlayers = [
-    { id: MY_ID, nick: MY_NICK + ' (ты)', skin: equippedSkin, isMe: true, lastSeen: Date.now(), room: ROOM },
-    ...[...players.entries()].map(([id, p]) => ({ id, nick: p.nickname, skin: p.skin, isMe: false, lastSeen: p.lastSeen, room: ROOM }))
-  ];
-  allPlayers.sort((a, b) => (a.isMe === b.isMe ? 0 : (a.isMe ? -1 : 1)));
-  if (allPlayers.length <= 1) {
-    list.innerHTML = '<div class="no-players">В комнате только ты 😐</div>';
-    return;
-  }
-  allPlayers.forEach(p => {
-    const div = document.createElement('div');
-    div.className = 'player-item';
-    const secAgo = Math.floor((Date.now() - p.lastSeen) / 1000);
-    const timeText = p.isMe ? 'сейчас' : (secAgo < 5 ? 'только что' : secAgo + 'с назад');
-    div.innerHTML = `
-      <div class="player-info">
-        <div class="player-name ${p.isMe?'me':''}">${p.isMe?'👑':'🎮'} ${getSkinEmoji(p.skin)} ${escapeHtml(p.nick)}</div>
-        <div class="player-id">${p.id}</div>
-        <div class="player-time">⏱️ ${timeText}</div>
-      </div>
-      ${p.isMe ? '<div style="color:#ffd700;font-size:11px;">(это ты)</div>' : `
-        <div class="player-btns">
-          <button class="money-btn" onclick="openGiveMoneyModal('${p.id}','${escapeJs(p.nick)}','${p.room}')" title="Дать деньги">💰</button>
-          <button class="reset-acc-btn" onclick="confirmDeleteAccount('${p.id}','${escapeJs(p.nick)}','${p.room}')" title="Удалить аккаунт">🗑️</button>
-          <button class="kick-btn" onclick="kickPlayer('${p.id}','${escapeJs(p.nick)}','${p.room}')" title="Выгнать">🥾</button>
-        </div>
-      `}
-    `;
-    list.appendChild(div);
-  });
-}
-
-/* ==================== 🌍 ГЛОБАЛЬНЫЙ СПИСОК ИГРОКОВ ==================== */
-function renderGlobalPlayersList() {
-  const list = document.getElementById('globalPlayersList');
-  if (!list) return;
-  if (!adminUnlocked) { list.innerHTML = '<div class="no-players">🔒 Открой админ-панель</div>'; return; }
-  list.innerHTML = '';
-
-  const allPlayers = [
-    { id: MY_ID, nick: MY_NICK + ' (ты)', skin: equippedSkin, isMe: true, lastSeen: Date.now(), room: ROOM, inMyRoom: true },
-    ...[...globalPlayers.entries()].map(([id, p]) => ({
-      id, nick: p.nickname, skin: p.skin, isMe: false, lastSeen: p.lastSeen, room: p.room, inMyRoom: p.room === ROOM
-    }))
-  ];
-
-  // Сортируем: сначала моя комната, потом остальные
-  allPlayers.sort((a, b) => {
-    if (a.isMe !== b.isMe) return a.isMe ? -1 : 1;
-    if (a.inMyRoom !== b.inMyRoom) return a.inMyRoom ? -1 : 1;
-    return 0;
-  });
-
-  if (allPlayers.length <= 1) {
-    list.innerHTML = '<div class="no-players">В мире только ты 😐<br><span style="font-size:10px;color:#555">Другие игроки появятся здесь автоматически</span></div>';
-    return;
-  }
-
-  allPlayers.forEach(p => {
-    const div = document.createElement('div');
-    div.className = 'player-item';
-    const secAgo = Math.floor((Date.now() - p.lastSeen) / 1000);
-    const timeText = p.isMe ? 'сейчас' : (secAgo < 5 ? 'только что' : secAgo + 'с назад');
-    const roomBadge = p.inMyRoom ? '🏠 Моя комната' : '🌍 ' + p.room;
-    div.innerHTML = `
-      <div class="player-info">
-        <div class="player-name ${p.isMe?'me':''}">${p.isMe?'👑':'🎮'} ${getSkinEmoji(p.skin)} ${escapeHtml(p.nick)}</div>
-        <div class="player-id">${p.id}</div>
-        <div class="player-room">${roomBadge}</div>
-        <div class="player-time">⏱️ ${timeText}</div>
-      </div>
-      ${p.isMe ? '<div style="color:#ffd700;font-size:11px;">(это ты)</div>' : `
-        <div class="player-btns">
-          <button class="money-btn" onclick="openGiveMoneyModal('${p.id}','${escapeJs(p.nick)}','${p.room}')" title="Дать деньги">💰</button>
-          <button class="reset-acc-btn" onclick="confirmDeleteAccount('${p.id}','${escapeJs(p.nick)}','${p.room}')" title="Удалить аккаунт">🗑️</button>
-          <button class="kick-btn" onclick="kickPlayer('${p.id}','${escapeJs(p.nick)}','${p.room}')" title="Выгнать">🥾</button>
-        </div>
-      `}
-    `;
-    list.appendChild(div);
-  });
-}
-
-function kickPlayer(targetId, targetNick, targetRoom) {
-  if (!adminUnlocked) { showToast('❌ Нет доступа', 'Только админ', false); return; }
-  if (targetId === MY_ID) { showToast('😅 Себя нельзя', 'Ты админ', false); return; }
-  document.getElementById('kickModal').classList.add('show');
-  document.getElementById('kickModalTarget').textContent = targetNick;
-  document.getElementById('kickModalTargetIdDisplay').textContent = targetId;
-  document.getElementById('kickModalTargetRoomDisplay').textContent = '🏠 Комната: ' + (targetRoom || ROOM);
-  document.getElementById('kickModalTargetId').value = targetId;
-  document.getElementById('kickModalTargetNick').value = targetNick;
-  document.getElementById('kickModalTargetRoom').value = targetRoom || ROOM;
-  document.getElementById('kickReasonInput').value = 'Нарушение правил';
-  document.getElementById('dur5').checked = true;
-}
-function closeKickModal() { document.getElementById('kickModal').classList.remove('show'); }
-function confirmKick() {
-  const targetId = document.getElementById('kickModalTargetId').value;
-  const targetNick = document.getElementById('kickModalTargetNick').value;
-  const targetRoom = document.getElementById('kickModalTargetRoom').value || ROOM;
-  const reason = document.getElementById('kickReasonInput').value.trim() || 'Нарушение правил';
-  const durationRadio = document.querySelector('input[name="kickDuration"]:checked');
-  if (!durationRadio) { alert('Выбери длительность!'); return; }
-  let banMs = 0, durationText = '';
-  const val = durationRadio.value;
-  if (val === 'forever') { banMs = 365 * 24 * 60 * 60 * 1000 * 100; durationText = 'навсегда'; }
-  else { const minutes = parseInt(val); banMs = minutes * 60 * 1000; durationText = formatDuration(minutes); }
-  const kickPayload = {type:'kick', target: targetId, targetNick, reason, banMs, durationText};
-  publishToRoom(targetRoom, kickPayload);
-  setTimeout(() => publishToRoom(targetRoom, kickPayload), 500);
-  setTimeout(() => publishToRoom(targetRoom, kickPayload), 1500);
-  players.delete(targetId);
-  globalPlayers.delete(targetId);
-  renderPlayersList(); renderGlobalPlayersList(); updateGlobalCount(); closeKickModal();
-  showToast('🥾 ИГРОК ВЫГНАН', `${targetNick} (комната ${targetRoom}) — бан ${durationText}`, false, false, true);
-}
-function formatDuration(minutes) {
-  if (minutes < 60) return minutes + ' мин';
-  if (minutes < 1440) return Math.floor(minutes/60) + ' ч';
-  if (minutes < 10080) return Math.floor(minutes/1440) + ' дн';
-  return Math.floor(minutes/10080) + ' нед';
-}
-function handleKick(payload) {
-  if (payload.target !== MY_ID) return;
-  const reason = payload.reason || 'Нарушение правил';
-  const banMs = payload.banMs || (5*60*1000);
-  const durationText = payload.durationText || '5 мин';
-  const banUntil = Date.now() + banMs;
-  localStorage.setItem('rb_kicked_until', banUntil);
-  localStorage.setItem('rb_kicked_reason', reason);
-  localStorage.setItem('rb_kicked_duration', durationText);
-  showKickedScreen(reason, banUntil, durationText);
-}
-function showKickedScreen(reason, banUntil, durationText) {
-  document.getElementById('kickReason').textContent = '📝 Причина: ' + reason;
-  document.getElementById('kickDurationText').textContent = '⏱️ Срок бана: ' + (durationText || '5 мин');
-  document.getElementById('kickOverlay').classList.add('show');
-  if (eventSource) { eventSource.close(); eventSource = null; }
-  if (globalEventSource) { globalEventSource.close(); globalEventSource = null; }
-  setOnlineStatus('offline');
-  const timerEl = document.getElementById('kickTimer');
-  function tick() {
-    const left = Math.max(0, banUntil - Date.now());
-    if (left <= 0) {
-      localStorage.removeItem('rb_kicked_until');
-      localStorage.removeItem('rb_kicked_reason');
-      localStorage.removeItem('rb_kicked_duration');
-      location.reload(); return;
-    }
-    const days = Math.floor(left/86400000);
-    const hours = Math.floor((left%86400000)/3600000);
-    const mins = Math.floor((left%3600000)/60000);
-    const secs = Math.floor((left%60000)/1000);
-    let text = '';
-    if (days > 0) text = days + 'д ' + String(hours).padStart(2,'0') + ':' + String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
-    else if (hours > 0) text = String(hours).padStart(2,'0') + ':' + String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
-    else text = String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
-    timerEl.textContent = text;
-  }
-  tick(); setInterval(tick, 500);
-}
-function checkBan() {
-  const until = parseInt(localStorage.getItem('rb_kicked_until') || '0');
-  if (until && until > Date.now()) {
-    const reason = localStorage.getItem('rb_kicked_reason') || 'Нарушение правил';
-    const durationText = localStorage.getItem('rb_kicked_duration') || '5 мин';
-    showKickedScreen(reason, until, durationText);
-    return true;
-  } else if (until) {
-    localStorage.removeItem('rb_kicked_until');
-    localStorage.removeItem('rb_kicked_reason');
-    localStorage.removeItem('rb_kicked_duration');
-  }
-  return false;
-}
-function changeRoom() {
-  const val = document.getElementById('roomInput').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g,'');
-  if (!val) { alert('Введи название комнаты!'); return; }
-  const url = new URL(location.href);
-  url.searchParams.set('room', val);
-  location.href = url.toString();
-}
-
-let activeEvent = null, eventEndTime = 0, eventStartTime = 0, eventTotalDuration = 0, eventTimerInterval = null;
-const EVENTS = [
-  { id:'x2money',      icon:'💎', name:'x2 Деньги',      desc:'Все награды удваиваются!', duration:60, moneyMult:2, memoryMult:2, brusikMult:2 },
-  { id:'superMemory',  icon:'🧠', name:'Супер-память',   desc:'Память даёт x3 денег!',    duration:60, moneyMult:1, memoryMult:3, brusikMult:1 },
-  { id:'brusikMania',  icon:'🐶', name:'Брюсик-мания',   desc:'Поглаживания x3!',         duration:60, moneyMult:1, memoryMult:1, brusikMult:3 },
-  { id:'moneyRain',    icon:'💰', name:'Денежный дождь', desc:'Мгновенно +500 💰 всем!',  duration:0,  instant:500 },
-  { id:'megaEvent',    icon:'🌟', name:'МЕГА-ИВЕНТ',     desc:'x3 на всё + 1000 💰!',     duration:45, moneyMult:3, memoryMult:3, brusikMult:3, instant:1000 }
-];
-function getEventMoneyMult()  { return activeEvent ? (activeEvent.moneyMult  || 1) : 1; }
-function getEventMemoryMult() { return activeEvent ? (activeEvent.memoryMult || 1) : 1; }
-function getEventBrusikMult() { return activeEvent ? (activeEvent.brusikMult || 1) : 1; }
-
-function handleRemoteEvent(payload) {
-  if (payload.type !== 'event_start') return;
-  if (!payload.endTime || payload.endTime < Date.now()) return;
-  const eventKey = payload.id + '_' + payload.endTime;
-  if (window._processedEvents && window._processedEvents[eventKey]) return;
-  if (!window._processedEvents) window._processedEvents = {};
-  window._processedEvents[eventKey] = true;
-  setTimeout(() => { delete window._processedEvents[eventKey]; }, 5000);
-  if (activeEvent && Date.now() < eventEndTime) return;
-  applyRemoteEvent({
-    id: payload.id, icon: payload.icon, name: payload.name, desc: payload.desc,
-    moneyMult: payload.moneyMult, memoryMult: payload.memoryMult,
-    brusikMult: payload.brusikMult, instant: payload.instant
-  }, payload.endTime);
-}
-function applyRemoteEvent(ev, endTime) {
-  activeEvent = ev; activeEvent.isRemote = true;
-  stats.eventsStarted = (stats.eventsStarted || 0) + 1;
-  if (ev.instant) { money += ev.instant; stats.totalEarned += ev.instant; updateMoney(); }
-  const remaining = Math.max(1, Math.ceil((endTime - Date.now()) / 1000));
-  eventStartTime = Date.now(); eventEndTime = endTime; eventTotalDuration = remaining;
-  if (eventTimerInterval) clearInterval(eventTimerInterval);
-  eventTimerInterval = setInterval(tickEvent, 250);
-  saveAll(); renderEventStatus(); updateActiveEventBadge(); updateEventsCard();
-  showToast('🌍 ИВЕНТ ОТ ДРУГОГО ИГРОКА', `${ev.icon} ${ev.name} — ${remaining}с`, true, 'blue');
-  checkAchievements();
-}
-function handleRemoteStop(payload) {
-  if (!activeEvent) return;
-  if (payload.eventId && activeEvent.id !== payload.eventId) return;
-  const evName = activeEvent.name;
-  if (eventTimerInterval) { clearInterval(eventTimerInterval); eventTimerInterval = null; }
-  activeEvent = null; eventEndTime = 0; eventStartTime = 0; eventTotalDuration = 0;
-  updateActiveEventBadge(); updateEventsCard(); renderEventStatus();
-  showToast('⏹️ ИВЕНТ ОСТАНОВЛЕН', `${evName} — другим игроком`, false, false, true);
-}
-function openEvents() {
-  document.getElementById('menu').style.display = 'none';
-  document.querySelectorAll('.game').forEach(g => g.classList.remove('active'));
-  document.getElementById('events').classList.add('active');
-  currentGame = 'events';
-  renderEventStatus();
-}
-function setDuration(val) { document.getElementById('eventDuration').value = val; }
-function tryStartEvent() {
-  const input = document.getElementById('eventPassword');
-  if (input.value.trim() !== EVENT_PASSWORD) { showToast('❌ Неверный пароль!', 'Попробуй ещё раз', false); input.value=''; return; }
-  if (activeEvent && Date.now() < eventEndTime) { showToast('⏳ Ивент уже идёт', 'Нажми ОСТАНОВИТЬ или дождись', false); input.value=''; return; }
-  const durInput = document.getElementById('eventDuration').value.trim();
-  let customDuration = null;
-  if (durInput !== '') {
-    const parsed = parseInt(durInput);
-    if (!isNaN(parsed) && parsed > 0) customDuration = Math.min(Math.max(parsed, 5), 3600);
-  }
-  startEvent(EVENTS[Math.floor(Math.random()*EVENTS.length)], customDuration);
-  input.value = '';
-}
-function startEvent(ev, customDuration) {
-  activeEvent = ev; activeEvent.isRemote = false;
-  stats.eventsStarted = (stats.eventsStarted || 0) + 1;
-  if (ev.instant) { money += ev.instant; stats.totalEarned += ev.instant; updateMoney(); }
-  let duration = ev.duration;
-  let customText = '';
-  if (customDuration !== null && ev.duration > 0) { duration = customDuration; customText = ` (своя: ${duration}с)`; }
-  if (duration > 0) {
-    eventStartTime = Date.now();
-    eventEndTime = eventStartTime + duration * 1000;
-    eventTotalDuration = duration;
-    if (eventTimerInterval) clearInterval(eventTimerInterval);
-    eventTimerInterval = setInterval(tickEvent, 250);
-  } else {
-    eventStartTime = Date.now();
-    eventEndTime = Date.now() + 3000;
-    eventTotalDuration = 3;
-    setTimeout(endEvent, 3000);
-  }
-  const evPayload = {
-    type:'event_start', id: ev.id, icon: ev.icon, name: ev.name, desc: ev.desc,
-    moneyMult: ev.moneyMult || 1, memoryMult: ev.memoryMult || 1,
-    brusikMult: ev.brusikMult || 1, instant: ev.instant || 0, duration: eventTotalDuration, endTime: eventEndTime
-  };
-  publish(evPayload);
-  setTimeout(() => publish(evPayload), 300);
-  setTimeout(() => publish(evPayload), 1200);
-  saveAll(); renderEventStatus(); updateActiveEventBadge(); updateEventsCard();
-  showToast('🎉 ИВЕНТ ЗАПУЩЕН!', `${ev.icon} ${ev.name}${customText}`, true, 'purple');
-  checkAchievements();
-}
-function tickEvent() {
-  if (!activeEvent) return;
-  if (eventEndTime - Date.now() <= 0) { endEvent(); return; }
-  if (currentGame === 'events') renderEventStatus();
-  updateActiveEventBadge(); updateEventsCard();
-}
-function endEvent() {
-  if (eventTimerInterval) { clearInterval(eventTimerInterval); eventTimerInterval = null; }
-  const wasEvent = activeEvent ? activeEvent.name : '';
-  activeEvent = null; eventEndTime = 0; eventStartTime = 0; eventTotalDuration = 0;
-  updateActiveEventBadge(); updateEventsCard();
-  if (currentGame === 'events') renderEventStatus();
-  if (wasEvent) showToast('⏹️ Ивент завершён', wasEvent, false);
-}
-function stopEventManually() {
-  if (!activeEvent) { showToast('❌ Нет активного ивента', 'Нечего останавливать', false); return; }
-  const evName = activeEvent.name;
-  const evId = activeEvent.id;
-  if (eventTimerInterval) { clearInterval(eventTimerInterval); eventTimerInterval = null; }
-  publish({ type: 'event_stop', eventId: evId });
-  activeEvent = null; eventEndTime = 0; eventStartTime = 0; eventTotalDuration = 0;
-  updateActiveEventBadge(); updateEventsCard(); renderEventStatus();
-  showToast('⏹️ ИВЕНТ ОСТАНОВЛЕН', `${evName} — досрочно завершён`, false, false, true);
-}
-function updateEventsCard() {
-  const card = document.getElementById('eventsCard');
-  const badge = document.getElementById('eventsCardBadge');
-  const status = document.getElementById('eventsCardStatus');
-  const info = document.getElementById('eventsCardInfo');
-  const isActive = activeEvent && Date.now() < eventEndTime;
-  if (isActive) {
-    card.classList.remove('idle'); card.classList.add('active');
-    badge.classList.remove('off'); badge.classList.add('on');
-    badge.textContent = activeEvent.isRemote ? '🌍' : '🟢 ИДЁТ';
-    status.classList.remove('off'); status.classList.add('on');
-    status.innerHTML = `${activeEvent.icon} ${activeEvent.name}`;
-    const left = Math.max(0, Math.ceil((eventEndTime - Date.now())/1000));
-    const mm = String(Math.floor(left/60)).padStart(2,'0');
-    const ss = String(left%60).padStart(2,'0');
-    info.innerHTML = `<div class="event-menu-timer">⏱️ ${mm}:${ss}</div>`;
-  } else {
-    card.classList.remove('active'); card.classList.add('idle');
-    badge.classList.remove('on'); badge.classList.add('off'); badge.textContent = 'НЕТ';
-    status.classList.remove('on'); status.classList.add('off');
-    status.innerHTML = '🔴 Не активен';
-    info.innerHTML = `<p style="font-size:11px;color:#888;margin-top:4px">Введи пароль</p>`;
-  }
-}
-function renderEventStatus() {
-  const box = document.getElementById('eventStatus');
-  const stopBtn = document.getElementById('stopEventBtn');
-  if (activeEvent && Date.now() < eventEndTime) {
-    const left = Math.ceil((eventEndTime - Date.now())/1000);
-    const elapsed = (Date.now() - eventStartTime)/1000;
-    const percent = Math.min(100, Math.max(0, (elapsed/eventTotalDuration)*100));
-    box.className = 'event-status active' + (activeEvent.isRemote ? ' remote' : '');
-    box.innerHTML = `
-      <div style="font-size:36px">${activeEvent.icon}</div>
-      <div class="event-name">${activeEvent.name}</div>
-      <div class="event-desc">${activeEvent.desc}</div>
-      <div class="event-timer">⏱️ ${left} сек</div>
-      <div class="event-progress"><div class="event-progress-bar" style="width:${percent}%"></div></div>
-      ${activeEvent.isRemote ? '<p style="color:#00bfff;font-size:12px;margin-top:8px">🌍 Ивент от другого игрока</p>' : ''}
-    `;
-    if (stopBtn) stopBtn.style.display = 'inline-block';
-  } else {
-    box.className = 'event-status';
-    box.innerHTML = `<p class="event-desc">Ивент не активен. Введи пароль.</p>`;
-    if (stopBtn) stopBtn.style.display = 'none';
-  }
-}
-function updateActiveEventBadge() {
-  const badge = document.getElementById('activeEventBadge');
-  if (activeEvent && Date.now() < eventEndTime) {
-    const left = Math.ceil((eventEndTime - Date.now())/1000);
-    badge.style.display = 'block';
-    badge.textContent = `${activeEvent.icon} ${left}с`;
-  } else badge.style.display = 'none';
-}
-async function loadRecentEvents() {
+// Загружаем базу всех игроков
+function loadPlayersDB() {
   try {
-    const res = await fetch(NTFY + NTFY_TOPIC + '/json?poll=1&since=3m');
-    const text = await res.text();
-    if (!text.trim()) return;
-    const lines = text.trim().split('\n');
-    for (let i = lines.length - 1; i >= 0; i--) {
-      try {
-        const wrapper = JSON.parse(lines[i]);
-        if (wrapper.event !== 'message') continue;
-        handleIncoming(JSON.parse(wrapper.message));
-      } catch(e) {}
-    }
-  } catch (err) {}
-}
-// 🌍 Загрузка последних глобальных presence
-async function loadRecentGlobal() {
-  try {
-    const res = await fetch(NTFY + GLOBAL_TOPIC + '/json?poll=1&since=2m');
-    const text = await res.text();
-    if (!text.trim()) return;
-    const lines = text.trim().split('\n');
-    for (let i = lines.length - 1; i >= 0; i--) {
-      try {
-        const wrapper = JSON.parse(lines[i]);
-        if (wrapper.event !== 'message') continue;
-        handleGlobalIncoming(JSON.parse(wrapper.message));
-      } catch(e) {}
-    }
-  } catch (err) {}
+    const raw = localStorage.getItem(PLAYERS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch(e) { return {}; }
 }
 
-let adminUnlocked = false;
-function openSecret() {
-  document.getElementById('menu').style.display = 'none';
-  document.querySelectorAll('.game').forEach(g => g.classList.remove('active'));
-  document.getElementById('secret').classList.add('active');
-  currentGame = 'secret';
-  if (adminUnlocked) {
-    document.getElementById('adminPanel').classList.add('show');
-    document.getElementById('secretLockedPart').style.display = 'none';
-    document.getElementById('secretLockIcon').textContent = '👑';
-    document.getElementById('secretTitle').textContent = 'АДМИН-РЕЖИМ';
-    document.getElementById('secretHint').textContent = 'Полный доступ!';
-    updateAdminInfo(); renderPlayersList(); renderGlobalPlayersList(); updateGlobalCount();
-  } else {
-    document.getElementById('adminPanel').classList.remove('show');
-    document.getElementById('secretLockedPart').style.display = 'block';
-    document.getElementById('secretLockIcon').textContent = '🔒';
-    document.getElementById('secretTitle').textContent = 'СЕКРЕТНЫЙ ДОСТУП';
-    document.getElementById('secretHint').textContent = 'Введи секретный код';
-    document.getElementById('secretInput').value = '';
-    setTimeout(() => document.getElementById('secretInput').focus(), 200);
+function savePlayersDB(db) {
+  localStorage.setItem(PLAYERS_KEY, JSON.stringify(db));
+}
+
+// ===== СОСТОЯНИЕ ТЕКУЩЕГО ИГРОКА =====
+const game = {
+  playerName: '',
+  money: 100,
+  clicks: 0,
+  wins: 0,
+  clickPower: 1,
+  pairsFound: 0,
+  guessSecret: null,
+  guessTries: 0,
+  achievements: []
+};
+
+// ===== СОХРАНЕНИЕ ТЕКУЩЕГО ИГРОКА В БАЗУ =====
+function syncToDB() {
+  if (!game.playerName) return;
+  const db = loadPlayersDB();
+  db[game.playerName.toLowerCase()] = {
+    name: game.playerName,
+    money: game.money,
+    clicks: game.clicks,
+    wins: game.wins,
+    clickPower: game.clickPower,
+    achievements: game.achievements
+  };
+  savePlayersDB(db);
+}
+
+// ===== ЗАГРУЗКА ИГРОКА ИЗ БАЗЫ =====
+function loadFromDB() {
+  const db = loadPlayersDB();
+  const data = db[game.playerName.toLowerCase()];
+  if (data) {
+    game.money = data.money;
+    game.clicks = data.clicks;
+    game.wins = data.wins;
+    game.clickPower = data.clickPower || 1;
+    game.achievements = data.achievements || [];
   }
 }
-function checkSecret() {
-  const input = document.getElementById('secretInput');
-  if (input.value.trim() === SECRET_CODE) {
-    adminUnlocked = true;
-    document.getElementById('secretLockIcon').textContent = '👑';
-    document.getElementById('secretTitle').textContent = 'АДМИН-РЕЖИМ';
-    document.getElementById('secretHint').textContent = 'Полный доступ!';
-    document.getElementById('secretLockedPart').style.display = 'none';
-    document.getElementById('adminPanel').classList.add('show');
-    updateAdminInfo(); renderPlayersList(); renderGlobalPlayersList(); updateGlobalCount();
-    showToast('🔓 ДОСТУП ОТКРЫТ!', '👑 Админ-режим', false, false, false, true);
-  } else {
-    input.value = '';
-    input.style.borderColor = '#c41e16';
-    setTimeout(() => { input.style.borderColor = '#ffd700'; }, 500);
-    showToast('❌ Неверный код', 'Попробуй ещё раз', false);
+
+// ===== СОХРАНЕНИЕ ЛОКАЛЬНОГО ПРОГРЕССА =====
+function saveGame() {
+  localStorage.setItem('HJ_KJRC_save', JSON.stringify(game));
+  syncToDB();
+}
+
+function loadGame() {
+  const saved = localStorage.getItem('HJ_KJRC_save');
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      Object.assign(game, data);
+    } catch(e) {}
   }
-}
-function lockSecret() {
-  adminUnlocked = false;
-  document.getElementById('secretLockIcon').textContent = '🔒';
-  document.getElementById('secretTitle').textContent = 'СЕКРЕТНЫЙ ДОСТУП';
-  document.getElementById('secretHint').textContent = 'Введи секретный код';
-  document.getElementById('secretLockedPart').style.display = 'block';
-  document.getElementById('adminPanel').classList.remove('show');
-  document.getElementById('secretInput').value = '';
-  showToast('🔒 ЗАБЛОКИРОВАНО', 'Доступ закрыт', false);
-}
-function updateAdminInfo() {
-  const el = document.getElementById('adminMoney');
-  if (el) el.textContent = money.toLocaleString('ru-RU');
-}
-function giveMoney() {
-  const input = document.getElementById('moneyAmount');
-  const val = parseInt(input.value);
-  if (isNaN(val) || val <= 0) { showToast('❌ Ошибка', 'Введи число > 0', false); return; }
-  money += val; stats.totalEarned += val;
-  updateMoney(); updateAdminInfo(); saveAll(); checkAchievements();
-  showToast('💰 ДЕНЬГИ ВЫДАНЫ!', `+${val.toLocaleString('ru-RU')} 💰`, true, false, false, true);
-  input.value = '';
-}
-function quickGive(amount) {
-  money += amount; stats.totalEarned += amount;
-  updateMoney(); updateAdminInfo(); saveAll(); checkAchievements();
-  showToast('💰 Быстрая выдача', `+${amount.toLocaleString('ru-RU')} 💰`, true, false, false, true);
-}
-function setMoney(amount) {
-  if (!confirm('Обнулить баланс?')) return;
-  money = amount; updateMoney(); updateAdminInfo(); saveAll();
-  showToast('💰 Баланс изменён', `= ${amount} 💰`, true, false, false, true);
+  if (!game.guessSecret) game.guessSecret = Math.floor(Math.random() * 100) + 1;
+  updateUI();
 }
 
-const DAILY_REWARDS = [
-  { money:50, icon:'🪙', label:'50' }, { money:100, icon:'💵', label:'100' },
-  { money:150, icon:'💰', label:'150' }, { money:250, icon:'💎', label:'250' },
-  { money:400, icon:'🏆', label:'400' }, { money:600, icon:'👑', label:'600' },
-  { money:2000, icon:'🌟', label:'2000' }
-];
-
-let money           = parseInt(localStorage.getItem('rb_money'))   || 0;
-let memoryMultiplier= parseInt(localStorage.getItem('rb_memoryMult')) || 1;
-let brusikMultiplier= parseInt(localStorage.getItem('rb_brusikMult')) || 1;
-
-let stats = JSON.parse(localStorage.getItem('rb_stats') || '{}');
-stats.totalEarned   = stats.totalEarned   || 0;
-stats.totalPairs    = stats.totalPairs    || 0;
-stats.totalGuesses  = stats.totalGuesses  || 0;
-stats.bestGuess     = stats.bestGuess     || 0;
-stats.gamesPlayed   = stats.gamesPlayed   || 0;
-stats.dailyClaims   = stats.dailyClaims   || 0;
-stats.eventsStarted = stats.eventsStarted || 0;
-stats.memoryWins    = stats.memoryWins    || 0;
-stats.brusikPets    = stats.brusikPets    || 0;
-stats.brusikEarned  = stats.brusikEarned  || 0;
-stats.brusikTricks  = stats.brusikTricks  || 0;
-
-let achievements = JSON.parse(localStorage.getItem('rb_ach') || '{}');
-let daily = JSON.parse(localStorage.getItem('rb_daily') || '{}');
-daily.lastClaim = daily.lastClaim || 0;
-daily.streak    = daily.streak    || 0;
-daily.cycleDay  = daily.cycleDay  || 0;
-
-function saveAll() {
-  localStorage.setItem('rb_money', money);
-  localStorage.setItem('rb_memoryMult', memoryMultiplier);
-  localStorage.setItem('rb_brusikMult', brusikMultiplier);
-  localStorage.setItem('rb_stats', JSON.stringify(stats));
-  localStorage.setItem('rb_ach', JSON.stringify(achievements));
-  localStorage.setItem('rb_daily', JSON.stringify(daily));
-  localStorage.setItem('rb_skins', JSON.stringify(ownedSkins));
-  localStorage.setItem('rb_skin', equippedSkin);
+// ===== ОБНОВЛЕНИЕ ИНТЕРФЕЙСА =====
+function updateUI() {
+  document.getElementById('statMoney').textContent = game.money;
+  document.getElementById('statClicks').textContent = game.clicks;
+  document.getElementById('statWins').textContent = game.wins;
+  document.getElementById('clickerCount').textContent = game.clicks;
+  document.getElementById('clickPower').textContent = game.clickPower;
+  document.getElementById('playerNameDisplay').textContent = '👤 ' + (game.playerName || 'Игрок');
 }
 
-let brusikMood = 0;
-let brusikSessionPets = 0;
-let brusikLastPet = 0;
+// ===== УВЕДОМЛЕНИЯ =====
+function notify(text, color = '#ffd93d') {
+  const box = document.getElementById('notifications');
+  const n = document.createElement('div');
+  n.className = 'notif';
+  n.style.borderLeftColor = color;
+  n.textContent = text;
+  box.appendChild(n);
+  setTimeout(() => {
+    n.style.opacity = '0';
+    n.style.transition = 'opacity 0.4s';
+    setTimeout(() => n.remove(), 400);
+  }, 2500);
+}
 
-function petBrusik(e) {
-  const now = Date.now();
-  if (now - brusikLastPet < 100) return;
-  brusikLastPet = now;
-  const dog = document.getElementById('brusikDog');
-  const wrap = document.getElementById('brusikDogWrap');
-  const hint = document.getElementById('brusikHint');
-  hint.style.display = 'none';
-  dog.classList.remove('petting', 'happy');
-  void dog.offsetWidth;
-  dog.classList.add('petting');
-  const rect = wrap.getBoundingClientRect();
-  let clickX = 0, clickY = 0;
-  if (e && e.clientX !== undefined && e.clientX !== 0) {
-    clickX = e.clientX - (rect.left + rect.width/2);
-    clickY = e.clientY - (rect.top + rect.height/2);
-  } else { clickX = (Math.random()-0.5)*100; clickY = (Math.random()-0.5)*60; }
-  spawnHeart(clickX, clickY);
-  const mult = brusikMultiplier * getEventBrusikMult();
-  const reward = BRUSIK_REWARD * mult;
-  money += reward;
-  stats.totalEarned += reward;
-  stats.brusikEarned += reward;
-  stats.brusikPets++;
-  brusikSessionPets++;
-  brusikMood += 8;
-  if (brusikMood >= 100) { brusikMood = 0; doBrusikTrick(); }
-  updateMoney();
-  updateBrusikUI();
-  saveAll();
-  checkAchievements();
-}
-function doBrusikTrick() {
-  const dog = document.getElementById('brusikDog');
-  dog.classList.add('happy');
-  setTimeout(() => dog.classList.remove('happy'), 600);
-  const bonus = BRUSIK_REWARD * 50 * brusikMultiplier * getEventBrusikMult() * getEventMoneyMult();
-  money += bonus; stats.totalEarned += bonus; stats.brusikEarned += bonus; stats.brusikTricks++;
-  updateMoney();
-  showToast('🐶 ТРЮК БРЮСИКА!', `🎉 +${Math.floor(bonus)} 💰 бонус`, false, false, false, true, false);
-  for (let i = 0; i < 8; i++) setTimeout(() => spawnHeart((Math.random()-0.5)*150, (Math.random()-0.5)*100), i*80);
-}
-function spawnHeart(x, y) {
-  const wrap = document.getElementById('brusikDogWrap');
-  const heart = document.createElement('div');
-  heart.className = 'brusik-heart';
-  const emojis = ['❤️','💖','💕','💗','💓','🐾','💰'];
-  heart.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-  heart.style.left = '50%';
-  heart.style.top = '40%';
-  heart.style.setProperty('--hx', (x*0.5) + 'px');
-  heart.style.setProperty('--hy', (y - 60) + 'px');
-  heart.style.setProperty('--hx2', (x) + 'px');
-  heart.style.setProperty('--hy2', (y - 120) + 'px');
-  wrap.appendChild(heart);
-  setTimeout(() => heart.remove(), 1100);
-}
-function updateBrusikUI() {
-  document.getElementById('brusikPets').textContent = brusikSessionPets;
-  document.getElementById('brusikTotalPets').textContent = stats.brusikPets;
-  document.getElementById('brusikTricks').textContent = stats.brusikTricks;
-  document.getElementById('brusikEarned').textContent = stats.brusikEarned.toLocaleString('ru-RU');
-  document.getElementById('brusikMoodFill').style.width = brusikMood + '%';
-  applySkin();
-}
-function resetBrusik() {
-  if (!confirm('Сбросить прогресс Брюсика?')) return;
-  stats.brusikPets = 0; stats.brusikEarned = 0; stats.brusikTricks = 0;
-  brusikSessionPets = 0; brusikMood = 0;
-  saveAll(); updateBrusikUI();
-  showToast('🔄 Прогресс сброшен', 'Брюсик снова голоден!', false);
-}
-function msUntilMidnight() {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate()+1) - now;
-}
-function canClaimToday() {
-  if (!daily.lastClaim) return true;
-  const now = new Date(), last = new Date(daily.lastClaim);
-  return now.getFullYear() !== last.getFullYear() || now.getMonth() !== last.getMonth() || now.getDate() !== last.getDate();
-}
-function wasYesterday() {
-  if (!daily.lastClaim) return false;
-  const now = new Date(), last = new Date(daily.lastClaim);
-  const y = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1);
-  return last.getFullYear() === y.getFullYear() && last.getMonth() === y.getMonth() && last.getDate() === y.getDate();
-}
-function checkStreakBreak() {
-  if (!daily.lastClaim) return;
-  if (canClaimToday() && !wasYesterday()) { daily.streak = 0; daily.cycleDay = 0; saveAll(); }
-}
-function claimDaily() {
-  if (!canClaimToday()) return;
-  if (wasYesterday()) daily.streak++; else { daily.streak = 1; daily.cycleDay = 0; }
-  const idx = daily.cycleDay;
-  const reward = DAILY_REWARDS[idx];
-  let totalMoney = reward.money;
-  let bonusText = reward.label;
-  if (idx === 6) bonusText = '2000 💰 + бонус!';
-  totalMoney = Math.floor(totalMoney * getEventMoneyMult());
-  money += totalMoney; stats.totalEarned += totalMoney; stats.dailyClaims++;
-  daily.lastClaim = Date.now(); daily.cycleDay = (daily.cycleDay + 1) % 7;
-  updateMoney(); saveAll(); renderDaily(); updateDailyCard(); checkAchievements();
-  showToast(`🎁 Ежедневка! День ${daily.streak}`, `+${totalMoney} 💰 ${bonusText}`, true);
-}
-function updateDailyCard() {
-  const badge = document.getElementById('dailyBadge');
-  const card = document.getElementById('dailyCard');
-  if (canClaimToday()) { badge.style.display = 'block'; card.style.borderColor = '#00c853'; }
-  else { badge.style.display = 'none'; card.style.borderColor = '#444'; }
-  document.getElementById('menuStreak').textContent = daily.streak;
-}
-function renderDaily() {
-  checkStreakBreak();
-  document.getElementById('dailyStreak').textContent = daily.streak;
-  const grid = document.getElementById('dailyGrid');
-  grid.innerHTML = '';
-  for (let i = 0; i < 7; i++) {
-    const r = DAILY_REWARDS[i];
-    const dayDiv = document.createElement('div');
-    dayDiv.className = 'day';
-    if (daily.cycleDay > i) dayDiv.classList.add('claimed');
-    if (daily.cycleDay === i && canClaimToday()) dayDiv.classList.add('current');
-    dayDiv.innerHTML = `<div class="day-num">День ${i+1}</div><div class="day-icon">${r.icon}</div><div class="day-reward">${r.label}💰</div>`;
-    grid.appendChild(dayDiv);
+// ===== ОТКРЫТИЕ/ЗАКРЫТИЕ ОКОН =====
+function openGame(name) {
+  document.querySelectorAll('.window').forEach(w => w.classList.remove('active'));
+  document.getElementById('mainMenu').style.display = 'none';
+  document.getElementById('win-' + name).classList.add('active');
+
+  if (name === 'memory') initMemory();
+  if (name === 'guess' && !game.guessSecret) {
+    game.guessSecret = Math.floor(Math.random() * 100) + 1;
   }
-  const btn = document.getElementById('claimBtn');
-  if (canClaimToday()) { btn.disabled = false; btn.textContent = '🎁 Забрать награду'; document.getElementById('dailyTimer').textContent = ''; }
-  else { btn.disabled = true; btn.textContent = '✅ Уже забрано'; updateTimer(); }
-}
-function updateTimer() {
-  if (canClaimToday()) { document.getElementById('dailyTimer').textContent = ''; return; }
-  const ms = msUntilMidnight();
-  const h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000), s = Math.floor((ms%60000)/1000);
-  document.getElementById('dailyTimer').textContent = `⏰ Через: ${h}ч ${m}м ${s}с`;
-}
-function openDaily() {
-  document.getElementById('menu').style.display = 'none';
-  document.querySelectorAll('.game').forEach(g => g.classList.remove('active'));
-  document.getElementById('daily').classList.add('active');
-  currentGame = 'daily';
-  renderDaily();
+  if (name === 'admin') refreshPlayerList();
 }
 
-const ACHIEVEMENTS = [
-  { id:'first_money', icon:'🪙', name:'Первая монетка', desc:'Заработай 1 💰', check:()=>stats.totalEarned>=1 },
-  { id:'money_100',   icon:'💵', name:'Сотка', desc:'Заработай 100 💰', check:()=>stats.totalEarned>=100 },
-  { id:'money_1000',  icon:'💰', name:'Богач', desc:'Заработай 1 000 💰', check:()=>stats.totalEarned>=1000 },
-  { id:'money_10000', icon:'💎', name:'Миллионер', desc:'Заработай 10 000 💰', check:()=>stats.totalEarned>=10000 },
-  { id:'memory_10',   icon:'🧠', name:'Первые пары', desc:'10 пар', check:()=>stats.totalPairs>=10 },
-  { id:'memory_50',   icon:'🎴', name:'Мастер памяти', desc:'50 пар', check:()=>stats.totalPairs>=50 },
-  { id:'memory_win',  icon:'🏅', name:'Полное поле', desc:'Собери все пары', check:()=>stats.memoryWins>=1 },
-  { id:'guess_win',   icon:'🔢', name:'Угадал!', desc:'Выиграй 1 раз', check:()=>stats.gamesPlayed>=1 },
-  { id:'guess_best',  icon:'🎯', name:'Снайпер', desc:'Угадай за 3 попытки', check:()=>stats.bestGuess>0 && stats.bestGuess<=3 },
-  { id:'shop_buyer',  icon:'🛒', name:'Шопоголик', desc:'Купи улучшение', check:()=>(memoryMultiplier>1 || brusikMultiplier>1) },
-  { id:'daily_1',     icon:'🎁', name:'Первый бонус', desc:'Забери ежедневку', check:()=>stats.dailyClaims>=1 },
-  { id:'daily_7',     icon:'🔥', name:'Неделя подряд', desc:'7 дней streak', check:()=>daily.streak>=7 },
-  { id:'daily_30',    icon:'👑', name:'Месяц верности', desc:'30 дней streak', check:()=>daily.streak>=30 },
-  { id:'event_1',     icon:'🎉', name:'Первый ивент', desc:'Запусти 1 ивент', check:()=>stats.eventsStarted>=1 },
-  { id:'event_10',    icon:'🎊', name:'Ивент-мастер', desc:'10 ивентов', check:()=>stats.eventsStarted>=10 },
-  { id:'event_50',    icon:'🎆', name:'Повелитель ивентов', desc:'50 ивентов', check:()=>stats.eventsStarted>=50 },
-  { id:'brusik',      icon:'🐱', name:'Брюсик Барбусик', desc:'Собери 1000 монет чтобы накормить Брюсик Барбусик', check:()=>stats.totalEarned>=1000 },
-  { id:'brusik_10',   icon:'🐶', name:'Первый друг', desc:'Погладь Брюсика 10 раз', check:()=>stats.brusikPets>=10 },
-  { id:'brusik_100',  icon:'💝', name:'Лучший друг', desc:'Погладь Брюсика 100 раз', check:()=>stats.brusikPets>=100 },
-  { id:'brusik_1000', icon:'🏆', name:'Брюсик-легенда', desc:'Погладь Брюсика 1000 раз', check:()=>stats.brusikPets>=1000 },
-  { id:'brusik_tricks',icon:'🎪', name:'Дрессировщик', desc:'10 трюков Брюсика', check:()=>stats.brusikTricks>=10 },
-  { id:'sigma_millionaires', icon:'🐱💎', name:'Брюсик и Сигма Миллионеры', desc:'Заработайте бесконечность денег', check:()=>money >= 999999999999999 },
-  { id:'skin_buyer',  icon:'🎨', name:'Модник', desc:'Купи любой скин', check:()=>ownedSkins.length > 1 },
-  { id:'skin_zebra',  icon:'🦓', name:'Главная Зебра', desc:'Купи САМЫЙ РЕДКИЙ скин — ЗЕБРУ за 1 000 000 💰', check:()=>ownedSkins.includes('zebra') }
-];
-
-function checkAchievements() {
-  let anyNew = false;
-  ACHIEVEMENTS.forEach(a => {
-    if (!achievements[a.id] && a.check()) {
-      achievements[a.id] = true;
-      showToast('🏆 НОВАЯ АЧИВКА!', `${a.icon} ${a.name}`);
-      anyNew = true;
-    }
-  });
-  if (anyNew) { saveAll(); updateAchCounter(); if (currentGame === 'achievements') renderAch(); }
-}
-function updateAchCounter() {
-  const unlocked = Object.values(achievements).filter(v=>v).length;
-  const total = ACHIEVEMENTS.length;
-  document.getElementById('achCounter').textContent = unlocked;
-  document.getElementById('achTotal').textContent = total;
-  document.getElementById('achCounter2').textContent = unlocked;
-  document.getElementById('achTotal2').textContent = total;
-}
-function renderAch() {
-  const grid = document.getElementById('achGrid');
-  grid.innerHTML = '';
-  ACHIEVEMENTS.forEach(a => {
-    const div = document.createElement('div');
-    div.className = 'ach' + (achievements[a.id] ? ' unlocked' : '');
-    div.innerHTML = `<div class="icon">${achievements[a.id] ? a.icon : '🔒'}</div><div class="name">${a.name}</div><div class="desc">${a.desc}</div>`;
-    grid.appendChild(div);
-  });
-}
-function openAch() {
-  document.getElementById('menu').style.display = 'none';
-  document.querySelectorAll('.game').forEach(g => g.classList.remove('active'));
-  document.getElementById('achievements').classList.add('active');
-  currentGame = 'achievements';
-  renderAch(); updateAchCounter();
+function closeGame(name) {
+  document.getElementById('win-' + name).classList.remove('active');
+  document.getElementById('mainMenu').style.display = 'block';
 }
 
-function updateMoney() {
-  document.getElementById('moneyDisplay').textContent = money.toLocaleString('ru-RU');
-  const sm = document.getElementById('shopMoney');
-  if (sm) sm.textContent = money.toLocaleString('ru-RU');
-}
-function addMoney(amount) {
-  const boosted = Math.floor(amount * getEventMoneyMult());
-  money += boosted; stats.totalEarned += boosted;
-  updateMoney(); saveAll(); checkAchievements();
-}
-function resetMoney() {
-  if (!confirm('Сбросить все деньги?')) return;
-  money = 0; updateMoney(); saveAll();
-}
+// ==================================================
+//  👤 СИСТЕМА ИМЁН ИГРОКОВ
+// ==================================================
+function saveName() {
+  const input = document.getElementById('nameInput');
+  const name = input.value.trim();
 
-function openAccountReset() {
-  document.getElementById('accountModal').classList.add('show');
-  document.getElementById('confirmInput').value = '';
-  document.getElementById('confirmResetBtn').disabled = true;
-}
-function closeAccountReset() { document.getElementById('accountModal').classList.remove('show'); }
-function checkConfirmInput() {
-  const val = document.getElementById('confirmInput').value.trim().toUpperCase();
-  document.getElementById('confirmResetBtn').disabled = (val !== 'УДАЛИТЬ');
-}
-function confirmAccountReset() {
-  if (document.getElementById('confirmInput').value.trim().toUpperCase() !== 'УДАЛИТЬ') return;
-  if (eventTimerInterval) { clearInterval(eventTimerInterval); eventTimerInterval = null; }
-  if (gameInterval) { clearInterval(gameInterval); gameInterval = null; }
-  activeEvent = null; eventEndTime = 0;
-  localStorage.clear();
-  sessionStorage.clear();
-  location.reload();
-}
-
-let currentGame = null;
-let gameInterval = null;
-
-function showGame(id) {
-  document.getElementById('menu').style.display = 'none';
-  document.querySelectorAll('.game').forEach(g => g.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  currentGame = id;
-  if (id === 'memory') startMemory();
-  if (id === 'guess')  newGuessGame();
-  if (id === 'brusik') {
-    updateBrusikUI();
-    document.getElementById('brusikHint').style.display = 'inline-block';
-    brusikSessionPets = 0;
+  if (name.length < 2) {
+    alert('Имя должно быть минимум 2 символа!');
+    return;
   }
-}
-function showMenu() {
-  if (gameInterval) { clearInterval(gameInterval); gameInterval = null; }
-  currentGame = null;
-  document.querySelectorAll('.game').forEach(g => g.classList.remove('active'));
-  document.getElementById('menu').style.display = 'grid';
-  updateMoney(); updateDailyCard(); updateEventsCard();
-}
-function openShop() {
-  document.getElementById('menu').style.display = 'none';
-  document.querySelectorAll('.game').forEach(g => g.classList.remove('active'));
-  document.getElementById('shop').classList.add('active');
-  currentGame = 'shop';
-  renderShop();
+
+  game.playerName = name;
+  loadFromDB(); // подгружаем деньги, если игрок уже играл
+  syncToDB();
+
+  document.getElementById('nameModal').classList.remove('active');
+  updateUI();
+  notify(`👋 Привет, ${name}!`, '#f5c26b');
 }
 
-const MEMORY_EMOJIS = ['🍎','🍌','🍇','🍓','🍊','🍒','🥝','🍑'];
-let memoryCards = [], memoryFirst = null, memorySecond = null, memoryLock = false, memoryMoves = 0, memoryPairs = 0;
-function startMemory() {
-  const all = [...MEMORY_EMOJIS, ...MEMORY_EMOJIS];
-  for (let i = all.length - 1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [all[i], all[j]] = [all[j], all[i]]; }
-  memoryCards = all.map(e => ({emoji:e, matched:false}));
-  memoryFirst = null; memorySecond = null; memoryLock = false; memoryMoves = 0; memoryPairs = 0;
-  document.getElementById('memoryWin').innerHTML = '';
-  renderMemory();
+function changeName() {
+  const input = document.getElementById('nameInput');
+  input.value = game.playerName;
+  document.getElementById('nameModal').classList.add('active');
 }
-function renderMemory() {
+
+// ==================================================
+//  👆 ИГРА 1: КЛИКЕР
+// ==================================================
+function doClick() {
+  game.money += game.clickPower;
+  game.clicks += 1;
+  updateUI();
+  saveGame();
+
+  if (game.clicks === 10) notify('🏅 Достижение: 10 кликов!', '#4cd964');
+  if (game.clicks === 100) notify('🏅 Достижение: 100 кликов!', '#4cd964');
+  if (game.clicks === 500) notify('🏅 Достижение: 500 кликов! Ты монстр!', '#4cd964');
+  if (game.clicks === 1000) notify('🏆 ЛЕГЕНДА! 1000 кликов!', '#ffd93d');
+
+  const s = document.getElementById('subak');
+  s.style.transform = 'scale(0.85)';
+  setTimeout(() => s.style.transform = '', 80);
+}
+
+// ==================================================
+//  🧠 ИГРА 2: НАЙТИ ПАРУ
+// ==================================================
+let memoryState = { cards: [], opened: [], matched: [], locked: false };
+
+function initMemory() {
+  const emojis = ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼'];
+  let cards = [...emojis, ...emojis];
+  for (let i = cards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cards[i], cards[j]] = [cards[j], cards[i]];
+  }
+
+  memoryState = { cards, opened: [], matched: [], locked: false };
+  game.pairsFound = 0;
+  document.getElementById('pairsFound').textContent = 0;
+
   const grid = document.getElementById('memoryGrid');
   grid.innerHTML = '';
-  memoryCards.forEach((card, i) => {
-    const div = document.createElement('div');
-    div.className = 'mem-card';
-    if (card.matched) div.classList.add('matched');
-    if (memoryFirst === i || memorySecond === i) div.classList.add('flipped');
-    const showFace = card.matched || memoryFirst === i || memorySecond === i;
-    div.textContent = showFace ? card.emoji : '❓';
-    div.onclick = () => flipMemory(i);
-    grid.appendChild(div);
+
+  cards.forEach((emoji, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.index = i;
+    card.dataset.emoji = emoji;
+    card.textContent = emoji;
+    card.onclick = () => flipCard(i, card);
+    grid.appendChild(card);
   });
-  document.getElementById('memoryMoves').textContent = memoryMoves;
-  document.getElementById('memoryPairs').textContent = memoryPairs;
 }
-function flipMemory(i) {
-  if (memoryLock || memoryCards[i].matched) return;
-  if (memoryFirst === i || memorySecond === i) return;
-  if (memoryFirst === null) { memoryFirst = i; renderMemory(); return; }
-  memorySecond = i; memoryMoves++; renderMemory();
-  if (memoryCards[memoryFirst].emoji === memoryCards[memorySecond].emoji) {
-    memoryCards[memoryFirst].matched = true;
-    memoryCards[memorySecond].matched = true;
-    memoryPairs++; stats.totalPairs = (stats.totalPairs || 0) + 1;
-    addMoney(15 * memoryMultiplier * getEventMemoryMult());
-    memoryFirst = null; memorySecond = null; renderMemory();
-    if (memoryPairs === 8) {
-      stats.memoryWins = (stats.memoryWins || 0) + 1;
-      addMoney(50 * memoryMultiplier * getEventMemoryMult());
-      document.getElementById('memoryWin').innerHTML = `<div class="mem-win">🎉 Победа! +50 💰</div>`;
-    }
-    saveAll(); checkAchievements();
-  } else {
-    memoryLock = true;
-    setTimeout(() => { memoryFirst = null; memorySecond = null; memoryLock = false; renderMemory(); }, 800);
+
+function flipCard(index, card) {
+  if (memoryState.locked) return;
+  if (memoryState.opened.includes(index)) return;
+  if (memoryState.matched.includes(index)) return;
+
+  card.classList.add('opened');
+  memoryState.opened.push(index);
+
+  if (memoryState.opened.length === 2) {
+    memoryState.locked = true;
+    const [a, b] = memoryState.opened;
+    const cardsEls = document.querySelectorAll('#memoryGrid .card');
+
+    setTimeout(() => {
+      if (memoryState.cards[a] === memoryState.cards[b]) {
+        cardsEls[a].classList.add('matched');
+        cardsEls[b].classList.add('matched');
+        memoryState.matched.push(a, b);
+        game.pairsFound++;
+        game.money += 30;
+        game.wins++;
+        document.getElementById('pairsFound').textContent = game.pairsFound;
+        notify('🎉 Пара найдена! +30 монет', '#4cd964');
+        updateUI();
+        saveGame();
+
+        if (memoryState.matched.length === 16) {
+          notify('🏆 ВСЕ ПАРЫ НАЙДЕНЫ! +200 бонус!', '#ffd93d');
+          game.money += 200;
+          updateUI();
+          saveGame();
+        }
+      } else {
+        cardsEls[a].classList.remove('opened');
+        cardsEls[b].classList.remove('opened');
+      }
+      memoryState.opened = [];
+      memoryState.locked = false;
+    }, 700);
   }
 }
 
-let secretNumber, attempts;
-function newGuessGame() {
-  secretNumber = Math.floor(Math.random()*100) + 1;
-  attempts = 0;
-  document.getElementById('guessMessage').textContent = 'Попыток: 0';
-  document.getElementById('guessInput').value = '';
-}
+// ==================================================
+//  🔢 ИГРА 3: УГАДАЙ ЧИСЛО
+// ==================================================
 function checkGuess() {
-  const val = parseInt(document.getElementById('guessInput').value);
-  if (isNaN(val) || val < 1 || val > 100) { document.getElementById('guessMessage').textContent = 'Введи 1-100!'; return; }
-  attempts++; stats.totalGuesses++;
-  if (val === secretNumber) {
-    let reward = Math.max(10, 100 - (attempts-1)*10);
-    stats.gamesPlayed++;
-    if (stats.bestGuess === 0 || attempts < stats.bestGuess) stats.bestGuess = attempts;
-    addMoney(reward);
-    document.getElementById('guessMessage').textContent = `🎉 Угадал за ${attempts}! +${reward} 💰`;
-  } else if (val < secretNumber) document.getElementById('guessMessage').textContent = `Больше! Попыток: ${attempts}`;
-  else document.getElementById('guessMessage').textContent = `Меньше! Попыток: ${attempts}`;
-  saveAll();
+  const input = document.getElementById('guessInput');
+  const hint = document.getElementById('guessHint');
+  const n = parseInt(input.value);
+
+  if (isNaN(n) || n < 1 || n > 100) {
+    hint.textContent = '⚠️ Введи число от 1 до 100!';
+    hint.style.color = '#e74c3c';
+    return;
+  }
+
+  game.guessTries++;
+  document.getElementById('guessTries').textContent = game.guessTries;
+
+  if (n === game.guessSecret) {
+    const reward = Math.max(10, 100 - game.guessTries * 5);
+    game.money += reward;
+    game.wins++;
+    hint.textContent = `🎉 УГАДАЛ! Число было ${game.guessSecret}. +${reward} монет!`;
+    hint.style.color = '#4cd964';
+    notify(`🎉 Угадал за ${game.guessTries} попыток! +${reward}`, '#4cd964');
+
+    setTimeout(() => {
+      game.guessSecret = Math.floor(Math.random() * 100) + 1;
+      game.guessTries = 0;
+      document.getElementById('guessTries').textContent = 0;
+      document.getElementById('guessInput').value = '';
+      hint.textContent = '🔄 Новое число загадано!';
+      hint.style.color = '#ffd93d';
+    }, 2500);
+  } else if (n < game.guessSecret) {
+    hint.textContent = '📈 Моё число БОЛЬШЕ!';
+    hint.style.color = '#f5c26b';
+  } else {
+    hint.textContent = '📉 Моё число МЕНЬШЕ!';
+    hint.style.color = '#f5c26b';
+  }
+
+  updateUI();
+  saveGame();
+  input.value = '';
 }
 
-const shopItems = [
-  { id:'memory',  name:'🧠 x2 деньги в Памяти',   price:300,  apply:()=>memoryMultiplier *= 2 },
-  { id:'brusik',  name:'🐶 x2 деньги Брюсика',    price:400,  apply:()=>brusikMultiplier *= 2 },
-  { id:'brusik5', name:'💝 x5 деньги Брюсика',    price:1500, apply:()=>brusikMultiplier *= 5 }
-];
-function renderShop() {
-  updateMoney();
-  const container = document.getElementById('shopItems');
-  container.innerHTML = '';
-  shopItems.forEach(item => {
-    const div = document.createElement('div');
-    div.style.margin = '10px';
-    div.innerHTML = `<button class="shop-btn" onclick="buyItem('${item.id}')">${item.name} — ${item.price} 💰</button>`;
-    container.appendChild(div);
+// ==================================================
+//  ⚙️ АДМИН ПАНЕЛЬ
+// ==================================================
+const _p1 = '67';
+const _p2 = '890';
+const ADMIN_PASSWORD = _p1 + _p2;
+
+// Обновить список игроков в админке
+function refreshPlayerList() {
+  const list = document.getElementById('playerList');
+  const db = loadPlayersDB();
+  const keys = Object.keys(db);
+
+  if (keys.length === 0) {
+    list.innerHTML = '<p style="text-align:center;color:#aaa;font-size:13px;padding:10px">Пока никого нет...</p>';
+    return;
+  }
+
+  list.innerHTML = '';
+  keys.forEach(k => {
+    const p = db[k];
+    const el = document.createElement('div');
+    el.className = 'player-item';
+    el.innerHTML = `
+      <span class="name">👤 ${p.name}</span>
+      <span class="money">💰 ${p.money}</span>
+    `;
+    el.style.cursor = 'pointer';
+    el.onclick = () => {
+      document.getElementById('targetName').value = p.name;
+      notify(`👆 Выбран игрок: ${p.name}`, '#f5c26b');
+    };
+    list.appendChild(el);
   });
-  const info = document.createElement('p');
-  info.style.marginTop = '15px'; info.style.color = '#aaa'; info.style.fontSize = '13px';
-  info.textContent = `Память: x${memoryMultiplier} | Брюсик: x${brusikMultiplier}`;
-  container.appendChild(info);
-}
-function buyItem(id) {
-  const item = shopItems.find(i => i.id === id);
-  if (!item) return;
-  if (money < item.price) { alert('Недостаточно денег!'); return; }
-  money -= item.price; item.apply();
-  updateMoney();
-  saveAll(); renderShop(); checkAchievements();
 }
 
-function showToast(title, name, green = false, purple = false, red = false, gold = false, blue = false, pink = false) {
-  const toast = document.getElementById('toast');
-  document.getElementById('toastTitle').textContent = title;
-  document.getElementById('toastName').textContent = name;
-  toast.classList.remove('green','purple','red','gold','blue','pink');
-  if (green) toast.classList.add('green');
-  if (purple) toast.classList.add('purple');
-  if (red) toast.classList.add('red');
-  if (gold) toast.classList.add('gold');
-  if (blue) toast.classList.add('blue');
-  if (pink) toast.classList.add('pink');
-  toast.classList.add('show');
-  clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+function adminAction(action) {
+  const pass = document.getElementById('adminPass').value;
+
+  if (pass !== ADMIN_PASSWORD) {
+    notify('❌ НЕВЕРНЫЙ ПАРОЛЬ!', '#e74c3c');
+    return;
+  }
+
+  switch (action) {
+    // ===== ВЫДАЧА ДЕНЕГ ИГРОКУ =====
+    case 'giveMoney': {
+      const name = document.getElementById('targetName').value.trim().toLowerCase();
+      const amount = parseInt(document.getElementById('moneyAmount').value);
+
+      if (!name) { notify('❌ Введи имя игрока!', '#e74c3c'); return; }
+      if (isNaN(amount) || amount <= 0) { notify('❌ Введи корректную сумму!', '#e74c3c'); return; }
+
+      const db = loadPlayersDB();
+      if (!db[name]) {
+        notify(`❌ Игрок "${name}" не найден!`, '#e74c3c');
+        return;
+      }
+
+      db[name].money += amount;
+      savePlayersDB(db);
+
+      // Если это МЫ САМИ — обновляем свой кошелёк
+      if (name === game.playerName.toLowerCase()) {
+        game.money = db[name].money;
+        updateUI();
+      }
+
+      notify(`💰 Выдано ${amount} монет игроку ${db[name].name}!`, '#4cd964');
+      refreshPlayerList();
+      break;
+    }
+
+    // ===== ЗАБРАТЬ ДЕНЬГИ =====
+    case 'takeMoney': {
+      const name = document.getElementById('targetName').value.trim().toLowerCase();
+      const amount = parseInt(document.getElementById('moneyAmount').value);
+
+      if (!name) { notify('❌ Введи имя игрока!', '#e74c3c'); return; }
+      if (isNaN(amount) || amount <= 0) { notify('❌ Введи корректную сумму!', '#e74c3c'); return; }
+
+      const db = loadPlayersDB();
+      if (!db[name]) {
+        notify(`❌ Игрок "${name}" не найден!`, '#e74c3c');
+        return;
+      }
+
+      db[name].money = Math.max(0, db[name].money - amount);
+      savePlayersDB(db);
+
+      if (name === game.playerName.toLowerCase()) {
+        game.money = db[name].money;
+        updateUI();
+      }
+
+      notify(`💸 Забрано ${amount} монет у ${db[name].name}!`, '#e74c3c');
+      refreshPlayerList();
+      break;
+    }
+
+    // ===== СЕБЕ 1000 =====
+    case 'money':
+      game.money += 1000;
+      notify('💰 Себе +1000 монет!', '#4cd964');
+      break;
+
+    // ===== ДОСТИЖЕНИЕ =====
+    case 'ach': {
+      const achs = ['🏅 Кликер-мастер', '🏅 Богач', '🏅 Легенда', '🏅 Брюсик-фанат'];
+      const ach = achs[Math.floor(Math.random() * achs.length)];
+      game.achievements.push(ach);
+      notify(`🏅 Выдано достижение: ${ach}`, '#f5c26b');
+      break;
+    }
+
+    // ===== СИЛА КЛИКА =====
+    case 'godclick':
+      game.clickPower += 10;
+      notify(`⚡ Сила клика: ${game.clickPower}`, '#6a89cc');
+      break;
+
+    // ===== СБРОС СЕБЕ =====
+    case 'reset':
+      if (confirm('Сбросить МОЙ прогресс?')) {
+        localStorage.removeItem('HJ_KJRC_save');
+        game.money = 100;
+        game.clicks = 0;
+        game.wins = 0;
+        game.clickPower = 1;
+        game.achievements = [];
+        game.guessSecret = Math.floor(Math.random() * 100) + 1;
+        updateUI();
+        notify('🔄 Прогресс сброшен!', '#e74c3c');
+      }
+      break;
+
+    // ===== ОЧИСТКА УВЕДОМЛЕНИЙ =====
+    case 'clear':
+      document.getElementById('notifications').innerHTML = '';
+      break;
+  }
+  updateUI();
+  saveGame();
 }
 
-document.getElementById('accountModal').addEventListener('click', function(e) { if (e.target === this) closeAccountReset(); });
-document.getElementById('kickModal').addEventListener('click', function(e) { if (e.target === this) closeKickModal(); });
-document.getElementById('nickModal').addEventListener('click', function(e) { if (e.target === this) closeNickModal(); });
-document.getElementById('giveMoneyModal').addEventListener('click', function(e) { if (e.target === this) closeGiveMoneyModal(); });
+// ==================================================
+//  🚀 ЗАПУСК
+// ==================================================
+loadGame();
 
+// Показываем окно ввода имени сразу
+document.getElementById('nameModal').classList.add('active');
+
+// Enter в модальном окне имени
+document.getElementById('nameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveName();
+});
+
+// Enter в поле угадай число
+document.getElementById('guessInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkGuess();
+});
+
+// Автообновление списка игроков в админке каждые 2 сек (если окно открыто)
 setInterval(() => {
-  if (currentGame === 'daily') { updateTimer(); renderDaily(); }
-  if (currentGame === 'events') renderEventStatus();
-  updateActiveEventBadge();
-  updateEventsCard();
-  if (currentGame === 'secret' && adminUnlocked) { updateAdminInfo(); renderPlayersList(); renderGlobalPlayersList(); }
-}, 500);
-
-let lastTouchEnd = 0;
-document.addEventListener('touchend', function(e) {
-  const now = Date.now();
-  if (now - lastTouchEnd <= 300) e.preventDefault();
-  lastTouchEnd = now;
-}, { passive: false });
-
-applySkin();
-updateMoney();
-updateAchCounter(); updateDailyCard(); updateEventsCard(); checkStreakBreak();
-updateBrusikUI();
-updateGlobalCount();
-saveAll();
-
-if (!checkBan()) {
-  connectToEvents();
-  connectToGlobal();
-  setInterval(sendPresence, 5000);
-  setInterval(cleanupPlayers, 5000);
-  setInterval(async () => {
-    if (!activeEvent && !checkBan()) await loadRecentEvents();
-  }, 10000);
-  setInterval(async () => {
-    await loadRecentGlobal();
-  }, 15000);
-  setTimeout(loadRecentEvents, 1500);
-  setTimeout(loadRecentGlobal, 2000);
-  setTimeout(updateGlobalCount, 500);
-}
+  if (document.getElementById('win-admin').classList.contains('active')) {
+    refreshPlayerList();
+  }
+}, 2000);
 </script>
-
 </body>
 </html>
