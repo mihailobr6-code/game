@@ -2,1030 +2,433 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HJ,KJRC</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ИИ-помощник: Математика + Игры (ПК и телефон)</title>
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Comic Sans MS', 'Segoe UI', sans-serif;
-  }
-
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
   body {
-    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-    min-height: 100vh;
-    color: white;
-    overflow-x: hidden;
-    padding: 20px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    min-height: 100vh; min-height: 100dvh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 12px; overflow-x: hidden;
   }
-
-  /* ===== ВЕРХНЯЯ ПАНЕЛЬ ===== */
-  .top-bar {
-    max-width: 900px;
-    margin: 0 auto 20px;
-    background: rgba(0,0,0,0.4);
-    border-radius: 15px;
-    padding: 15px 25px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-  }
-
-  .stats {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .stat {
-    background: rgba(255,255,255,0.1);
-    padding: 8px 15px;
-    border-radius: 10px;
-    font-weight: bold;
-    font-size: 14px;
-  }
-
-  .stat span { color: #ffd93d; }
-
-  .player-name {
-    background: linear-gradient(135deg, #f5c26b, #d4a056);
-    color: #000;
-    padding: 8px 15px;
-    border-radius: 10px;
-    font-weight: bold;
-    font-size: 14px;
-    cursor: pointer;
-    transition: transform 0.15s;
-  }
-
-  .player-name:hover { transform: scale(1.05); }
-
-  /* ===== МЕНЮ ===== */
-  .menu {
-    max-width: 900px;
-    margin: 0 auto;
-    text-align: center;
-  }
-
-  .menu h2 {
-    font-size: 32px;
-    margin-bottom: 30px;
-    text-shadow: 0 0 20px rgba(255,200,50,0.6);
-  }
-
-  .game-buttons {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-
-  .game-btn {
-    padding: 30px 20px;
-    font-size: 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    color: white;
-    transition: all 0.2s;
-    box-shadow: 0 8px 0 rgba(0,0,0,0.3);
-    text-align: center;
-  }
-
-  .game-btn:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 0 rgba(0,0,0,0.3);
-  }
-
-  .game-btn:active {
-    transform: translateY(4px);
-    box-shadow: 0 4px 0 rgba(0,0,0,0.3);
-  }
-
-  .btn-clicker { background: linear-gradient(135deg, #28a745, #4cd964); }
-  .btn-memory { background: linear-gradient(135deg, #4a69bd, #6a89cc); }
-  .btn-guess  { background: linear-gradient(135deg, #c44569, #e84393); }
-  .btn-admin  { background: linear-gradient(135deg, #c0392b, #e74c3c); }
-
-  /* ===== ОКНО ИГРЫ ===== */
-  .window {
-    display: none;
-    max-width: 700px;
-    margin: 20px auto;
-    background: rgba(20,20,35,0.95);
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.7);
-    position: relative;
-    animation: pop 0.3s ease;
-  }
-
-  @keyframes pop {
-    from { transform: scale(0.85); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
-  }
-
-  .window.active { display: block; }
-
-  .window-header {
-    font-size: 24px;
-    text-align: center;
-    padding: 12px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    font-weight: bold;
-  }
-
-  .header-clicker { background: linear-gradient(90deg, #28a745, #4cd964); }
-  .header-memory  { background: linear-gradient(90deg, #4a69bd, #6a89cc); }
-  .header-guess   { background: linear-gradient(90deg, #c44569, #e84393); }
-  .header-admin   { background: linear-gradient(90deg, #c0392b, #e74c3c); }
-
-  .close-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    background: #e74c3c;
-    border: none;
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
-    font-weight: bold;
-    z-index: 5;
-  }
-
-  .close-btn:hover { background: #c0392b; }
-
-  /* ===== КЛИКЕР ===== */
-  .clicker-area { text-align: center; }
-
-  #subak {
-    font-size: 100px;
-    width: 220px;
-    height: 220px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #f5c26b, #d4a056);
-    border: 6px solid #a67c3a;
-    cursor: pointer;
-    transition: transform 0.05s;
-    user-select: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 20px auto;
-    box-shadow: 0 10px 30px rgba(245,194,107,0.5);
-  }
-
-  #subak:active { transform: scale(0.9); }
-
-  .clicker-info {
-    font-size: 18px;
-    margin-top: 15px;
-    color: #ffd93d;
-  }
-
-  /* ===== ПАМЯТЬ ===== */
-  .memory-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    max-width: 400px;
-    margin: 0 auto;
-  }
-
   .card {
-    aspect-ratio: 1;
-    background: linear-gradient(135deg, #6a89cc, #4a69bd);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 40px;
-    cursor: pointer;
-    transition: all 0.3s;
-    user-select: none;
-    color: transparent;
+    background: #fff; border-radius: 20px; padding: 22px;
+    width: 100%; max-width: 560px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  }
+  h1 { font-size: 21px; color: #203a43; margin-bottom: 4px; text-align: center; }
+  p.sub { color: #888; font-size: 13px; margin-bottom: 14px; text-align: center; }
+
+  .modes { display: flex; gap: 8px; margin-bottom: 14px; }
+  .modes button {
+    flex: 1; padding: 13px; font-size: 15px; font-weight: 600;
+    border: 2px solid #2c5364; background: #fff; color: #2c5364;
+    border-radius: 12px; cursor: pointer; transition: .2s; touch-action: manipulation;
+  }
+  .modes button.active { background: #2c5364; color: #fff; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  input, textarea {
+    width: 100%; padding: 14px 15px; font-size: 16px; /* 16px — чтобы iOS не зумил */
+    border: 2px solid #ddd; border-radius: 12px; outline: none; font-family: inherit;
+  }
+  input:focus, textarea:focus { border-color: #2c5364; }
+  textarea { resize: vertical; min-height: 66px; }
+
+  .btn {
+    width: 100%; margin-top: 10px; padding: 14px;
+    font-size: 16px; font-weight: 600; color: #fff;
+    background: #2c5364; border: none; border-radius: 12px;
+    cursor: pointer; transition: .2s; touch-action: manipulation;
+  }
+  .btn:hover { background: #203a43; }
+  .btn:active { transform: scale(.98); }
+
+  #mathResult {
+    margin-top: 14px; padding: 14px; background: #f4f7ff;
+    border-left: 5px solid #2c5364; border-radius: 10px;
+    font-size: 16px; min-height: 22px; white-space: pre-wrap; word-break: break-word;
   }
 
-  .card.opened {
-    background: linear-gradient(135deg, #f5f5f5, #ddd);
-    color: inherit;
+  .tags { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 7px; }
+  .tags span {
+    background: #eef2f5; color: #2c5364; padding: 9px 13px;
+    border-radius: 20px; font-size: 13px; cursor: pointer;
+    touch-action: manipulation; user-select: none;
   }
+  .tags span:hover { background: #d4dee6; }
+  .tags span:active { background: #c0cdd8; }
 
-  .card.matched {
-    background: linear-gradient(135deg, #4cd964, #28a745);
-    color: inherit;
-    cursor: default;
-  }
-
-  /* ===== УГАДАЙ ЧИСЛО ===== */
-  .guess-area { text-align: center; }
-
-  .guess-area input {
-    width: 80%;
-    max-width: 300px;
-    padding: 15px;
-    font-size: 20px;
-    border-radius: 12px;
-    border: 2px solid #e84393;
-    background: rgba(255,255,255,0.1);
-    color: white;
-    text-align: center;
-    margin: 15px 0;
-    outline: none;
-  }
-
-  .guess-area button {
-    padding: 15px 40px;
-    font-size: 18px;
-    font-weight: bold;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #c44569, #e84393);
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 5px 0 rgba(0,0,0,0.3);
-    transition: all 0.15s;
-  }
-
-  .guess-area button:active {
-    transform: translateY(4px);
-    box-shadow: 0 1px 0 rgba(0,0,0,0.3);
-  }
-
-  #guessHint {
-    margin-top: 15px;
-    font-size: 18px;
-    min-height: 30px;
-    color: #ffd93d;
-  }
-
-  /* ===== АДМИН ===== */
-  .admin-area input,
-  .admin-area select {
-    width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    border-radius: 10px;
-    border: 2px solid #e74c3c;
-    background: rgba(255,255,255,0.1);
-    color: white;
-    font-size: 15px;
-    outline: none;
-  }
-
-  .admin-area select option {
-    background: #1a1a2e;
-    color: white;
-  }
-
-  .admin-btn {
-    width: 100%;
-    padding: 12px;
-    margin: 6px 0;
-    border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: bold;
-    color: white;
-    cursor: pointer;
-    transition: transform 0.1s;
-  }
-
-  .admin-btn:active { transform: scale(0.97); }
-
-  .ab-money  { background: linear-gradient(135deg, #28a745, #4cd964); }
-  .ab-ach    { background: linear-gradient(135deg, #d4a056, #f5c26b); color: #000; }
-  .ab-speed  { background: linear-gradient(135deg, #4a69bd, #6a89cc); }
-  .ab-clear  { background: linear-gradient(135deg, #7f8c8d, #95a5a6); }
-  .ab-danger { background: linear-gradient(135deg, #c0392b, #e74c3c); }
-
-  .admin-section {
-    border-top: 2px dashed rgba(255,255,255,0.15);
-    margin-top: 15px;
-    padding-top: 15px;
-  }
-
-  .admin-section-title {
-    text-align: center;
-    color: #ffd93d;
-    font-weight: bold;
-    margin-bottom: 10px;
-    font-size: 15px;
-  }
-
-  /* ===== СПИСОК ИГРОКОВ ===== */
-  .player-list {
-    max-height: 200px;
-    overflow-y: auto;
-    background: rgba(0,0,0,0.3);
-    border-radius: 10px;
-    padding: 8px;
-    margin-bottom: 10px;
-  }
-
-  .player-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;
-    margin: 4px 0;
-    background: rgba(255,255,255,0.05);
-    border-radius: 8px;
-    font-size: 14px;
-  }
-
-  .player-item .name { font-weight: bold; color: #f5c26b; }
-  .player-item .money { color: #4cd964; }
-
-  /* ===== МОДАЛЬНОЕ ОКНО ВВОДА ИМЕНИ ===== */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.8);
-    z-index: 10000;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-  }
-
-  .modal-overlay.active { display: flex; }
-
-  .modal {
-    background: linear-gradient(135deg, #1a1a2e, #0f3460);
-    padding: 30px;
-    border-radius: 20px;
-    max-width: 400px;
-    width: 100%;
-    text-align: center;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-    border: 2px solid #f5c26b;
-    animation: pop 0.3s ease;
-  }
-
-  .modal h3 {
-    font-size: 22px;
-    margin-bottom: 15px;
-    color: #f5c26b;
-  }
-
-  .modal input {
-    width: 100%;
-    padding: 14px;
-    font-size: 18px;
-    border-radius: 12px;
-    border: 2px solid #f5c26b;
-    background: rgba(255,255,255,0.1);
-    color: white;
-    text-align: center;
-    outline: none;
-    margin-bottom: 15px;
-  }
-
-  .modal button {
-    padding: 12px 30px;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #28a745, #4cd964);
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.3);
-  }
-
-  .modal button:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.3); }
-
-  /* ===== УВЕДОМЛЕНИЯ ===== */
-  .notifications {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-    pointer-events: none;
-  }
-
-  .notif {
-    background: rgba(0,0,0,0.85);
-    padding: 15px 25px;
-    border-radius: 12px;
-    font-weight: bold;
-    font-size: 16px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-    border-left: 5px solid #ffd93d;
-    animation: slideIn 0.3s ease;
-    max-width: 90vw;
-  }
-
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ===== МОБИЛЬНАЯ ВЕРСИЯ ===== */
-  @media (max-width: 600px) {
-    .stat, .player-name { font-size: 12px; padding: 6px 10px; }
-    .menu h2 { font-size: 24px; }
-    .game-btn { font-size: 16px; padding: 20px 15px; }
-    #subak { font-size: 70px; width: 160px; height: 160px; }
-    .memory-grid { gap: 6px; }
-    .card { font-size: 28px; }
-  }
+  #gameStatus { margin-top: 12px; font-size: 13px; color: #2c5364; min-height: 18px; }
+  .hint { margin-top: 10px; font-size: 12px; color: #999; line-height: 1.6; }
+  .hint code { background: #eef; padding: 2px 5px; border-radius: 5px; }
 </style>
 </head>
 <body>
+  <div class="card">
+    <h1>🤖 ИИ-помощник</h1>
+    <p class="sub">Математика + игры • ПК и телефон</p>
 
-<!-- МОДАЛЬНОЕ ОКНО ВВОДА ИМЕНИ -->
-<div class="modal-overlay active" id="nameModal">
-  <div class="modal">
-    <h3>👋 Введи своё имя</h3>
-    <input type="text" id="nameInput" placeholder="Твоё имя..." maxlength="15">
-    <button onclick="saveName()">ИГРАТЬ!</button>
-  </div>
-</div>
-
-<!-- УВЕДОМЛЕНИЯ -->
-<div class="notifications" id="notifications"></div>
-
-<!-- ВЕРХНЯЯ ПАНЕЛЬ -->
-<div class="top-bar">
-  <div class="stats">
-    <div class="player-name" id="playerNameDisplay" onclick="changeName()">👤 Игрок</div>
-    <div class="stat">💰 <span id="statMoney">100</span></div>
-    <div class="stat">👆 <span id="statClicks">0</span></div>
-    <div class="stat">🏆 <span id="statWins">0</span></div>
-  </div>
-</div>
-
-<!-- ГЛАВНОЕ МЕНЮ -->
-<div class="menu" id="mainMenu">
-  <h2>Выбери игру 👇</h2>
-  <div class="game-buttons">
-    <button class="game-btn btn-clicker" onclick="openGame('clicker')">
-      👆 КЛИКЕР<br><small style="font-size:13px;font-weight:normal">Брюсик Барюсик</small>
-    </button>
-    <button class="game-btn btn-memory" onclick="openGame('memory')">
-      🧠 НАЙТИ ПАРУ<br><small style="font-size:13px;font-weight:normal">Открывай карточки</small>
-    </button>
-    <button class="game-btn btn-guess" onclick="openGame('guess')">
-      🔢 УГАДАЙ ЧИСЛО<br><small style="font-size:13px;font-weight:normal">1 до 100</small>
-    </button>
-    <button class="game-btn btn-admin" onclick="openGame('admin')">
-      ⚙️ АДМИН ПАНЕЛЬ<br><small style="font-size:13px;font-weight:normal">Всё что угодно</small>
-    </button>
-  </div>
-</div>
-
-<!-- ====== ИГРА 1: КЛИКЕР ====== -->
-<div class="window" id="win-clicker">
-  <button class="close-btn" onclick="closeGame('clicker')">✕</button>
-  <div class="window-header header-clicker">🐹 БРЮСИК БАРЮСИК — КЛИКАЙ ПО САБАКЕ!</div>
-  <div class="clicker-area">
-    <div id="subak" onclick="doClick()">🐶</div>
-    <div class="clicker-info">
-      Кликов: <span id="clickerCount">0</span><br>
-      Монет за клик: <span id="clickPower">1</span>
+    <div class="modes">
+      <button id="tabMath" class="active" onclick="setMode('math')">🧮 Математика</button>
+      <button id="tabGame" onclick="setMode('game')">🎮 Игры</button>
     </div>
-  </div>
-</div>
 
-<!-- ====== ИГРА 2: НАЙТИ ПАРУ ====== -->
-<div class="window" id="win-memory">
-  <button class="close-btn" onclick="closeGame('memory')">✕</button>
-  <div class="window-header header-memory">🧠 НАЙДИ ПАРУ</div>
-  <div class="memory-grid" id="memoryGrid"></div>
-  <p style="text-align:center;margin-top:15px;color:#ffd93d">
-    Пар найдено: <span id="pairsFound">0</span> / 8
-  </p>
-</div>
-
-<!-- ====== ИГРА 3: УГАДАЙ ЧИСЛО ====== -->
-<div class="window" id="win-guess">
-  <button class="close-btn" onclick="closeGame('guess')">✕</button>
-  <div class="window-header header-guess">🔢 УГАДАЙ ЧИСЛО 1-100</div>
-  <div class="guess-area">
-    <p style="margin-bottom:10px">Я загадал число от 1 до 100. Угадаешь?</p>
-    <input type="number" id="guessInput" placeholder="Введи число..." min="1" max="100">
-    <br>
-    <button onclick="checkGuess()">ПРОВЕРИТЬ!</button>
-    <div id="guessHint"></div>
-    <p style="margin-top:20px;font-size:14px;color:#aaa">
-      Попыток: <span id="guessTries">0</span>
-    </p>
-  </div>
-</div>
-
-<!-- ====== АДМИН ПАНЕЛЬ ====== -->
-<div class="window" id="win-admin">
-  <button class="close-btn" onclick="closeGame('admin')">✕</button>
-  <div class="window-header header-admin">⚙️ АДМИН ПАНЕЛЬ</div>
-  <div class="admin-area">
-    <p style="text-align:center;margin-bottom:15px;color:#aaa;font-size:14px">
-      🔒 Только для администраторов
-    </p>
-    <input type="password" id="adminPass" placeholder="Введи пароль админа...">
-
-    <!-- ВЫДАЧА ДЕНЕГ ИГРОКАМ -->
-    <div class="admin-section">
-      <div class="admin-section-title">💸 ВЫДАТЬ ДЕНЬГИ ИГРОКУ</div>
-
-      <div class="player-list" id="playerList">
-        <p style="text-align:center;color:#aaa;font-size:13px;padding:10px">
-          Пока никого нет... (введи пароль)
-        </p>
+    <div id="panelMath" class="panel active">
+      <input id="mathInput" type="text" inputmode="text" placeholder="2+3*4  или  x^2 - 4 = 0" />
+      <button class="btn" onclick="solveMath()">Решить</button>
+      <div id="mathResult">Ответ появится здесь…</div>
+      <div class="hint">
+        <code>+ - * /</code>, <code>^</code>, <code>sqrt()</code>,
+        <code>sin() cos() tan()</code>, <code>pi</code>, <code>e</code>, уравнения с <code>x</code>.
       </div>
-
-      <input type="text" id="targetName" placeholder="Имя игрока (например: Вася)...">
-      <input type="number" id="moneyAmount" placeholder="Сумма (например: 500)..." value="100">
-      <button class="admin-btn ab-money" onclick="adminAction('giveMoney')">💰 Выдать деньги игроку</button>
-      <button class="admin-btn ab-danger" onclick="adminAction('takeMoney')">💸 Забрать деньги у игрока</button>
     </div>
 
-    <!-- ОБЩИЕ ДЕЙСТВИЯ -->
-    <div class="admin-section">
-      <div class="admin-section-title">⚡ ДЕЙСТВИЯ</div>
-      <button class="admin-btn ab-money" onclick="adminAction('money')">💰 Себе +1000 монет</button>
-      <button class="admin-btn ab-ach" onclick="adminAction('ach')">🏅 Выдать себе достижение</button>
-      <button class="admin-btn ab-speed" onclick="adminAction('godclick')">⚡ +10 к силе клика</button>
-      <button class="admin-btn ab-speed" onclick="adminAction('reset')">🔄 Сбросить МОЙ прогресс</button>
-      <button class="admin-btn ab-clear" onclick="adminAction('clear')">🗑️ Очистить уведомления</button>
+    <div id="panelGame" class="panel">
+      <textarea id="gameIdea" placeholder="Опиши игру: змейка, ловец, память, кликер, угадай число…"></textarea>
+      <button class="btn" onclick="generateGame()">Создать игру 🚀</button>
+      <div class="tags">
+        <span onclick="quickGame('змейка')">🐍 змейка</span>
+        <span onclick="quickGame('ловец')">🎯 ловец</span>
+        <span onclick="quickGame('память')">🧠 память</span>
+        <span onclick="quickGame('кликер')">👆 кликер</span>
+        <span onclick="quickGame('угадай число')">🔢 угадай число</span>
+      </div>
+      <div id="gameStatus"></div>
     </div>
   </div>
-</div>
 
-<script>
-// ==================================================
-//  🎮 HJ,KJRC — ГЛАВНЫЙ СКРИПТ
-// ==================================================
+  <script src="https://cdn.jsdelivr.net/npm/mathjs@12/lib/browser/math.js"></script>
+  <script>
+    // ============ РЕЖИМЫ ============
+    function setMode(mode) {
+      document.getElementById('panelMath').classList.toggle('active', mode === 'math');
+      document.getElementById('panelGame').classList.toggle('active', mode === 'game');
+      document.getElementById('tabMath').classList.toggle('active', mode === 'math');
+      document.getElementById('tabGame').classList.toggle('active', mode === 'game');
+    }
 
-// ===== ГЛОБАЛЬНАЯ БАЗА ИГРОКОВ (общая на всех) =====
-const PLAYERS_KEY = 'HJ_KJRC_players_db';
+    // ============ МАТЕМАТИКА ============
+    const mathInput = document.getElementById('mathInput');
+    const mathResult = document.getElementById('mathResult');
 
-// Загружаем базу всех игроков
-function loadPlayersDB() {
-  try {
-    const raw = localStorage.getItem(PLAYERS_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch(e) { return {}; }
-}
-
-function savePlayersDB(db) {
-  localStorage.setItem(PLAYERS_KEY, JSON.stringify(db));
-}
-
-// ===== СОСТОЯНИЕ ТЕКУЩЕГО ИГРОКА =====
-const game = {
-  playerName: '',
-  money: 100,
-  clicks: 0,
-  wins: 0,
-  clickPower: 1,
-  pairsFound: 0,
-  guessSecret: null,
-  guessTries: 0,
-  achievements: []
-};
-
-// ===== СОХРАНЕНИЕ ТЕКУЩЕГО ИГРОКА В БАЗУ =====
-function syncToDB() {
-  if (!game.playerName) return;
-  const db = loadPlayersDB();
-  db[game.playerName.toLowerCase()] = {
-    name: game.playerName,
-    money: game.money,
-    clicks: game.clicks,
-    wins: game.wins,
-    clickPower: game.clickPower,
-    achievements: game.achievements
-  };
-  savePlayersDB(db);
-}
-
-// ===== ЗАГРУЗКА ИГРОКА ИЗ БАЗЫ =====
-function loadFromDB() {
-  const db = loadPlayersDB();
-  const data = db[game.playerName.toLowerCase()];
-  if (data) {
-    game.money = data.money;
-    game.clicks = data.clicks;
-    game.wins = data.wins;
-    game.clickPower = data.clickPower || 1;
-    game.achievements = data.achievements || [];
-  }
-}
-
-// ===== СОХРАНЕНИЕ ЛОКАЛЬНОГО ПРОГРЕССА =====
-function saveGame() {
-  localStorage.setItem('HJ_KJRC_save', JSON.stringify(game));
-  syncToDB();
-}
-
-function loadGame() {
-  const saved = localStorage.getItem('HJ_KJRC_save');
-  if (saved) {
-    try {
-      const data = JSON.parse(saved);
-      Object.assign(game, data);
-    } catch(e) {}
-  }
-  if (!game.guessSecret) game.guessSecret = Math.floor(Math.random() * 100) + 1;
-  updateUI();
-}
-
-// ===== ОБНОВЛЕНИЕ ИНТЕРФЕЙСА =====
-function updateUI() {
-  document.getElementById('statMoney').textContent = game.money;
-  document.getElementById('statClicks').textContent = game.clicks;
-  document.getElementById('statWins').textContent = game.wins;
-  document.getElementById('clickerCount').textContent = game.clicks;
-  document.getElementById('clickPower').textContent = game.clickPower;
-  document.getElementById('playerNameDisplay').textContent = '👤 ' + (game.playerName || 'Игрок');
-}
-
-// ===== УВЕДОМЛЕНИЯ =====
-function notify(text, color = '#ffd93d') {
-  const box = document.getElementById('notifications');
-  const n = document.createElement('div');
-  n.className = 'notif';
-  n.style.borderLeftColor = color;
-  n.textContent = text;
-  box.appendChild(n);
-  setTimeout(() => {
-    n.style.opacity = '0';
-    n.style.transition = 'opacity 0.4s';
-    setTimeout(() => n.remove(), 400);
-  }, 2500);
-}
-
-// ===== ОТКРЫТИЕ/ЗАКРЫТИЕ ОКОН =====
-function openGame(name) {
-  document.querySelectorAll('.window').forEach(w => w.classList.remove('active'));
-  document.getElementById('mainMenu').style.display = 'none';
-  document.getElementById('win-' + name).classList.add('active');
-
-  if (name === 'memory') initMemory();
-  if (name === 'guess' && !game.guessSecret) {
-    game.guessSecret = Math.floor(Math.random() * 100) + 1;
-  }
-  if (name === 'admin') refreshPlayerList();
-}
-
-function closeGame(name) {
-  document.getElementById('win-' + name).classList.remove('active');
-  document.getElementById('mainMenu').style.display = 'block';
-}
-
-// ==================================================
-//  👤 СИСТЕМА ИМЁН ИГРОКОВ
-// ==================================================
-function saveName() {
-  const input = document.getElementById('nameInput');
-  const name = input.value.trim();
-
-  if (name.length < 2) {
-    alert('Имя должно быть минимум 2 символа!');
-    return;
-  }
-
-  game.playerName = name;
-  loadFromDB(); // подгружаем деньги, если игрок уже играл
-  syncToDB();
-
-  document.getElementById('nameModal').classList.remove('active');
-  updateUI();
-  notify(`👋 Привет, ${name}!`, '#f5c26b');
-}
-
-function changeName() {
-  const input = document.getElementById('nameInput');
-  input.value = game.playerName;
-  document.getElementById('nameModal').classList.add('active');
-}
-
-// ==================================================
-//  👆 ИГРА 1: КЛИКЕР
-// ==================================================
-function doClick() {
-  game.money += game.clickPower;
-  game.clicks += 1;
-  updateUI();
-  saveGame();
-
-  if (game.clicks === 10) notify('🏅 Достижение: 10 кликов!', '#4cd964');
-  if (game.clicks === 100) notify('🏅 Достижение: 100 кликов!', '#4cd964');
-  if (game.clicks === 500) notify('🏅 Достижение: 500 кликов! Ты монстр!', '#4cd964');
-  if (game.clicks === 1000) notify('🏆 ЛЕГЕНДА! 1000 кликов!', '#ffd93d');
-
-  const s = document.getElementById('subak');
-  s.style.transform = 'scale(0.85)';
-  setTimeout(() => s.style.transform = '', 80);
-}
-
-// ==================================================
-//  🧠 ИГРА 2: НАЙТИ ПАРУ
-// ==================================================
-let memoryState = { cards: [], opened: [], matched: [], locked: false };
-
-function initMemory() {
-  const emojis = ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼'];
-  let cards = [...emojis, ...emojis];
-  for (let i = cards.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [cards[i], cards[j]] = [cards[j], cards[i]];
-  }
-
-  memoryState = { cards, opened: [], matched: [], locked: false };
-  game.pairsFound = 0;
-  document.getElementById('pairsFound').textContent = 0;
-
-  const grid = document.getElementById('memoryGrid');
-  grid.innerHTML = '';
-
-  cards.forEach((emoji, i) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.dataset.index = i;
-    card.dataset.emoji = emoji;
-    card.textContent = emoji;
-    card.onclick = () => flipCard(i, card);
-    grid.appendChild(card);
-  });
-}
-
-function flipCard(index, card) {
-  if (memoryState.locked) return;
-  if (memoryState.opened.includes(index)) return;
-  if (memoryState.matched.includes(index)) return;
-
-  card.classList.add('opened');
-  memoryState.opened.push(index);
-
-  if (memoryState.opened.length === 2) {
-    memoryState.locked = true;
-    const [a, b] = memoryState.opened;
-    const cardsEls = document.querySelectorAll('#memoryGrid .card');
-
-    setTimeout(() => {
-      if (memoryState.cards[a] === memoryState.cards[b]) {
-        cardsEls[a].classList.add('matched');
-        cardsEls[b].classList.add('matched');
-        memoryState.matched.push(a, b);
-        game.pairsFound++;
-        game.money += 30;
-        game.wins++;
-        document.getElementById('pairsFound').textContent = game.pairsFound;
-        notify('🎉 Пара найдена! +30 монет', '#4cd964');
-        updateUI();
-        saveGame();
-
-        if (memoryState.matched.length === 16) {
-          notify('🏆 ВСЕ ПАРЫ НАЙДЕНЫ! +200 бонус!', '#ffd93d');
-          game.money += 200;
-          updateUI();
-          saveGame();
+    function solveMath() {
+      const raw = mathInput.value.trim();
+      if (!raw) { mathResult.textContent = '⚠️ Введи пример!'; return; }
+      mathResult.textContent = '⏳ Считаю…';
+      try {
+        if (raw.includes('=')) {
+          mathResult.textContent = '📐 Уравнение:\n' + solveEquation(raw);
+        } else {
+          const result = math.evaluate(raw);
+          mathResult.textContent = '✅ Ответ: ' + math.format(result, { precision: 10 });
         }
-      } else {
-        cardsEls[a].classList.remove('opened');
-        cardsEls[b].classList.remove('opened');
+      } catch (err) {
+        mathResult.textContent = '❌ Не смог посчитать.\n' + err.message;
       }
-      memoryState.opened = [];
-      memoryState.locked = false;
-    }, 700);
+    }
+
+    function solveEquation(str) {
+      const [left, right] = str.split('=');
+      const f = (x) => math.evaluate(left, { x }) - math.evaluate(right, { x });
+      const sols = []; const step = 0.01, range = 100;
+      let prevX = -range, prevY = f(prevX);
+      for (let x = -range + step; x <= range; x += step) {
+        const y = f(x);
+        if (prevY * y < 0) {
+          const r = bisect(f, prevX, x);
+          if (!sols.some(s => Math.abs(s - r) < 1e-6)) sols.push(+r.toFixed(6));
+        }
+        if (Math.abs(y) < 1e-9 && !sols.some(s => Math.abs(s - x) < 1e-6)) sols.push(+x.toFixed(6));
+        prevX = x; prevY = y;
+      }
+      return sols.length ? 'x = ' + sols.join(',  ') : 'Корней не найдено';
+    }
+    function bisect(f, a, b) {
+      let fa = f(a);
+      for (let i = 0; i < 100; i++) {
+        const m = (a + b) / 2, fm = f(m);
+        if (Math.abs(fm) < 1e-12) return m;
+        if (fa * fm < 0) b = m; else { a = m; fa = fm; }
+      }
+      return (a + b) / 2;
+    }
+    mathInput.addEventListener('keydown', e => { if (e.key === 'Enter') solveMath(); });
+
+    // ============ ГЕНЕРАТОР ИГР ============
+    const gameStatus = document.getElementById('gameStatus');
+    function quickGame(text) { document.getElementById('gameIdea').value = text; generateGame(); }
+
+    function generateGame() {
+      const idea = document.getElementById('gameIdea').value.toLowerCase().trim();
+      if (!idea) { gameStatus.textContent = '⚠️ Опиши игру!'; return; }
+      gameStatus.textContent = '🤖 Анализирую идею…';
+      setTimeout(() => {
+        let code, name;
+        if (idea.includes('зме') || idea.includes('snake')) { code = gameSnake(); name = 'Змейка'; }
+        else if (idea.includes('лов') || idea.includes('клик') || idea.includes('круг') || idea.includes('catch')) { code = gameCatcher(); name = 'Ловец'; }
+        else if (idea.includes('памят') || idea.includes('memory') || idea.includes('карт')) { code = gameMemory(); name = 'Память'; }
+        else if (idea.includes('кликер') || idea.includes('clicker')) { code = gameClicker(); name = 'Кликер'; }
+        else if (idea.includes('угада') || idea.includes('числ') || idea.includes('guess')) { code = gameGuess(); name = 'Угадай число'; }
+        else { code = gameClicker(); name = 'Кликер'; }
+        gameStatus.textContent = `✅ ${name} — открываю в новом окне`;
+        const win = window.open('', '_blank');
+        win.document.write(code);
+        win.document.close();
+      }, 400);
+    }
+
+    // ---- Общий каркас (адаптивный, с мета-тегом для телефона) ----
+    function basePage(title, body, script) {
+      return `<!DOCTYPE html><html><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>${title}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;font-family:Arial,sans-serif;
+    background:#203a43;color:#fff;padding:10px;overflow:hidden;
+    touch-action:manipulation;user-select:none;}
+  h1{color:#8fd3ff;margin-bottom:8px;font-size:clamp(18px,5vw,26px);text-align:center;}
+  canvas{background:#0f2027;border-radius:12px;box-shadow:0 10px 30px #0008;
+    max-width:100%;max-height:70vh;touch-action:none;display:block;}
+  button{margin-top:12px;padding:12px 22px;font-size:16px;border:none;
+    border-radius:10px;background:#2c5364;color:#fff;cursor:pointer;
+    touch-action:manipulation;user-select:none;}
+  button:active{transform:scale(.96);background:#3a6b82;}
+  .info{margin-top:10px;font-size:clamp(15px,4vw,18px);text-align:center;}
+  .pad{display:none;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(3,60px);
+    gap:6px;margin-top:14px;}
+  .pad button{width:60px;height:60px;margin:0;font-size:22px;border-radius:12px;}
+  @media (pointer:coarse){.pad{display:grid;}} /* показываем крестовину на телефоне */
+</style></head><body>
+<h1>${title}</h1>
+${body}
+<script>${script}<\/script>
+</body></html>`;
+    }
+
+    // 🐍 Змейка — адаптивная, с крестовиной на телефоне
+    function gameSnake() {
+      const body = `<canvas id="c"></canvas>
+<div class="info">Счёт: <span id="score">0</span></div>
+<div class="pad">
+  <span></span><button onclick="press('up')">▲</button><span></span>
+  <button onclick="press('left')">◀</button><span></span><button onclick="press('right')">▶</button>
+  <span></span><button onclick="press('down')">▼</button><span></span>
+</div>
+<button onclick="restart()">Заново</button>`;
+      const script = `
+const c=document.getElementById('c'),ctx=c.getContext('2d');
+let size=20,tiles=20,snake,dir,food,score,alive;
+// Адаптивный размер canvas
+function fit(){
+  const maxW=Math.min(window.innerWidth-40,window.innerHeight*0.6,400);
+  size=Math.floor(maxW/tiles);
+  c.width=tiles*size;c.height=tiles*size;
+  draw();
+}
+function reset(){snake=[{x:10,y:10}];dir={x:1,y:0};score=0;alive=true;spawnFood();draw();}
+function spawnFood(){food={x:Math.floor(Math.random()*tiles),y:Math.floor(Math.random()*tiles)};}
+function press(d){
+  if(d==='up'&&dir.y===0)dir={x:0,y:-1};
+  if(d==='down'&&dir.y===0)dir={x:0,y:1};
+  if(d==='left'&&dir.x===0)dir={x:-1,y:0};
+  if(d==='right'&&dir.x===0)dir={x:1,y:0};
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowUp')press('up');
+  if(e.key==='ArrowDown')press('down');
+  if(e.key==='ArrowLeft')press('left');
+  if(e.key==='ArrowRight')press('right');
+});
+// Свайпы на телефоне
+let sx=0,sy=0;
+c.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
+c.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+  if(Math.abs(dx)>Math.abs(dy)) press(dx>0?'right':'left');
+  else press(dy>0?'down':'up');
+},{passive:true});
+function loop(){
+  if(!alive)return;
+  const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+  if(head.x<0||head.y<0||head.x>=tiles||head.y>=tiles||
+     snake.some(s=>s.x===head.x&&s.y===head.y)){alive=false;draw();return;}
+  snake.unshift(head);
+  if(head.x===food.x&&head.y===food.y){score++;document.getElementById('score').textContent=score;spawnFood();}
+  else snake.pop();
+  draw();
+}
+function draw(){
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.fillStyle='#ff5a5a';ctx.fillRect(food.x*size,food.y*size,size-1,size-1);
+  ctx.fillStyle='#8fd3ff';
+  snake.forEach(s=>ctx.fillRect(s.x*size,s.y*size,size-1,size-1));
+  if(!alive){ctx.fillStyle='#fff';ctx.font=(size*1.4)+'px Arial';
+    ctx.textAlign='center';ctx.fillText('Конец!',c.width/2,c.height/2);}
+}
+function restart(){reset();}
+window.addEventListener('resize',fit);
+reset();fit();setInterval(loop,120);
+`;
+      return basePage('🐍 Змейка', body, script);
+    }
+
+    // 🎯 Ловец — тач и мышь
+    function gameCatcher() {
+      const body = `<canvas id="c"></canvas>
+<div class="info">Поймано: <span id="score">0</span></div>
+<div style="font-size:13px;color:#9bb;margin-top:8px">Кликай/тапай по кругам!</div>`;
+      const script = `
+const c=document.getElementById('c'),ctx=c.getContext('2d');
+let W=400,H=400,circles=[],score=0,timeLeft=30,running=true;
+function fit(){
+  const maxW=Math.min(window.innerWidth-40,window.innerHeight*0.6,420);
+  W=H=Math.floor(maxW);c.width=W;c.height=H;
+}
+function spawn(){
+  if(!running)return;
+  circles.push({x:Math.random()*(W-50)+25,y:Math.random()*(H-50)+25,
+    r:Math.random()*14+18,color:'hsl('+Math.random()*360+',80%,60%)'});
+}
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  circles.forEach(o=>{ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,7);
+    ctx.fillStyle=o.color;ctx.fill();});
+  ctx.fillStyle='#fff';ctx.font='18px Arial';ctx.textAlign='left';
+  ctx.fillText('Время: '+timeLeft,10,25);
+  if(!running){ctx.font='28px Arial';ctx.textAlign='center';
+    ctx.fillText('Финиш! Счёт: '+score,W/2,H/2);return;}
+  requestAnimationFrame(draw);
+}
+function hit(mx,my){
+  for(let i=circles.length-1;i>=0;i--){
+    const o=circles[i];
+    if(Math.hypot(mx-o.x,my-o.y)<o.r){
+      circles.splice(i,1);score++;
+      document.getElementById('score').textContent=score;
+    }
   }
 }
+c.addEventListener('click',e=>{
+  const r=c.getBoundingClientRect();
+  hit(e.clientX-r.left,e.clientY-r.top);
+});
+c.addEventListener('touchstart',e=>{
+  e.preventDefault();
+  const r=c.getBoundingClientRect(),t=e.touches[0];
+  hit(t.clientX-r.left,t.clientY-r.top);
+},{passive:false});
+setInterval(spawn,500);
+setInterval(()=>{if(timeLeft>0)timeLeft--;else running=false;},1000);
+window.addEventListener('resize',fit);
+fit();draw();
+`;
+      return basePage('🎯 Ловец', body, script);
+    }
 
-// ==================================================
-//  🔢 ИГРА 3: УГАДАЙ ЧИСЛО
-// ==================================================
-function checkGuess() {
-  const input = document.getElementById('guessInput');
-  const hint = document.getElementById('guessHint');
-  const n = parseInt(input.value);
-
-  if (isNaN(n) || n < 1 || n > 100) {
-    hint.textContent = '⚠️ Введи число от 1 до 100!';
-    hint.style.color = '#e74c3c';
-    return;
-  }
-
-  game.guessTries++;
-  document.getElementById('guessTries').textContent = game.guessTries;
-
-  if (n === game.guessSecret) {
-    const reward = Math.max(10, 100 - game.guessTries * 5);
-    game.money += reward;
-    game.wins++;
-    hint.textContent = `🎉 УГАДАЛ! Число было ${game.guessSecret}. +${reward} монет!`;
-    hint.style.color = '#4cd964';
-    notify(`🎉 Угадал за ${game.guessTries} попыток! +${reward}`, '#4cd964');
-
-    setTimeout(() => {
-      game.guessSecret = Math.floor(Math.random() * 100) + 1;
-      game.guessTries = 0;
-      document.getElementById('guessTries').textContent = 0;
-      document.getElementById('guessInput').value = '';
-      hint.textContent = '🔄 Новое число загадано!';
-      hint.style.color = '#ffd93d';
-    }, 2500);
-  } else if (n < game.guessSecret) {
-    hint.textContent = '📈 Моё число БОЛЬШЕ!';
-    hint.style.color = '#f5c26b';
-  } else {
-    hint.textContent = '📉 Моё число МЕНЬШЕ!';
-    hint.style.color = '#f5c26b';
-  }
-
-  updateUI();
-  saveGame();
-  input.value = '';
+    // 🧠 Память — адаптивная сетка
+    function gameMemory() {
+      const body = `<div id="grid"></div>
+<div class="info">Ходы: <span id="moves">0</span></div>`;
+      const script = `
+const grid=document.getElementById('grid');
+let cards=[],flipped=[],moves=0,lock=false;
+const emojis=['🍎','🍌','🍇','🍓','🍒','🥝','🍑','🍍'];
+function fit(){
+  const maxW=Math.min(window.innerWidth-50,380);
+  const cell=Math.floor(maxW/4)-8;
+  grid.style.gridTemplateColumns='repeat(4,'+cell+'px)';
+  grid.style.gap='8px';
+  [...grid.children].forEach(d=>{d.style.width=cell+'px';d.style.height=cell+'px';
+    d.style.fontSize=(cell*0.5)+'px';});
 }
-
-// ==================================================
-//  ⚙️ АДМИН ПАНЕЛЬ
-// ==================================================
-const _p1 = '67';
-const _p2 = '890';
-const ADMIN_PASSWORD = _p1 + _p2;
-
-// Обновить список игроков в админке
-function refreshPlayerList() {
-  const list = document.getElementById('playerList');
-  const db = loadPlayersDB();
-  const keys = Object.keys(db);
-
-  if (keys.length === 0) {
-    list.innerHTML = '<p style="text-align:center;color:#aaa;font-size:13px;padding:10px">Пока никого нет...</p>';
-    return;
-  }
-
-  list.innerHTML = '';
-  keys.forEach(k => {
-    const p = db[k];
-    const el = document.createElement('div');
-    el.className = 'player-item';
-    el.innerHTML = `
-      <span class="name">👤 ${p.name}</span>
-      <span class="money">💰 ${p.money}</span>
-    `;
-    el.style.cursor = 'pointer';
-    el.onclick = () => {
-      document.getElementById('targetName').value = p.name;
-      notify(`👆 Выбран игрок: ${p.name}`, '#f5c26b');
-    };
-    list.appendChild(el);
+function init(){
+  cards=[...emojis,...emojis].sort(()=>Math.random()-.5);
+  grid.innerHTML='';flipped=[];moves=0;
+  document.getElementById('moves').textContent=0;
+  cards.forEach(e=>{
+    const d=document.createElement('div');
+    d.style.cssText='background:#2c5364;border-radius:12px;display:flex;'+
+      'align-items:center;justify-content:center;cursor:pointer;user-select:none;';
+    d.dataset.val=e;d.dataset.open='0';d.onclick=()=>flip(d);grid.appendChild(d);
   });
+  fit();
 }
-
-function adminAction(action) {
-  const pass = document.getElementById('adminPass').value;
-
-  if (pass !== ADMIN_PASSWORD) {
-    notify('❌ НЕВЕРНЫЙ ПАРОЛЬ!', '#e74c3c');
-    return;
+function flip(d){
+  if(lock||d.dataset.open==='1')return;
+  d.textContent=d.dataset.val;d.dataset.open='1';flipped.push(d);
+  if(flipped.length===2){
+    moves++;document.getElementById('moves').textContent=moves;
+    if(flipped[0].dataset.val===flipped[1].dataset.val){flipped=[];checkWin();}
+    else{lock=true;setTimeout(()=>{flipped.forEach(x=>{x.textContent='';x.dataset.open='0';});
+      flipped=[];lock=false;},700);}
   }
-
-  switch (action) {
-    // ===== ВЫДАЧА ДЕНЕГ ИГРОКУ =====
-    case 'giveMoney': {
-      const name = document.getElementById('targetName').value.trim().toLowerCase();
-      const amount = parseInt(document.getElementById('moneyAmount').value);
-
-      if (!name) { notify('❌ Введи имя игрока!', '#e74c3c'); return; }
-      if (isNaN(amount) || amount <= 0) { notify('❌ Введи корректную сумму!', '#e74c3c'); return; }
-
-      const db = loadPlayersDB();
-      if (!db[name]) {
-        notify(`❌ Игрок "${name}" не найден!`, '#e74c3c');
-        return;
-      }
-
-      db[name].money += amount;
-      savePlayersDB(db);
-
-      // Если это МЫ САМИ — обновляем свой кошелёк
-      if (name === game.playerName.toLowerCase()) {
-        game.money = db[name].money;
-        updateUI();
-      }
-
-      notify(`💰 Выдано ${amount} монет игроку ${db[name].name}!`, '#4cd964');
-      refreshPlayerList();
-      break;
-    }
-
-    // ===== ЗАБРАТЬ ДЕНЬГИ =====
-    case 'takeMoney': {
-      const name = document.getElementById('targetName').value.trim().toLowerCase();
-      const amount = parseInt(document.getElementById('moneyAmount').value);
-
-      if (!name) { notify('❌ Введи имя игрока!', '#e74c3c'); return; }
-      if (isNaN(amount) || amount <= 0) { notify('❌ Введи корректную сумму!', '#e74c3c'); return; }
-
-      const db = loadPlayersDB();
-      if (!db[name]) {
-        notify(`❌ Игрок "${name}" не найден!`, '#e74c3c');
-        return;
-      }
-
-      db[name].money = Math.max(0, db[name].money - amount);
-      savePlayersDB(db);
-
-      if (name === game.playerName.toLowerCase()) {
-        game.money = db[name].money;
-        updateUI();
-      }
-
-      notify(`💸 Забрано ${amount} монет у ${db[name].name}!`, '#e74c3c');
-      refreshPlayerList();
-      break;
-    }
-
-    // ===== СЕБЕ 1000 =====
-    case 'money':
-      game.money += 1000;
-      notify('💰 Себе +1000 монет!', '#4cd964');
-      break;
-
-    // ===== ДОСТИЖЕНИЕ =====
-    case 'ach': {
-      const achs = ['🏅 Кликер-мастер', '🏅 Богач', '🏅 Легенда', '🏅 Брюсик-фанат'];
-      const ach = achs[Math.floor(Math.random() * achs.length)];
-      game.achievements.push(ach);
-      notify(`🏅 Выдано достижение: ${ach}`, '#f5c26b');
-      break;
-    }
-
-    // ===== СИЛА КЛИКА =====
-    case 'godclick':
-      game.clickPower += 10;
-      notify(`⚡ Сила клика: ${game.clickPower}`, '#6a89cc');
-      break;
-
-    // ===== СБРОС СЕБЕ =====
-    case 'reset':
-      if (confirm('Сбросить МОЙ прогресс?')) {
-        localStorage.removeItem('HJ_KJRC_save');
-        game.money = 100;
-        game.clicks = 0;
-        game.wins = 0;
-        game.clickPower = 1;
-        game.achievements = [];
-        game.guessSecret = Math.floor(Math.random() * 100) + 1;
-        updateUI();
-        notify('🔄 Прогресс сброшен!', '#e74c3c');
-      }
-      break;
-
-    // ===== ОЧИСТКА УВЕДОМЛЕНИЙ =====
-    case 'clear':
-      document.getElementById('notifications').innerHTML = '';
-      break;
-  }
-  updateUI();
-  saveGame();
 }
+function checkWin(){
+  if([...grid.children].every(d=>d.dataset.open==='1'))
+    setTimeout(()=>alert('🎉 Победа! Ходов: '+moves),300);
+}
+window.addEventListener('resize',fit);
+init();
+`;
+      return basePage('🧠 Память', body, script);
+    }
 
-// ==================================================
-//  🚀 ЗАПУСК
-// ==================================================
-loadGame();
+    // 👆 Кликер — работает тапом
+    function gameClicker() {
+      const body = `<div style="font-size:clamp(60px,20vw,100px);cursor:pointer;user-select:none;line-height:1;" id="btn">🍪</div>
+<div class="info">Печенек: <span id="score">0</span></div>
+<button onclick="upgrade()">Апгрейд (стоит <span id="cost">10</span>)</button>
+<div style="font-size:13px;color:#9bb;margin-top:8px">Кликай/тапай по печеньке!</div>`;
+      const script = `
+let score=0,perClick=1,cost=10;
+const scoreEl=document.getElementById('score');
+const btn=document.getElementById('btn');
+function click(){score+=perClick;scoreEl.textContent=score;}
+btn.addEventListener('click',click);
+btn.addEventListener('touchstart',e=>{e.preventDefault();click();},{passive:false});
+function upgrade(){
+  if(score>=cost){score-=cost;perClick++;cost=Math.floor(cost*1.8);
+    document.getElementById('cost').textContent=cost;scoreEl.textContent=score;}
+}
+`;
+      return basePage('👆 Кликер', body, script);
+    }
 
-// Показываем окно ввода имени сразу
-document.getElementById('nameModal').classList.add('active');
-
-// Enter в модальном окне имени
-document.getElementById('nameInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') saveName();
+    // 🔢 Угадай число — inputmode для цифровой клавиатуры
+    function gameGuess() {
+      const body = `<p style="text-align:center">Я загадал число от 1 до 100</p>
+<input id="g" type="number" inputmode="numeric" pattern="[0-9]*"
+  style="padding:14px;font-size:18px;border-radius:10px;border:none;
+  width:200px;text-align:center;margin-top:12px;max-width:100%;">
+<button onclick="check()">Проверить</button>
+<div class="info" id="hint" style="min-height:30px;"></div>
+<div style="font-size:13px;color:#9bb;">Попыток: <span id="tries">0</span></div>`;
+      const script = `
+let secret=Math.floor(Math.random()*100)+1,tries=0;
+function check(){
+  const v=+document.getElementById('g').value;
+  if(!v||v<1||v>100)return;
+  tries++;document.getElementById('tries').textContent=tries;
+  const h=document.getElementById('hint');
+  if(v===secret){h.textContent='🎉 Угадал! Попыток: '+tries;h.style.color='#8fff8f';}
+  else if(v<secret){h.textContent='📈 Больше';h.style.color='#8fd3ff';}
+  else{h.textContent='📉 Меньше';h.style.color='#ff9a9a';}
+}
+document.getElementById('g').addEventListener('keydown',e=>{
+  if(e.key==='Enter')check();
 });
-
-// Enter в поле угадай число
-document.getElementById('guessInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') checkGuess();
-});
-
-// Автообновление списка игроков в админке каждые 2 сек (если окно открыто)
-setInterval(() => {
-  if (document.getElementById('win-admin').classList.contains('active')) {
-    refreshPlayerList();
-  }
-}, 2000);
-</script>
+`;
+      return basePage('🔢 Угадай число', body, script);
+    }
+  </script>
 </body>
 </html>
