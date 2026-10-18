@@ -3,422 +3,628 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>📐 ИИ по математике — голос и текст</title>
+<title>Конструктор бота</title>
 <style>
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Segoe UI', Arial, sans-serif;
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    background: linear-gradient(135deg, #667eea, #764ba2);
     min-height: 100vh;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+    display: flex; justify-content: center; align-items: center;
+    padding: 16px; transition: background 0.4s;
   }
-  .container {
+  .chat {
+    width: 100%; max-width: 480px; height: 90vh; max-height: 820px;
+    background: #fff; border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    display: flex; flex-direction: column; overflow: hidden;
+    position: relative;
+  }
+  .chat-header {
+    background: #667eea; color: #fff;
+    padding: 14px 18px;
+    display: flex; align-items: center; gap: 12px;
+    transition: background 0.4s;
+  }
+  .avatar {
+    width: 42px; height: 42px; border-radius: 50%;
     background: #fff;
-    border-radius: 20px;
-    padding: 25px;
-    width: 100%;
-    max-width: 650px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
   }
-  h1 {
-    text-align: center;
-    color: #1e3c72;
-    margin: 0 0 15px;
-    font-size: 22px;
-  }
-
-  /* Переключатель озвучки */
-  .toggle-row {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 15px;
-    font-size: 14px;
-    color: #444;
-  }
-  .toggle-row input { width: 18px; height: 18px; cursor: pointer; }
-
-  /* Чат */
-  #chat {
-    border: 2px solid #e0e0e0;
-    border-radius: 12px;
-    padding: 15px;
-    height: 340px;
-    overflow-y: auto;
-    margin-bottom: 15px;
-    background: #f9f9f9;
-  }
-  .msg {
-    margin-bottom: 12px;
-    padding: 10px 14px;
-    border-radius: 12px;
-    line-height: 1.5;
-    animation: fadeIn 0.3s;
-    word-wrap: break-word;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .user { background: #d1e7ff; color: #0b3d91; margin-left: 40px; }
-  .ai   { background: #e8f5e9; color: #1b5e20; margin-right: 40px; }
-  .system { background: #fff3cd; color: #856404; text-align: center; font-size: 13px; }
-
-  /* Кнопка "прослушать" у ответа ИИ */
-  .speak-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    margin-left: 6px;
-    padding: 2px 6px;
-    border-radius: 6px;
+  .chat-header .info { flex: 1; min-width: 0; }
+  .chat-header h1 { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chat-header p { font-size: 12px; opacity: 0.85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .settings-btn {
+    background: rgba(255,255,255,0.2); border: none; color: #fff;
+    width: 38px; height: 38px; border-radius: 50%;
+    cursor: pointer; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
     transition: background 0.2s;
   }
-  .speak-btn:hover { background: rgba(0,0,0,0.08); }
+  .settings-btn:hover { background: rgba(255,255,255,0.35); }
 
-  /* Поле ввода + кнопки */
-  .input-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px;
+  .messages {
+    flex: 1; padding: 20px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 12px;
+    background: #f7f8fc; transition: background 0.4s;
   }
-  #textInput {
-    flex: 1;
-    padding: 12px 14px;
-    border: 2px solid #e0e0e0;
-    border-radius: 12px;
-    font-size: 15px;
-    outline: none;
-    transition: border 0.2s;
+  .msg {
+    max-width: 78%; padding: 10px 14px;
+    border-radius: 16px; font-size: 14px;
+    line-height: 1.45; animation: pop 0.2s ease;
+    word-wrap: break-word; white-space: pre-wrap;
   }
-  #textInput:focus { border-color: #2a5298; }
+  @keyframes pop {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .msg.bot {
+    background: #fff; color: #333; align-self: flex-start;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .msg.user {
+    background: #667eea; color: #fff; align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+  .typing { color: #999; font-style: italic; }
+  .input-area {
+    display: flex; padding: 12px; background: #fff;
+    border-top: 1px solid #eee; gap: 10px;
+  }
+  .input-area input {
+    flex: 1; padding: 12px 16px;
+    border: 1px solid #ddd; border-radius: 24px;
+    font-size: 14px; outline: none; transition: border 0.2s;
+  }
+  .input-area input:focus { border-color: #667eea; }
+  .input-area button {
+    padding: 0 22px; border: none; border-radius: 24px;
+    background: #667eea; color: #fff; font-size: 14px;
+    font-weight: 600; cursor: pointer; transition: background 0.2s;
+  }
+  .input-area button:hover { background: #5568d3; }
+  .input-area button:disabled { background: #bbb; cursor: not-allowed; }
+  .system-msg {
+    align-self: center; font-size: 11px; color: #999;
+    background: #eee; padding: 4px 12px; border-radius: 12px;
+  }
 
-  .buttons {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+  /* ===== ПАНЕЛЬ РЕДАКТОРА ===== */
+  .editor-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: none; align-items: flex-end;
+    z-index: 10;
   }
-  button {
-    padding: 12px 16px;
-    border: none;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
+  .editor-overlay.open { display: flex; }
+  .editor {
+    width: 100%; max-height: 90%;
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+    padding: 20px;
+    overflow-y: auto;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .editor h2 {
+    font-size: 18px; margin-bottom: 16px;
+    color: #333;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .editor h2 button {
+    background: none; border: none; font-size: 22px;
+    cursor: pointer; color: #999;
+  }
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: #666; margin-bottom: 4px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .field input, .field textarea, .field select {
+    width: 100%; padding: 10px 12px;
+    border: 1px solid #ddd; border-radius: 10px;
+    font-size: 14px; font-family: inherit;
+    outline: none; transition: border 0.2s;
+    background: #fff;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus { border-color: #667eea; }
+  .field textarea { resize: vertical; min-height: 80px; }
+  .field .hint { font-size: 11px; color: #999; margin-top: 3px; }
+  .row { display: flex; gap: 10px; }
+  .row .field { flex: 1; }
+
+  /* Категории фраз */
+  .cat-tabs {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .cat-tabs button {
+    padding: 6px 12px; border-radius: 16px;
+    border: 1px solid #ddd; background: #fff;
+    font-size: 12px; cursor: pointer;
     transition: all 0.2s;
   }
-  #sendBtn   { background: #2a5298; color: white; flex: 1; }
-  #sendBtn:hover { background: #1e3c72; }
-  #micBtn    { background: #2a5298; color: white; flex: 1; }
-  #micBtn:hover { background: #1e3c72; }
-  #micBtn.listening {
-    background: #e53935;
-    animation: pulse 1s infinite;
+  .cat-tabs button.active {
+    background: #667eea; color: #fff; border-color: #667eea;
   }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(229,57,53,0.7); }
-    50% { box-shadow: 0 0 0 15px rgba(229,57,53,0); }
+  .phrase-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+  .phrase-item {
+    display: flex; gap: 6px; align-items: flex-start;
   }
-  #stopBtn  { background: #ff9800; color: white; }
-  #clearBtn { background: #757575; color: white; }
-  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .phrase-item textarea {
+    flex: 1; padding: 8px 10px;
+    border: 1px solid #ddd; border-radius: 8px;
+    font-size: 13px; font-family: inherit;
+    resize: vertical; min-height: 40px;
+    outline: none;
+  }
+  .phrase-item textarea:focus { border-color: #667eea; }
+  .phrase-item button {
+    background: #fee; color: #eb3349;
+    border: none; width: 32px; height: 32px;
+    border-radius: 8px; cursor: pointer;
+    font-size: 16px; flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .phrase-item button:hover { background: #fdd; }
+  .add-btn {
+    width: 100%; padding: 10px;
+    border: 2px dashed #ccc; background: #fafafa;
+    border-radius: 10px; color: #667eea;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .add-btn:hover { border-color: #667eea; background: #f0f3ff; }
 
-  .status {
-    text-align: center;
-    margin-top: 12px;
-    color: #666;
-    font-size: 14px;
-    min-height: 20px;
+  .actions {
+    display: flex; gap: 10px; margin-top: 16px;
   }
-  .status.listening { color: #e53935; font-weight: bold; }
+  .actions button {
+    flex: 1; padding: 12px;
+    border: none; border-radius: 10px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-save { background: #667eea; color: #fff; }
+  .btn-save:hover { background: #5568d3; }
+  .btn-reset { background: #f0f0f0; color: #666; }
+  .btn-reset:hover { background: #e0e0e0; }
+  .btn-close { background: #f0f0f0; color: #666; }
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>📐 ИИ-помощник по математике</h1>
 
-  <!-- Переключатель озвучки -->
-  <div class="toggle-row">
-    <input type="checkbox" id="voiceToggle" checked>
-    <label for="voiceToggle">🔊 Озвучивать ответы голосом</label>
+<div class="chat" id="chat">
+  <div class="chat-header" id="header">
+    <div class="avatar" id="avatar">🤖</div>
+    <div class="info">
+      <h1 id="botName">Мой бот</h1>
+      <p id="botStatus">онлайн</p>
+    </div>
+    <button class="settings-btn" id="openEditor" title="Настроить бота">⚙️</button>
+  </div>
+  <div class="messages" id="messages"></div>
+  <div class="input-area">
+    <input type="text" id="input" placeholder="Напишите сообщение..." autocomplete="off">
+    <button id="send">➤</button>
   </div>
 
-  <div id="chat">
-    <div class="msg system">Напиши вопрос или нажми 🎤 и скажи голосом</div>
-  </div>
+  <!-- ===== РЕДАКТОР ===== -->
+  <div class="editor-overlay" id="editorOverlay">
+    <div class="editor">
+      <h2>⚙️ Настройка бота <button id="closeEditor">✕</button></h2>
 
-  <!-- Текстовый ввод -->
-  <div class="input-row">
-    <input id="textInput" type="text" placeholder="Введи математический вопрос..." autocomplete="off">
-    <button id="sendBtn">➤ Отправить</button>
-  </div>
+      <div class="row">
+        <div class="field">
+          <label>Имя бота</label>
+          <input type="text" id="cfgName" maxlength="30" placeholder="Мой бот">
+        </div>
+        <div class="field">
+          <label>Аватар (эмодзи)</label>
+          <input type="text" id="cfgAvatar" maxlength="4" placeholder="🤖">
+        </div>
+      </div>
 
-  <!-- Голосовые кнопки -->
-  <div class="buttons">
-    <button id="micBtn">🎤 Говорить</button>
-    <button id="stopBtn" disabled>⏹ Стоп</button>
-    <button id="clearBtn">🗑 Очистить</button>
-  </div>
+      <div class="row">
+        <div class="field">
+          <label>Основной цвет</label>
+          <input type="color" id="cfgColor" value="#667eea">
+        </div>
+        <div class="field">
+          <label>Цвет фона чата</label>
+          <input type="color" id="cfgBg" value="#f7f8fc">
+        </div>
+      </div>
 
-  <div class="status" id="status"></div>
+      <div class="field">
+        <label>Приветствие при запуске</label>
+        <textarea id="cfgGreeting" placeholder="Привет! Я твой бот..."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Стиль общения</label>
+        <select id="cfgStyle">
+          <option value="polite">😇 Вежливый и добрый</option>
+          <option value="sassy">😈 Дерзкий и саркастичный</option>
+          <option value="neutral">🙂 Нейтральный</option>
+        </select>
+      </div>
+
+      <!-- Редактор фраз -->
+      <div class="field" style="margin-top: 20px;">
+        <label>Фразы бота (по категориям)</label>
+        <div class="cat-tabs" id="catTabs"></div>
+        <div class="phrase-list" id="phraseList"></div>
+        <button class="add-btn" id="addPhrase">+ Добавить фразу</button>
+        <div class="hint" style="margin-top:8px;">
+          Бот выбирает случайную фразу из категории. Чем больше фраз — тем разнообразнее ответы.
+        </div>
+      </div>
+
+      <!-- Реакции на слова -->
+      <div class="field">
+        <label>Свои реакции на ключевые слова</label>
+        <div class="hint" style="margin-bottom:8px;">
+          Формат: слово → фразы через `;`. Пример:<br>
+          <code>привет → Привет!; Здорово!; Хай!</code>
+        </div>
+        <textarea id="cfgTriggers" style="min-height: 100px;" placeholder="привет → Привет!; Здравствуй!
+как дела → Отлично!; Нормально, а у тебя?"></textarea>
+      </div>
+
+      <div class="actions">
+        <button class="btn-reset" id="resetBtn">Сбросить</button>
+        <button class="btn-save" id="saveBtn">Сохранить</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-// ============================================================
-// НАСТРОЙКИ — ВСТАВЬ СВОЙ API-КЛЮЧ
-// ============================================================
-const API_KEY = "ТВОЙ_API_КЛЮЧ";
-const API_URL = "https://api.deepseek.com/chat/completions";
-const MODEL   = "deepseek-chat";
-
-// ============================================================
-// Элементы
-// ============================================================
-const chatEl       = document.getElementById("chat");
-const textInput    = document.getElementById("textInput");
-const sendBtn      = document.getElementById("sendBtn");
-const micBtn       = document.getElementById("micBtn");
-const stopBtn      = document.getElementById("stopBtn");
-const clearBtn     = document.getElementById("clearBtn");
-const statusEl     = document.getElementById("status");
-const voiceToggle  = document.getElementById("voiceToggle");
-
-// ============================================================
-// Распознавание речи (STT)
-// ============================================================
-let recognition = null;
-let isListening = false;
-
-function setupRecognition() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) {
-    addMessage("❌ Браузер не поддерживает распознавание речи. Используй Chrome/Edge или пиши текстом.", "system");
-    micBtn.disabled = true;
-    return null;
+// ==========================================================
+// КОНФИГ БОТА (сохраняется в localStorage)
+// ==========================================================
+const DEFAULT_CONFIG = {
+  name: 'Мой бот',
+  avatar: '🤖',
+  color: '#667eea',
+  bg: '#f7f8fc',
+  greeting: 'Привет! 👋 Я твой персональный бот. Напиши что-нибудь!',
+  style: 'neutral',
+  phrases: {
+    greetings: ['Привет! 👋', 'Здравствуй!', 'Хэй! Как дела?', 'Салют! 🚀'],
+    howAreYou: ['У меня всё отлично! А у тебя? 😊', 'Супер! Ты как?', 'Лучше всех!'],
+    jokes: ['Почему программисты путают Хэллоуин и Рождество? Oct 31 == Dec 25 🎃🎄', 'Работает — не трогай! 😄'],
+    facts: ['🐙 У осьминога три сердца.', '🍯 Мёд не портится.', '🌌 Звёзд больше, чем песчинок.'],
+    motivation: ['💪 Ты справишься!', '✨ Маленькие шаги ведут к большим результатам.'],
+    goodbyes: ['Пока! 👋', 'До встречи!', 'Увидимся!'],
+    thanks: ['Пожалуйста! 🙌', 'Не за что! 😊'],
+    unknown: ['Интересно! Расскажи ещё 🤔', 'Хм, не знаю, что сказать. Спроси иначе 🙂']
+  },
+  triggers: {
+    'привет': ['Привет! 👋', 'Здравствуй!', 'Хай!'],
+    'как дела': ['Отлично!', 'Нормально, а у тебя?', 'Всё супер!'],
+    'пока': ['Пока!', 'До встречи!'],
+    'спасибо': ['Пожалуйста!', 'Не за что!']
   }
-  const rec = new SR();
-  rec.lang = "ru-RU";
-  rec.continuous = false;
-  rec.interimResults = false;
-  rec.maxAlternatives = 1;
+};
 
-  rec.onstart = () => {
-    isListening = true;
-    micBtn.classList.add("listening");
-    micBtn.textContent = "🔴 Слушаю...";
-    stopBtn.disabled = false;
-    setStatus("Слушаю ваш вопрос...", true);
-  };
+const CATEGORIES = {
+  greetings: '👋 Приветствия',
+  howAreYou: '😊 Как дела',
+  jokes: '😄 Шутки',
+  facts: '💡 Факты',
+  motivation: '💪 Мотивация',
+  goodbyes: '👋 Прощания',
+  thanks: '🙏 Спасибо',
+  unknown: '❓ Незнание',
+  questions: '❔ Вопросы'
+};
 
-  rec.onresult = (event) => {
-    const text = event.results[0][0].transcript.trim();
-    setStatus("");
-    if (text) {
-      addMessage("👤 Ты: " + text, "user");
-      askAI(text);
-    } else {
-      addMessage("🤖 Не разобрал, попробуй снова.", "system");
-    }
-  };
+let config = loadConfig();
+let currentCategory = 'greetings';
 
-  rec.onerror = (e) => {
-    setStatus("");
-    if (e.error === "not-allowed" || e.error === "service-not-allowed") {
-      addMessage("❌ Нет доступа к микрофону. Разреши его в браузере.", "system");
-    } else if (e.error === "no-speech") {
-      addMessage("🔇 Ничего не услышал. Попробуй ещё раз.", "system");
-    } else {
-      addMessage("⚠️ Ошибка распознавания: " + e.error, "system");
-    }
-  };
-
-  rec.onend = () => {
-    isListening = false;
-    micBtn.classList.remove("listening");
-    micBtn.textContent = "🎤 Говорить";
-    stopBtn.disabled = true;
-    setStatus("");
-  };
-
-  return rec;
-}
-
-// ============================================================
-// Синтез речи (TTS)
-// ============================================================
-let voices = [];
-function loadVoices() { voices = window.speechSynthesis.getVoices(); }
-window.speechSynthesis.onvoiceschanged = loadVoices;
-loadVoices();
-
-function speak(text) {
-  if (!voiceToggle.checked) return;      // озвучка выключена
-  if (!window.speechSynthesis) return;
-
-  window.speechSynthesis.cancel();
-
-  const clean = text
-    .replace(/[*_`#>]/g, "")
-    .replace(/\n+/g, ". ");
-
-  const utter = new SpeechSynthesisUtterance(clean);
-  utter.lang = "ru-RU";
-  utter.rate = 1.0;
-  utter.pitch = 1.0;
-
-  const ruVoice = voices.find(v => v.lang.startsWith("ru"));
-  if (ruVoice) utter.voice = ruVoice;
-
-  window.speechSynthesis.speak(utter);
-}
-
-// ============================================================
-// Запрос к ИИ
-// ============================================================
-let isBusy = false;
-
-async function askAI(question) {
-  if (isBusy) return;
-  isBusy = true;
-  sendBtn.disabled = true;
-  micBtn.disabled = true;
-  setStatus("🤔 Думаю...", true);
-
+// ==========================================================
+// ХРАНИЛИЩЕ
+// ==========================================================
+function loadConfig() {
   try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + API_KEY
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [
-          {
-            role: "system",
-            content: (
-              "Ты — ИИ-помощник по математике. Отвечай ТОЛЬКО на математические вопросы " +
-              "(арифметика, алгебра, геометрия, тригонометрия, производные, интегралы, " +
-              "статистика и т.п.). Решай пошагово и понятно. Ответ может читаться голосом — " +
-              "не используй сложную разметку (markdown, LaTeX). " +
-              "Если вопрос не по математике — вежливо откажись."
-            )
-          },
-          { role: "user", content: question }
-        ],
-        temperature: 0.3
-      })
-    });
-
-    if (!res.ok) throw new Error("HTTP " + res.status);
-
-    const data = await res.json();
-    const answer = data.choices?.[0]?.message?.content?.trim() || "Пустой ответ от ИИ.";
-
-    // Добавляем ответ + кнопку "прослушать"
-    addAIMessage(answer);
-    speak(answer);
-
-  } catch (err) {
-    console.error(err);
-    addMessage("⚠️ Ошибка запроса: " + err.message, "system");
-  } finally {
-    setStatus("");
-    sendBtn.disabled = false;
-    micBtn.disabled = false;
-    isBusy = false;
-  }
+    const saved = localStorage.getItem('myBotConfig');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Мерджим с дефолтом на случай новых полей
+      return {
+        ...DEFAULT_CONFIG,
+        ...parsed,
+        phrases: { ...DEFAULT_CONFIG.phrases, ...(parsed.phrases || {}) },
+        triggers: { ...DEFAULT_CONFIG.triggers, ...(parsed.triggers || {}) }
+      };
+    }
+  } catch (e) { console.warn('Ошибка загрузки:', e); }
+  return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 }
 
-// ============================================================
-// Добавление сообщений
-// ============================================================
-function addMessage(text, cls) {
-  const div = document.createElement("div");
-  div.className = "msg " + cls;
+function saveConfig() {
+  try {
+    localStorage.setItem('myBotConfig', JSON.stringify(config));
+  } catch (e) { console.warn('Ошибка сохранения:', e); }
+}
+
+// ==========================================================
+// ПРИМЕНЕНИЕ КОНФИГА К UI
+// ==========================================================
+function applyConfig() {
+  document.getElementById('botName').textContent = config.name;
+  document.getElementById('botStatus').textContent = 'онлайн';
+  document.getElementById('avatar').textContent = config.avatar;
+  document.getElementById('header').style.background = config.color;
+  document.getElementById('messages').style.background = config.bg;
+  document.body.style.background = `linear-gradient(135deg, ${config.color}, ${shadeColor(config.color, -30)})`;
+
+  // Кнопки и поле ввода
+  document.querySelectorAll('.input-area button').forEach(b => b.style.background = config.color);
+  document.getElementById('input').style.setProperty('--focus-color', config.color);
+
+  // Цвет сообщений пользователя
+  const style = document.createElement('style');
+  style.id = 'dynamic-style';
+  const old = document.getElementById('dynamic-style');
+  if (old) old.remove();
+  style.textContent = `
+    .msg.user { background: ${config.color} !important; }
+    .input-area input:focus { border-color: ${config.color} !important; }
+  `;
+  document.head.appendChild(style);
+}
+
+function shadeColor(hex, percent) {
+  const num = parseInt(hex.replace('#',''), 16);
+  const amt = Math.round(2.55 * percent);
+  const R = Math.max(0, Math.min(255, (num >> 16) + amt));
+  const G = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amt));
+  const B = Math.max(0, Math.min(255, (num & 0x0000FF) + amt));
+  return '#' + ((R << 16) | (G << 8) | B).toString(16).padStart(6, '0');
+}
+
+// ==========================================================
+// ЛОГИКА БОТА
+// ==========================================================
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+function getBotReply(text) {
+  const t = text.toLowerCase().trim();
+
+  // 1. Проверяем пользовательские триггеры
+  for (const [keyword, responses] of Object.entries(config.triggers)) {
+    if (t.includes(keyword.toLowerCase())) {
+      return pick(responses);
+    }
+  }
+
+  // 2. Стандартные категории
+  if (/привет|здравств|хай|hello|hi|салют/.test(t))
+    return pick(config.phrases.greetings || config.phrases.unknown);
+  if (/как дела|как ты|как жизнь/.test(t))
+    return pick(config.phrases.howAreYou || config.phrases.unknown);
+  if (/шутк|анекдот|пошути|рассмеши/.test(t))
+    return pick(config.phrases.jokes || config.phrases.unknown);
+  if (/факт|интересное/.test(t))
+    return pick(config.phrases.facts || config.phrases.unknown);
+  if (/мотивац|вдохнови|поддержи|грустно|тяжело/.test(t))
+    return pick(config.phrases.motivation || config.phrases.unknown);
+  if (/пока|до свидания|bye|прощай/.test(t))
+    return pick(config.phrases.goodbyes || config.phrases.unknown);
+  if (/спасибо|благодар|thanks/.test(t))
+    return pick(config.phrases.thanks || config.phrases.unknown);
+
+  // Время / дата
+  if (/время|который час/.test(t))
+    return '🕐 ' + new Date().toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+  if (/дата|какое число|какой день/.test(t))
+    return '📅 ' + new Date().toLocaleDateString('ru-RU', {day:'numeric', month:'long', year:'numeric'});
+
+  // 3. Стиль
+  if (config.style === 'sassy' && /\?/.test(t))
+    return pick(config.phrases.unknown || ['Ты серьёзно думаешь, что я знаю ответ? Ну ты наивный. 🙄']);
+  if (config.style === 'sassy')
+    return 'И что мне с этим делать, лох? "' + text + '". Ну ок. 😏';
+
+  // 4. Вопрос
+  if (/\?/.test(t)) {
+    const q = config.phrases.questions;
+    if (q && q.length) return pick(config.phrases.unknown) + '\n\n' + pick(q);
+    return pick(config.phrases.unknown || ['Хм, интересный вопрос 🤔']);
+  }
+
+  // 5. Эхо
+  return 'Ты написал: "' + text + '"\n\n' + pick(config.phrases.unknown || ['Расскажи ещё! 🙂']);
+}
+
+// ==========================================================
+// UI ЧАТА
+// ==========================================================
+const messagesEl = document.getElementById('messages');
+const inputEl = document.getElementById('input');
+const sendBtn = document.getElementById('send');
+
+function addMessage(text, sender, system = false) {
+  const div = document.createElement('div');
+  div.className = system ? 'system-msg' : 'msg ' + sender;
   div.textContent = text;
-  chatEl.appendChild(div);
-  chatEl.scrollTop = chatEl.scrollHeight;
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  return div;
 }
 
-// Ответ ИИ + отдельная кнопка "прослушать" (работает даже если автоозвучка выключена)
-function addAIMessage(text) {
-  const div = document.createElement("div");
-  div.className = "msg ai";
+function sendMessage() {
+  const text = inputEl.value.trim();
+  if (!text) return;
 
-  const span = document.createElement("span");
-  span.textContent = "🤖 ИИ: " + text;
-  div.appendChild(span);
+  addMessage(text, 'user');
+  inputEl.value = '';
+  sendBtn.disabled = true;
 
-  const btn = document.createElement("button");
-  btn.className = "speak-btn";
-  btn.title = "Прослушать ответ";
-  btn.textContent = "🔊";
-  btn.addEventListener("click", () => {
-    // Временно игнорируем переключатель, чтобы можно было послушать вручную
-    const old = voiceToggle.checked;
-    voiceToggle.checked = true;
-    speak(text);
-    voiceToggle.checked = old;
-  });
-  div.appendChild(btn);
+  const typing = addMessage('печатает...', 'bot');
+  typing.classList.add('typing');
 
-  chatEl.appendChild(div);
-  chatEl.scrollTop = chatEl.scrollHeight;
+  setTimeout(() => {
+    typing.remove();
+    addMessage(getBotReply(text), 'bot');
+    sendBtn.disabled = false;
+    inputEl.focus();
+  }, 500 + Math.random() * 600);
 }
 
-function setStatus(text, listening = false) {
-  statusEl.textContent = text;
-  statusEl.classList.toggle("listening", listening);
+sendBtn.addEventListener('click', sendMessage);
+inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+
+// ==========================================================
+// РЕДАКТОР
+// ==========================================================
+const overlay = document.getElementById('editorOverlay');
+const openBtn = document.getElementById('openEditor');
+const closeBtn = document.getElementById('closeEditor');
+const saveBtn = document.getElementById('saveBtn');
+const resetBtn = document.getElementById('resetBtn');
+const catTabs = document.getElementById('catTabs');
+const phraseList = document.getElementById('phraseList');
+const addPhraseBtn = document.getElementById('addPhrase');
+
+function openEditor() {
+  // Заполняем поля
+  document.getElementById('cfgName').value = config.name;
+  document.getElementById('cfgAvatar').value = config.avatar;
+  document.getElementById('cfgColor').value = config.color;
+  document.getElementById('cfgBg').value = config.bg;
+  document.getElementById('cfgGreeting').value = config.greeting;
+  document.getElementById('cfgStyle').value = config.style;
+
+  // Триггеры в текст
+  const triggersText = Object.entries(config.triggers)
+    .map(([k, v]) => `${k} → ${v.join('; ')}`)
+    .join('\n');
+  document.getElementById('cfgTriggers').value = triggersText;
+
+  // Категории
+  currentCategory = 'greetings';
+  renderCatTabs();
+  renderPhrases();
+
+  overlay.classList.add('open');
 }
 
-// ============================================================
-// Отправка из текстового поля
-// ============================================================
-function sendFromText() {
-  const q = textInput.value.trim();
-  if (!q) return;
-  window.speechSynthesis.cancel();       // прервать текущую озвучку
-  addMessage("👤 Ты: " + q, "user");
-  textInput.value = "";
-  askAI(q);
+function closeEditor() {
+  overlay.classList.remove('open');
 }
 
-sendBtn.addEventListener("click", sendFromText);
-textInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") sendFromText();
-});
-
-// ============================================================
-// Голосовой ввод
-// ============================================================
-recognition = setupRecognition();
-
-micBtn.addEventListener("click", () => {
-  if (!recognition) return;
-  if (isListening) {
-    recognition.stop();
-  } else {
-    window.speechSynthesis.cancel();
-    try { recognition.start(); } catch (e) { /* уже идёт */ }
+function renderCatTabs() {
+  catTabs.innerHTML = '';
+  for (const [key, label] of Object.entries(CATEGORIES)) {
+    const btn = document.createElement('button');
+    btn.textContent = label;
+    btn.className = key === currentCategory ? 'active' : '';
+    btn.onclick = () => {
+      currentCategory = key;
+      renderCatTabs();
+      renderPhrases();
+    };
+    catTabs.appendChild(btn);
   }
-});
+}
 
-stopBtn.addEventListener("click", () => {
-  if (recognition && isListening) recognition.stop();
-  window.speechSynthesis.cancel();
-});
+function renderPhrases() {
+  phraseList.innerHTML = '';
+  const arr = config.phrases[currentCategory] || [];
+  arr.forEach((phrase, idx) => {
+    const item = document.createElement('div');
+    item.className = 'phrase-item';
 
-clearBtn.addEventListener("click", () => {
-  window.speechSynthesis.cancel();
-  chatEl.innerHTML = '<div class="msg system">Чат очищен. Задай новый вопрос!</div>';
-});
+    const ta = document.createElement('textarea');
+    ta.value = phrase;
+    ta.oninput = () => { config.phrases[currentCategory][idx] = ta.value; };
+
+    const del = document.createElement('button');
+    del.textContent = '✕';
+    del.onclick = () => {
+      config.phrases[currentCategory].splice(idx, 1);
+      renderPhrases();
+    };
+
+    item.appendChild(ta);
+    item.appendChild(del);
+    phraseList.appendChild(item);
+  });
+}
+
+addPhraseBtn.onclick = () => {
+  if (!config.phrases[currentCategory]) config.phrases[currentCategory] = [];
+  config.phrases[currentCategory].push('');
+  renderPhrases();
+  // Фокус на последний textarea
+  const list = phraseList.querySelectorAll('textarea');
+  if (list.length) list[list.length - 1].focus();
+};
+
+saveBtn.onclick = () => {
+  config.name = document.getElementById('cfgName').value.trim() || 'Мой бот';
+  config.avatar = document.getElementById('cfgAvatar').value.trim() || '🤖';
+  config.color = document.getElementById('cfgColor').value;
+  config.bg = document.getElementById('cfgBg').value;
+  config.greeting = document.getElementById('cfgGreeting').value.trim();
+  config.style = document.getElementById('cfgStyle').value;
+
+  // Парсим триггеры
+  const trigText = document.getElementById('cfgTriggers').value;
+  const newTriggers = {};
+  trigText.split('\n').forEach(line => {
+    const m = line.split('→');
+    if (m.length === 2) {
+      const key = m[0].trim().toLowerCase();
+      const vals = m[1].split(';').map(s => s.trim()).filter(Boolean);
+      if (key && vals.length) newTriggers[key] = vals;
+    }
+  });
+  config.triggers = newTriggers;
+
+  // Удаляем пустые фразы
+  for (const k in config.phrases) {
+    config.phrases[k] = config.phrases[k].filter(p => p.trim());
+  }
+
+  saveConfig();
+  applyConfig();
+  closeEditor();
+
+  addMessage('⚙️ Настройки сохранены!', null, true);
+  setTimeout(() => addMessage(config.greeting, 'bot'), 400);
+};
+
+resetBtn.onclick = () => {
+  if (!confirm('Сбросить все настройки бота? Это действие нельзя отменить.')) return;
+  localStorage.removeItem('myBotConfig');
+  config = loadConfig();
+  applyConfig();
+  closeEditor();
+  messagesEl.innerHTML = '';
+  addMessage('🔄 Настройки сброшены. Бот перезапущен.', null, true);
+  setTimeout(() => addMessage(config.greeting, 'bot'), 400);
+};
+
+openBtn.onclick = openEditor;
+closeBtn.onclick = closeEditor;
+overlay.onclick = (e) => { if (e.target === overlay) closeEditor(); };
+
+// ==========================================================
+// ЗАПУСК
+// ==========================================================
+applyConfig();
+setTimeout(() => addMessage(config.greeting, 'bot'), 300);
 </script>
+
 </body>
 </html>
