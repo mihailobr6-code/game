@@ -2,433 +2,423 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ИИ-помощник: Математика + Игры (ПК и телефон)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📐 ИИ по математике — голос и текст</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { height: 100%; }
+  * { box-sizing: border-box; }
   body {
     font-family: 'Segoe UI', Arial, sans-serif;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    min-height: 100vh; min-height: 100dvh;
-    display: flex; align-items: center; justify-content: center;
-    padding: 12px; overflow-x: hidden;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
   }
-  .card {
-    background: #fff; border-radius: 20px; padding: 22px;
-    width: 100%; max-width: 560px;
-    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  .container {
+    background: #fff;
+    border-radius: 20px;
+    padding: 25px;
+    width: 100%;
+    max-width: 650px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
   }
-  h1 { font-size: 21px; color: #203a43; margin-bottom: 4px; text-align: center; }
-  p.sub { color: #888; font-size: 13px; margin-bottom: 14px; text-align: center; }
-
-  .modes { display: flex; gap: 8px; margin-bottom: 14px; }
-  .modes button {
-    flex: 1; padding: 13px; font-size: 15px; font-weight: 600;
-    border: 2px solid #2c5364; background: #fff; color: #2c5364;
-    border-radius: 12px; cursor: pointer; transition: .2s; touch-action: manipulation;
-  }
-  .modes button.active { background: #2c5364; color: #fff; }
-
-  .panel { display: none; }
-  .panel.active { display: block; }
-
-  input, textarea {
-    width: 100%; padding: 14px 15px; font-size: 16px; /* 16px — чтобы iOS не зумил */
-    border: 2px solid #ddd; border-radius: 12px; outline: none; font-family: inherit;
-  }
-  input:focus, textarea:focus { border-color: #2c5364; }
-  textarea { resize: vertical; min-height: 66px; }
-
-  .btn {
-    width: 100%; margin-top: 10px; padding: 14px;
-    font-size: 16px; font-weight: 600; color: #fff;
-    background: #2c5364; border: none; border-radius: 12px;
-    cursor: pointer; transition: .2s; touch-action: manipulation;
-  }
-  .btn:hover { background: #203a43; }
-  .btn:active { transform: scale(.98); }
-
-  #mathResult {
-    margin-top: 14px; padding: 14px; background: #f4f7ff;
-    border-left: 5px solid #2c5364; border-radius: 10px;
-    font-size: 16px; min-height: 22px; white-space: pre-wrap; word-break: break-word;
+  h1 {
+    text-align: center;
+    color: #1e3c72;
+    margin: 0 0 15px;
+    font-size: 22px;
   }
 
-  .tags { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 7px; }
-  .tags span {
-    background: #eef2f5; color: #2c5364; padding: 9px 13px;
-    border-radius: 20px; font-size: 13px; cursor: pointer;
-    touch-action: manipulation; user-select: none;
+  /* Переключатель озвучки */
+  .toggle-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #444;
   }
-  .tags span:hover { background: #d4dee6; }
-  .tags span:active { background: #c0cdd8; }
+  .toggle-row input { width: 18px; height: 18px; cursor: pointer; }
 
-  #gameStatus { margin-top: 12px; font-size: 13px; color: #2c5364; min-height: 18px; }
-  .hint { margin-top: 10px; font-size: 12px; color: #999; line-height: 1.6; }
-  .hint code { background: #eef; padding: 2px 5px; border-radius: 5px; }
+  /* Чат */
+  #chat {
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 15px;
+    height: 340px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    background: #f9f9f9;
+  }
+  .msg {
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    line-height: 1.5;
+    animation: fadeIn 0.3s;
+    word-wrap: break-word;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .user { background: #d1e7ff; color: #0b3d91; margin-left: 40px; }
+  .ai   { background: #e8f5e9; color: #1b5e20; margin-right: 40px; }
+  .system { background: #fff3cd; color: #856404; text-align: center; font-size: 13px; }
+
+  /* Кнопка "прослушать" у ответа ИИ */
+  .speak-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 6px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+  .speak-btn:hover { background: rgba(0,0,0,0.08); }
+
+  /* Поле ввода + кнопки */
+  .input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  #textInput {
+    flex: 1;
+    padding: 12px 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 15px;
+    outline: none;
+    transition: border 0.2s;
+  }
+  #textInput:focus { border-color: #2a5298; }
+
+  .buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  button {
+    padding: 12px 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  #sendBtn   { background: #2a5298; color: white; flex: 1; }
+  #sendBtn:hover { background: #1e3c72; }
+  #micBtn    { background: #2a5298; color: white; flex: 1; }
+  #micBtn:hover { background: #1e3c72; }
+  #micBtn.listening {
+    background: #e53935;
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(229,57,53,0.7); }
+    50% { box-shadow: 0 0 0 15px rgba(229,57,53,0); }
+  }
+  #stopBtn  { background: #ff9800; color: white; }
+  #clearBtn { background: #757575; color: white; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .status {
+    text-align: center;
+    margin-top: 12px;
+    color: #666;
+    font-size: 14px;
+    min-height: 20px;
+  }
+  .status.listening { color: #e53935; font-weight: bold; }
 </style>
 </head>
 <body>
-  <div class="card">
-    <h1>🤖 ИИ-помощник</h1>
-    <p class="sub">Математика + игры • ПК и телефон</p>
+<div class="container">
+  <h1>📐 ИИ-помощник по математике</h1>
 
-    <div class="modes">
-      <button id="tabMath" class="active" onclick="setMode('math')">🧮 Математика</button>
-      <button id="tabGame" onclick="setMode('game')">🎮 Игры</button>
-    </div>
-
-    <div id="panelMath" class="panel active">
-      <input id="mathInput" type="text" inputmode="text" placeholder="2+3*4  или  x^2 - 4 = 0" />
-      <button class="btn" onclick="solveMath()">Решить</button>
-      <div id="mathResult">Ответ появится здесь…</div>
-      <div class="hint">
-        <code>+ - * /</code>, <code>^</code>, <code>sqrt()</code>,
-        <code>sin() cos() tan()</code>, <code>pi</code>, <code>e</code>, уравнения с <code>x</code>.
-      </div>
-    </div>
-
-    <div id="panelGame" class="panel">
-      <textarea id="gameIdea" placeholder="Опиши игру: змейка, ловец, память, кликер, угадай число…"></textarea>
-      <button class="btn" onclick="generateGame()">Создать игру 🚀</button>
-      <div class="tags">
-        <span onclick="quickGame('змейка')">🐍 змейка</span>
-        <span onclick="quickGame('ловец')">🎯 ловец</span>
-        <span onclick="quickGame('память')">🧠 память</span>
-        <span onclick="quickGame('кликер')">👆 кликер</span>
-        <span onclick="quickGame('угадай число')">🔢 угадай число</span>
-      </div>
-      <div id="gameStatus"></div>
-    </div>
+  <!-- Переключатель озвучки -->
+  <div class="toggle-row">
+    <input type="checkbox" id="voiceToggle" checked>
+    <label for="voiceToggle">🔊 Озвучивать ответы голосом</label>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/mathjs@12/lib/browser/math.js"></script>
-  <script>
-    // ============ РЕЖИМЫ ============
-    function setMode(mode) {
-      document.getElementById('panelMath').classList.toggle('active', mode === 'math');
-      document.getElementById('panelGame').classList.toggle('active', mode === 'game');
-      document.getElementById('tabMath').classList.toggle('active', mode === 'math');
-      document.getElementById('tabGame').classList.toggle('active', mode === 'game');
-    }
+  <div id="chat">
+    <div class="msg system">Напиши вопрос или нажми 🎤 и скажи голосом</div>
+  </div>
 
-    // ============ МАТЕМАТИКА ============
-    const mathInput = document.getElementById('mathInput');
-    const mathResult = document.getElementById('mathResult');
+  <!-- Текстовый ввод -->
+  <div class="input-row">
+    <input id="textInput" type="text" placeholder="Введи математический вопрос..." autocomplete="off">
+    <button id="sendBtn">➤ Отправить</button>
+  </div>
 
-    function solveMath() {
-      const raw = mathInput.value.trim();
-      if (!raw) { mathResult.textContent = '⚠️ Введи пример!'; return; }
-      mathResult.textContent = '⏳ Считаю…';
-      try {
-        if (raw.includes('=')) {
-          mathResult.textContent = '📐 Уравнение:\n' + solveEquation(raw);
-        } else {
-          const result = math.evaluate(raw);
-          mathResult.textContent = '✅ Ответ: ' + math.format(result, { precision: 10 });
-        }
-      } catch (err) {
-        mathResult.textContent = '❌ Не смог посчитать.\n' + err.message;
-      }
-    }
+  <!-- Голосовые кнопки -->
+  <div class="buttons">
+    <button id="micBtn">🎤 Говорить</button>
+    <button id="stopBtn" disabled>⏹ Стоп</button>
+    <button id="clearBtn">🗑 Очистить</button>
+  </div>
 
-    function solveEquation(str) {
-      const [left, right] = str.split('=');
-      const f = (x) => math.evaluate(left, { x }) - math.evaluate(right, { x });
-      const sols = []; const step = 0.01, range = 100;
-      let prevX = -range, prevY = f(prevX);
-      for (let x = -range + step; x <= range; x += step) {
-        const y = f(x);
-        if (prevY * y < 0) {
-          const r = bisect(f, prevX, x);
-          if (!sols.some(s => Math.abs(s - r) < 1e-6)) sols.push(+r.toFixed(6));
-        }
-        if (Math.abs(y) < 1e-9 && !sols.some(s => Math.abs(s - x) < 1e-6)) sols.push(+x.toFixed(6));
-        prevX = x; prevY = y;
-      }
-      return sols.length ? 'x = ' + sols.join(',  ') : 'Корней не найдено';
-    }
-    function bisect(f, a, b) {
-      let fa = f(a);
-      for (let i = 0; i < 100; i++) {
-        const m = (a + b) / 2, fm = f(m);
-        if (Math.abs(fm) < 1e-12) return m;
-        if (fa * fm < 0) b = m; else { a = m; fa = fm; }
-      }
-      return (a + b) / 2;
-    }
-    mathInput.addEventListener('keydown', e => { if (e.key === 'Enter') solveMath(); });
-
-    // ============ ГЕНЕРАТОР ИГР ============
-    const gameStatus = document.getElementById('gameStatus');
-    function quickGame(text) { document.getElementById('gameIdea').value = text; generateGame(); }
-
-    function generateGame() {
-      const idea = document.getElementById('gameIdea').value.toLowerCase().trim();
-      if (!idea) { gameStatus.textContent = '⚠️ Опиши игру!'; return; }
-      gameStatus.textContent = '🤖 Анализирую идею…';
-      setTimeout(() => {
-        let code, name;
-        if (idea.includes('зме') || idea.includes('snake')) { code = gameSnake(); name = 'Змейка'; }
-        else if (idea.includes('лов') || idea.includes('клик') || idea.includes('круг') || idea.includes('catch')) { code = gameCatcher(); name = 'Ловец'; }
-        else if (idea.includes('памят') || idea.includes('memory') || idea.includes('карт')) { code = gameMemory(); name = 'Память'; }
-        else if (idea.includes('кликер') || idea.includes('clicker')) { code = gameClicker(); name = 'Кликер'; }
-        else if (idea.includes('угада') || idea.includes('числ') || idea.includes('guess')) { code = gameGuess(); name = 'Угадай число'; }
-        else { code = gameClicker(); name = 'Кликер'; }
-        gameStatus.textContent = `✅ ${name} — открываю в новом окне`;
-        const win = window.open('', '_blank');
-        win.document.write(code);
-        win.document.close();
-      }, 400);
-    }
-
-    // ---- Общий каркас (адаптивный, с мета-тегом для телефона) ----
-    function basePage(title, body, script) {
-      return `<!DOCTYPE html><html><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>${title}</title>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-  html,body{height:100%;}
-  body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;font-family:Arial,sans-serif;
-    background:#203a43;color:#fff;padding:10px;overflow:hidden;
-    touch-action:manipulation;user-select:none;}
-  h1{color:#8fd3ff;margin-bottom:8px;font-size:clamp(18px,5vw,26px);text-align:center;}
-  canvas{background:#0f2027;border-radius:12px;box-shadow:0 10px 30px #0008;
-    max-width:100%;max-height:70vh;touch-action:none;display:block;}
-  button{margin-top:12px;padding:12px 22px;font-size:16px;border:none;
-    border-radius:10px;background:#2c5364;color:#fff;cursor:pointer;
-    touch-action:manipulation;user-select:none;}
-  button:active{transform:scale(.96);background:#3a6b82;}
-  .info{margin-top:10px;font-size:clamp(15px,4vw,18px);text-align:center;}
-  .pad{display:none;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(3,60px);
-    gap:6px;margin-top:14px;}
-  .pad button{width:60px;height:60px;margin:0;font-size:22px;border-radius:12px;}
-  @media (pointer:coarse){.pad{display:grid;}} /* показываем крестовину на телефоне */
-</style></head><body>
-<h1>${title}</h1>
-${body}
-<script>${script}<\/script>
-</body></html>`;
-    }
-
-    // 🐍 Змейка — адаптивная, с крестовиной на телефоне
-    function gameSnake() {
-      const body = `<canvas id="c"></canvas>
-<div class="info">Счёт: <span id="score">0</span></div>
-<div class="pad">
-  <span></span><button onclick="press('up')">▲</button><span></span>
-  <button onclick="press('left')">◀</button><span></span><button onclick="press('right')">▶</button>
-  <span></span><button onclick="press('down')">▼</button><span></span>
+  <div class="status" id="status"></div>
 </div>
-<button onclick="restart()">Заново</button>`;
-      const script = `
-const c=document.getElementById('c'),ctx=c.getContext('2d');
-let size=20,tiles=20,snake,dir,food,score,alive;
-// Адаптивный размер canvas
-function fit(){
-  const maxW=Math.min(window.innerWidth-40,window.innerHeight*0.6,400);
-  size=Math.floor(maxW/tiles);
-  c.width=tiles*size;c.height=tiles*size;
-  draw();
-}
-function reset(){snake=[{x:10,y:10}];dir={x:1,y:0};score=0;alive=true;spawnFood();draw();}
-function spawnFood(){food={x:Math.floor(Math.random()*tiles),y:Math.floor(Math.random()*tiles)};}
-function press(d){
-  if(d==='up'&&dir.y===0)dir={x:0,y:-1};
-  if(d==='down'&&dir.y===0)dir={x:0,y:1};
-  if(d==='left'&&dir.x===0)dir={x:-1,y:0};
-  if(d==='right'&&dir.x===0)dir={x:1,y:0};
-}
-document.addEventListener('keydown',e=>{
-  if(e.key==='ArrowUp')press('up');
-  if(e.key==='ArrowDown')press('down');
-  if(e.key==='ArrowLeft')press('left');
-  if(e.key==='ArrowRight')press('right');
-});
-// Свайпы на телефоне
-let sx=0,sy=0;
-c.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
-c.addEventListener('touchend',e=>{
-  const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
-  if(Math.abs(dx)>Math.abs(dy)) press(dx>0?'right':'left');
-  else press(dy>0?'down':'up');
-},{passive:true});
-function loop(){
-  if(!alive)return;
-  const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
-  if(head.x<0||head.y<0||head.x>=tiles||head.y>=tiles||
-     snake.some(s=>s.x===head.x&&s.y===head.y)){alive=false;draw();return;}
-  snake.unshift(head);
-  if(head.x===food.x&&head.y===food.y){score++;document.getElementById('score').textContent=score;spawnFood();}
-  else snake.pop();
-  draw();
-}
-function draw(){
-  ctx.clearRect(0,0,c.width,c.height);
-  ctx.fillStyle='#ff5a5a';ctx.fillRect(food.x*size,food.y*size,size-1,size-1);
-  ctx.fillStyle='#8fd3ff';
-  snake.forEach(s=>ctx.fillRect(s.x*size,s.y*size,size-1,size-1));
-  if(!alive){ctx.fillStyle='#fff';ctx.font=(size*1.4)+'px Arial';
-    ctx.textAlign='center';ctx.fillText('Конец!',c.width/2,c.height/2);}
-}
-function restart(){reset();}
-window.addEventListener('resize',fit);
-reset();fit();setInterval(loop,120);
-`;
-      return basePage('🐍 Змейка', body, script);
-    }
 
-    // 🎯 Ловец — тач и мышь
-    function gameCatcher() {
-      const body = `<canvas id="c"></canvas>
-<div class="info">Поймано: <span id="score">0</span></div>
-<div style="font-size:13px;color:#9bb;margin-top:8px">Кликай/тапай по кругам!</div>`;
-      const script = `
-const c=document.getElementById('c'),ctx=c.getContext('2d');
-let W=400,H=400,circles=[],score=0,timeLeft=30,running=true;
-function fit(){
-  const maxW=Math.min(window.innerWidth-40,window.innerHeight*0.6,420);
-  W=H=Math.floor(maxW);c.width=W;c.height=H;
-}
-function spawn(){
-  if(!running)return;
-  circles.push({x:Math.random()*(W-50)+25,y:Math.random()*(H-50)+25,
-    r:Math.random()*14+18,color:'hsl('+Math.random()*360+',80%,60%)'});
-}
-function draw(){
-  ctx.clearRect(0,0,W,H);
-  circles.forEach(o=>{ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,7);
-    ctx.fillStyle=o.color;ctx.fill();});
-  ctx.fillStyle='#fff';ctx.font='18px Arial';ctx.textAlign='left';
-  ctx.fillText('Время: '+timeLeft,10,25);
-  if(!running){ctx.font='28px Arial';ctx.textAlign='center';
-    ctx.fillText('Финиш! Счёт: '+score,W/2,H/2);return;}
-  requestAnimationFrame(draw);
-}
-function hit(mx,my){
-  for(let i=circles.length-1;i>=0;i--){
-    const o=circles[i];
-    if(Math.hypot(mx-o.x,my-o.y)<o.r){
-      circles.splice(i,1);score++;
-      document.getElementById('score').textContent=score;
+<script>
+// ============================================================
+// НАСТРОЙКИ — ВСТАВЬ СВОЙ API-КЛЮЧ
+// ============================================================
+const API_KEY = "ТВОЙ_API_КЛЮЧ";
+const API_URL = "https://api.deepseek.com/chat/completions";
+const MODEL   = "deepseek-chat";
+
+// ============================================================
+// Элементы
+// ============================================================
+const chatEl       = document.getElementById("chat");
+const textInput    = document.getElementById("textInput");
+const sendBtn      = document.getElementById("sendBtn");
+const micBtn       = document.getElementById("micBtn");
+const stopBtn      = document.getElementById("stopBtn");
+const clearBtn     = document.getElementById("clearBtn");
+const statusEl     = document.getElementById("status");
+const voiceToggle  = document.getElementById("voiceToggle");
+
+// ============================================================
+// Распознавание речи (STT)
+// ============================================================
+let recognition = null;
+let isListening = false;
+
+function setupRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    addMessage("❌ Браузер не поддерживает распознавание речи. Используй Chrome/Edge или пиши текстом.", "system");
+    micBtn.disabled = true;
+    return null;
+  }
+  const rec = new SR();
+  rec.lang = "ru-RU";
+  rec.continuous = false;
+  rec.interimResults = false;
+  rec.maxAlternatives = 1;
+
+  rec.onstart = () => {
+    isListening = true;
+    micBtn.classList.add("listening");
+    micBtn.textContent = "🔴 Слушаю...";
+    stopBtn.disabled = false;
+    setStatus("Слушаю ваш вопрос...", true);
+  };
+
+  rec.onresult = (event) => {
+    const text = event.results[0][0].transcript.trim();
+    setStatus("");
+    if (text) {
+      addMessage("👤 Ты: " + text, "user");
+      askAI(text);
+    } else {
+      addMessage("🤖 Не разобрал, попробуй снова.", "system");
     }
+  };
+
+  rec.onerror = (e) => {
+    setStatus("");
+    if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+      addMessage("❌ Нет доступа к микрофону. Разреши его в браузере.", "system");
+    } else if (e.error === "no-speech") {
+      addMessage("🔇 Ничего не услышал. Попробуй ещё раз.", "system");
+    } else {
+      addMessage("⚠️ Ошибка распознавания: " + e.error, "system");
+    }
+  };
+
+  rec.onend = () => {
+    isListening = false;
+    micBtn.classList.remove("listening");
+    micBtn.textContent = "🎤 Говорить";
+    stopBtn.disabled = true;
+    setStatus("");
+  };
+
+  return rec;
+}
+
+// ============================================================
+// Синтез речи (TTS)
+// ============================================================
+let voices = [];
+function loadVoices() { voices = window.speechSynthesis.getVoices(); }
+window.speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+function speak(text) {
+  if (!voiceToggle.checked) return;      // озвучка выключена
+  if (!window.speechSynthesis) return;
+
+  window.speechSynthesis.cancel();
+
+  const clean = text
+    .replace(/[*_`#>]/g, "")
+    .replace(/\n+/g, ". ");
+
+  const utter = new SpeechSynthesisUtterance(clean);
+  utter.lang = "ru-RU";
+  utter.rate = 1.0;
+  utter.pitch = 1.0;
+
+  const ruVoice = voices.find(v => v.lang.startsWith("ru"));
+  if (ruVoice) utter.voice = ruVoice;
+
+  window.speechSynthesis.speak(utter);
+}
+
+// ============================================================
+// Запрос к ИИ
+// ============================================================
+let isBusy = false;
+
+async function askAI(question) {
+  if (isBusy) return;
+  isBusy = true;
+  sendBtn.disabled = true;
+  micBtn.disabled = true;
+  setStatus("🤔 Думаю...", true);
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + API_KEY
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          {
+            role: "system",
+            content: (
+              "Ты — ИИ-помощник по математике. Отвечай ТОЛЬКО на математические вопросы " +
+              "(арифметика, алгебра, геометрия, тригонометрия, производные, интегралы, " +
+              "статистика и т.п.). Решай пошагово и понятно. Ответ может читаться голосом — " +
+              "не используй сложную разметку (markdown, LaTeX). " +
+              "Если вопрос не по математике — вежливо откажись."
+            )
+          },
+          { role: "user", content: question }
+        ],
+        temperature: 0.3
+      })
+    });
+
+    if (!res.ok) throw new Error("HTTP " + res.status);
+
+    const data = await res.json();
+    const answer = data.choices?.[0]?.message?.content?.trim() || "Пустой ответ от ИИ.";
+
+    // Добавляем ответ + кнопку "прослушать"
+    addAIMessage(answer);
+    speak(answer);
+
+  } catch (err) {
+    console.error(err);
+    addMessage("⚠️ Ошибка запроса: " + err.message, "system");
+  } finally {
+    setStatus("");
+    sendBtn.disabled = false;
+    micBtn.disabled = false;
+    isBusy = false;
   }
 }
-c.addEventListener('click',e=>{
-  const r=c.getBoundingClientRect();
-  hit(e.clientX-r.left,e.clientY-r.top);
-});
-c.addEventListener('touchstart',e=>{
-  e.preventDefault();
-  const r=c.getBoundingClientRect(),t=e.touches[0];
-  hit(t.clientX-r.left,t.clientY-r.top);
-},{passive:false});
-setInterval(spawn,500);
-setInterval(()=>{if(timeLeft>0)timeLeft--;else running=false;},1000);
-window.addEventListener('resize',fit);
-fit();draw();
-`;
-      return basePage('🎯 Ловец', body, script);
-    }
 
-    // 🧠 Память — адаптивная сетка
-    function gameMemory() {
-      const body = `<div id="grid"></div>
-<div class="info">Ходы: <span id="moves">0</span></div>`;
-      const script = `
-const grid=document.getElementById('grid');
-let cards=[],flipped=[],moves=0,lock=false;
-const emojis=['🍎','🍌','🍇','🍓','🍒','🥝','🍑','🍍'];
-function fit(){
-  const maxW=Math.min(window.innerWidth-50,380);
-  const cell=Math.floor(maxW/4)-8;
-  grid.style.gridTemplateColumns='repeat(4,'+cell+'px)';
-  grid.style.gap='8px';
-  [...grid.children].forEach(d=>{d.style.width=cell+'px';d.style.height=cell+'px';
-    d.style.fontSize=(cell*0.5)+'px';});
+// ============================================================
+// Добавление сообщений
+// ============================================================
+function addMessage(text, cls) {
+  const div = document.createElement("div");
+  div.className = "msg " + cls;
+  div.textContent = text;
+  chatEl.appendChild(div);
+  chatEl.scrollTop = chatEl.scrollHeight;
 }
-function init(){
-  cards=[...emojis,...emojis].sort(()=>Math.random()-.5);
-  grid.innerHTML='';flipped=[];moves=0;
-  document.getElementById('moves').textContent=0;
-  cards.forEach(e=>{
-    const d=document.createElement('div');
-    d.style.cssText='background:#2c5364;border-radius:12px;display:flex;'+
-      'align-items:center;justify-content:center;cursor:pointer;user-select:none;';
-    d.dataset.val=e;d.dataset.open='0';d.onclick=()=>flip(d);grid.appendChild(d);
+
+// Ответ ИИ + отдельная кнопка "прослушать" (работает даже если автоозвучка выключена)
+function addAIMessage(text) {
+  const div = document.createElement("div");
+  div.className = "msg ai";
+
+  const span = document.createElement("span");
+  span.textContent = "🤖 ИИ: " + text;
+  div.appendChild(span);
+
+  const btn = document.createElement("button");
+  btn.className = "speak-btn";
+  btn.title = "Прослушать ответ";
+  btn.textContent = "🔊";
+  btn.addEventListener("click", () => {
+    // Временно игнорируем переключатель, чтобы можно было послушать вручную
+    const old = voiceToggle.checked;
+    voiceToggle.checked = true;
+    speak(text);
+    voiceToggle.checked = old;
   });
-  fit();
-}
-function flip(d){
-  if(lock||d.dataset.open==='1')return;
-  d.textContent=d.dataset.val;d.dataset.open='1';flipped.push(d);
-  if(flipped.length===2){
-    moves++;document.getElementById('moves').textContent=moves;
-    if(flipped[0].dataset.val===flipped[1].dataset.val){flipped=[];checkWin();}
-    else{lock=true;setTimeout(()=>{flipped.forEach(x=>{x.textContent='';x.dataset.open='0';});
-      flipped=[];lock=false;},700);}
-  }
-}
-function checkWin(){
-  if([...grid.children].every(d=>d.dataset.open==='1'))
-    setTimeout(()=>alert('🎉 Победа! Ходов: '+moves),300);
-}
-window.addEventListener('resize',fit);
-init();
-`;
-      return basePage('🧠 Память', body, script);
-    }
+  div.appendChild(btn);
 
-    // 👆 Кликер — работает тапом
-    function gameClicker() {
-      const body = `<div style="font-size:clamp(60px,20vw,100px);cursor:pointer;user-select:none;line-height:1;" id="btn">🍪</div>
-<div class="info">Печенек: <span id="score">0</span></div>
-<button onclick="upgrade()">Апгрейд (стоит <span id="cost">10</span>)</button>
-<div style="font-size:13px;color:#9bb;margin-top:8px">Кликай/тапай по печеньке!</div>`;
-      const script = `
-let score=0,perClick=1,cost=10;
-const scoreEl=document.getElementById('score');
-const btn=document.getElementById('btn');
-function click(){score+=perClick;scoreEl.textContent=score;}
-btn.addEventListener('click',click);
-btn.addEventListener('touchstart',e=>{e.preventDefault();click();},{passive:false});
-function upgrade(){
-  if(score>=cost){score-=cost;perClick++;cost=Math.floor(cost*1.8);
-    document.getElementById('cost').textContent=cost;scoreEl.textContent=score;}
+  chatEl.appendChild(div);
+  chatEl.scrollTop = chatEl.scrollHeight;
 }
-`;
-      return basePage('👆 Кликер', body, script);
-    }
 
-    // 🔢 Угадай число — inputmode для цифровой клавиатуры
-    function gameGuess() {
-      const body = `<p style="text-align:center">Я загадал число от 1 до 100</p>
-<input id="g" type="number" inputmode="numeric" pattern="[0-9]*"
-  style="padding:14px;font-size:18px;border-radius:10px;border:none;
-  width:200px;text-align:center;margin-top:12px;max-width:100%;">
-<button onclick="check()">Проверить</button>
-<div class="info" id="hint" style="min-height:30px;"></div>
-<div style="font-size:13px;color:#9bb;">Попыток: <span id="tries">0</span></div>`;
-      const script = `
-let secret=Math.floor(Math.random()*100)+1,tries=0;
-function check(){
-  const v=+document.getElementById('g').value;
-  if(!v||v<1||v>100)return;
-  tries++;document.getElementById('tries').textContent=tries;
-  const h=document.getElementById('hint');
-  if(v===secret){h.textContent='🎉 Угадал! Попыток: '+tries;h.style.color='#8fff8f';}
-  else if(v<secret){h.textContent='📈 Больше';h.style.color='#8fd3ff';}
-  else{h.textContent='📉 Меньше';h.style.color='#ff9a9a';}
+function setStatus(text, listening = false) {
+  statusEl.textContent = text;
+  statusEl.classList.toggle("listening", listening);
 }
-document.getElementById('g').addEventListener('keydown',e=>{
-  if(e.key==='Enter')check();
+
+// ============================================================
+// Отправка из текстового поля
+// ============================================================
+function sendFromText() {
+  const q = textInput.value.trim();
+  if (!q) return;
+  window.speechSynthesis.cancel();       // прервать текущую озвучку
+  addMessage("👤 Ты: " + q, "user");
+  textInput.value = "";
+  askAI(q);
+}
+
+sendBtn.addEventListener("click", sendFromText);
+textInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") sendFromText();
 });
-`;
-      return basePage('🔢 Угадай число', body, script);
-    }
-  </script>
+
+// ============================================================
+// Голосовой ввод
+// ============================================================
+recognition = setupRecognition();
+
+micBtn.addEventListener("click", () => {
+  if (!recognition) return;
+  if (isListening) {
+    recognition.stop();
+  } else {
+    window.speechSynthesis.cancel();
+    try { recognition.start(); } catch (e) { /* уже идёт */ }
+  }
+});
+
+stopBtn.addEventListener("click", () => {
+  if (recognition && isListening) recognition.stop();
+  window.speechSynthesis.cancel();
+});
+
+clearBtn.addEventListener("click", () => {
+  window.speechSynthesis.cancel();
+  chatEl.innerHTML = '<div class="msg system">Чат очищен. Задай новый вопрос!</div>';
+});
+</script>
 </body>
 </html>
