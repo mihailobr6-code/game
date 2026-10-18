@@ -2,856 +2,276 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#667eea">
-<title>Конструктор бота</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ИИ по математике</title>
 <style>
-  /* ===== БАЗА ===== */
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  :root {
-    --brand: #667eea;
-    --bg-chat: #f7f8fc;
-    --text: #333;
-    --muted: #999;
-    --border: #e5e7eb;
-    --radius: 20px;
-    --safe-top: env(safe-area-inset-top, 0px);
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  html, body {
-    height: 100%;
-    overflow: hidden;
-    overscroll-behavior: none;
-  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-    background: linear-gradient(135deg, var(--brand), #764ba2);
-    transition: background 0.4s;
-    font-size: 16px;
-    -webkit-font-smoothing: antialiased;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
   }
-
-  /* ===== КОНТЕЙНЕР ЧАТА ===== */
-  .chat {
-    position: fixed;
-    inset: 0;
+  .app {
+    width: 100%;
+    max-width: 600px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    background: #fff;
-    overflow: hidden;
+    height: 90vh;
   }
-
-  /* На ПК — карточка по центру */
-  @media (min-width: 768px) {
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
-    }
-    .chat {
-      position: relative;
-      inset: auto;
-      width: 100%;
-      max-width: 520px;
-      height: min(820px, 92vh);
-      border-radius: var(--radius);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
-    }
-  }
-
-  /* ===== ШАПКА ===== */
-  .chat-header {
-    background: var(--brand);
+  header {
+    background: linear-gradient(90deg, #667eea, #764ba2);
     color: #fff;
-    padding: calc(10px + var(--safe-top)) 14px 10px;
+    padding: 18px 20px;
+    font-size: 20px;
+    font-weight: 700;
     display: flex;
     align-items: center;
     gap: 10px;
-    flex-shrink: 0;
-    transition: background 0.3s;
-    min-height: 56px;
   }
-  .avatar {
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    background: #fff;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; flex-shrink: 0;
-    user-select: none;
-  }
-  .chat-header .info { flex: 1; min-width: 0; }
-  .chat-header h1 {
-    font-size: 16px; font-weight: 600;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .chat-header p {
-    font-size: 12px; opacity: 0.85;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .settings-btn {
-    background: rgba(255,255,255,0.2);
-    border: none; color: #fff;
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    cursor: pointer; font-size: 20px;
-    display: flex; align-items: center; justify-content: center;
-    transition: background 0.2s;
-    flex-shrink: 0;
-  }
-  .settings-btn:hover { background: rgba(255,255,255,0.35); }
-  .settings-btn:active { transform: scale(0.94); }
-
-  /* ===== СООБЩЕНИЯ ===== */
-  .messages {
+  header small { font-weight: 400; opacity: .8; font-size: 12px; }
+  #chat {
     flex: 1;
-    min-height: 0;
-    padding: 16px;
     overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    background: var(--bg-chat);
-    transition: background 0.3s;
-    overscroll-behavior: contain;
+    padding: 20px;
+    background: #f5f7fb;
   }
   .msg {
-    max-width: 82%;
-    padding: 9px 13px;
+    max-width: 85%;
+    padding: 12px 16px;
     border-radius: 16px;
-    font-size: 14.5px;
-    line-height: 1.45;
-    animation: pop 0.18s ease;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+    margin-bottom: 12px;
+    line-height: 1.5;
+    font-size: 15px;
     white-space: pre-wrap;
-    hyphens: auto;
+    word-wrap: break-word;
   }
-  @keyframes pop {
-    from { transform: scale(0.92); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
-  }
-  .msg.bot {
-    background: #fff; color: var(--text);
-    align-self: flex-start;
-    border-bottom-left-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  }
-  .msg.user {
-    background: var(--brand); color: #fff;
-    align-self: flex-end;
-    border-bottom-right-radius: 4px;
-  }
-  .typing { color: var(--muted); font-style: italic; }
-  .system-msg {
-    align-self: center;
-    font-size: 11.5px;
-    color: var(--muted);
-    background: rgba(0,0,0,0.05);
-    padding: 4px 12px;
-    border-radius: 12px;
-    max-width: 90%;
-    text-align: center;
-  }
-
-  /* ===== ПОЛЕ ВВОДА ===== */
+  .user { background: #667eea; color: #fff; margin-left: auto; border-bottom-right-radius: 4px; }
+  .bot  { background: #fff; color: #222; border: 1px solid #e3e8f0; border-bottom-left-radius: 4px; }
+  .bot b { color: #764ba2; }
   .input-area {
     display: flex;
-    padding: 8px 10px calc(8px + var(--safe-bottom));
-    background: #fff;
-    border-top: 1px solid var(--border);
     gap: 8px;
-    flex-shrink: 0;
-    align-items: flex-end;
-  }
-  .input-area input {
-    flex: 1;
-    padding: 11px 16px;
-    border: 1px solid var(--border);
-    border-radius: 22px;
-    font-size: 16px; /* ВАЖНО: 16px предотвращает зум на iOS */
-    font-family: inherit;
-    outline: none;
-    transition: border 0.2s;
-    min-width: 0;
-    background: #fff;
-  }
-  .input-area input:focus { border-color: var(--brand); }
-  .input-area button {
-    padding: 0 18px;
-    min-width: 48px; min-height: 44px;
-    border: none; border-radius: 22px;
-    background: var(--brand); color: #fff;
-    font-size: 16px; font-weight: 600;
-    cursor: pointer; transition: background 0.2s, transform 0.1s;
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .input-area button:active { transform: scale(0.96); }
-  .input-area button:disabled { background: #bbb; cursor: not-allowed; }
-
-  /* ===== РЕДАКТОР ===== */
-  .editor-overlay {
-    position: absolute; inset: 0;
-    background: rgba(0,0,0,0.45);
-    display: none;
-    align-items: flex-end;
-    z-index: 100;
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-  }
-  .editor-overlay.open { display: flex; }
-
-  .editor {
-    width: 100%;
-    max-height: 92%;
-    background: #fff;
-    border-radius: 20px 20px 0 0;
-    padding: 18px 16px calc(18px + var(--safe-bottom));
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    animation: slideUp 0.25s ease;
-    overscroll-behavior: contain;
-  }
-  @keyframes slideUp {
-    from { transform: translateY(40px); opacity: 0; }
-    to   { transform: translateY(0); opacity: 1; }
-  }
-  .editor h2 {
-    font-size: 17px; margin-bottom: 14px;
-    color: var(--text);
-    display: flex; justify-content: space-between; align-items: center;
-    position: sticky; top: -18px;
-    background: #fff;
-    padding: 8px 0;
-    margin-top: -8px;
-    z-index: 2;
-  }
-  .editor h2 button {
-    background: none; border: none;
-    font-size: 24px; cursor: pointer;
-    color: var(--muted);
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .editor h2 button:active { background: #f0f0f0; }
-
-  .field { margin-bottom: 14px; }
-  .field label {
-    display: block; font-size: 12px; font-weight: 600;
-    color: #555; margin-bottom: 6px;
-    text-transform: uppercase; letter-spacing: 0.4px;
-  }
-  .field input,
-  .field textarea,
-  .field select {
-    width: 100%;
-    padding: 11px 13px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-size: 16px; /* против зума iOS */
-    font-family: inherit;
-    outline: none;
-    transition: border 0.2s;
-    background: #fff;
-    color: var(--text);
-  }
-  .field input[type="color"] {
-    padding: 3px; height: 44px;
-    cursor: pointer;
-  }
-  .field input:focus,
-  .field textarea:focus,
-  .field select:focus { border-color: var(--brand); }
-  .field textarea { resize: vertical; min-height: 80px; }
-  .field .hint {
-    font-size: 11.5px; color: var(--muted);
-    margin-top: 5px; line-height: 1.4;
-  }
-  .field .hint code {
-    background: #f0f0f0;
-    padding: 1px 4px;
-    border-radius: 3px;
-    font-size: 11px;
-  }
-
-  .row { display: flex; gap: 10px; }
-  .row .field { flex: 1; min-width: 0; }
-
-  /* Категории */
-  .cat-tabs {
-    display: flex; gap: 6px;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-  }
-  .cat-tabs button {
-    padding: 7px 12px;
-    border-radius: 16px;
-    border: 1px solid var(--border);
-    background: #fff;
-    font-size: 12.5px;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-    min-height: 34px;
-  }
-  .cat-tabs button.active {
-    background: var(--brand); color: #fff;
-    border-color: var(--brand);
-  }
-  .phrase-list {
-    display: flex; flex-direction: column;
-    gap: 8px; margin-bottom: 10px;
-  }
-  .phrase-item {
-    display: flex; gap: 6px; align-items: flex-start;
-  }
-  .phrase-item textarea {
-    flex: 1;
-    padding: 9px 11px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: inherit;
-    resize: vertical;
-    min-height: 44px;
-    outline: none;
-    transition: border 0.2s;
-  }
-  .phrase-item textarea:focus { border-color: var(--brand); }
-  .phrase-item button {
-    background: #fee;
-    color: #eb3349;
-    border: none;
-    width: 40px; height: 40px;
-    min-width: 40px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    flex-shrink: 0;
-    transition: background 0.2s;
-  }
-  .phrase-item button:active { background: #fdd; }
-
-  .add-btn {
-    width: 100%;
     padding: 12px;
-    border: 2px dashed #ccc;
-    background: #fafafa;
-    border-radius: 10px;
-    color: var(--brand);
-    font-size: 14px; font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    min-height: 48px;
-  }
-  .add-btn:hover { border-color: var(--brand); background: #f0f3ff; }
-  .add-btn:active { transform: scale(0.99); }
-
-  .actions {
-    display: flex; gap: 10px;
-    margin-top: 18px;
-    position: sticky;
-    bottom: calc(-18px - var(--safe-bottom));
     background: #fff;
-    padding: 10px 0 calc(10px + var(--safe-bottom));
-    margin-bottom: calc(-10px - var(--safe-bottom));
-    z-index: 2;
+    border-top: 1px solid #e3e8f0;
   }
-  .actions button {
+  #input {
     flex: 1;
-    padding: 13px;
-    border: none; border-radius: 10px;
-    font-size: 15px; font-weight: 600;
+    padding: 12px 16px;
+    border: 2px solid #e3e8f0;
+    border-radius: 24px;
+    font-size: 15px;
+    outline: none;
+  }
+  #input:focus { border-color: #667eea; }
+  button {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    color: #fff;
+    border: none;
+    padding: 0 22px;
+    border-radius: 24px;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
-    min-height: 48px;
   }
-  .btn-save { background: var(--brand); color: #fff; }
-  .btn-save:hover { filter: brightness(0.95); }
-  .btn-save:active { transform: scale(0.98); }
-  .btn-reset { background: #f0f0f0; color: #666; }
-  .btn-reset:hover { background: #e0e0e0; }
-
-  /* ===== ПК-ОПТИМИЗАЦИЯ ===== */
-  @media (min-width: 768px) {
-    .editor {
-      border-radius: 16px 16px 0 0;
-      max-height: 85%;
-    }
-    .messages { padding: 20px; gap: 12px; }
-    .msg { font-size: 14px; max-width: 75%; }
-    .input-area { padding: 10px 14px; }
+  button:hover { opacity: .9; }
+  .hints {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    background: #fafbff;
+    border-top: 1px solid #e3e8f0;
   }
-
-  /* ===== ЛАНДШАФТ НА ТЕЛЕФОНЕ ===== */
-  @media (max-height: 480px) and (orientation: landscape) {
-    .chat-header { padding: 6px 12px; min-height: 48px; }
-    .avatar { width: 34px; height: 34px; font-size: 18px; }
-    .chat-header h1 { font-size: 14px; }
-    .chat-header p { font-size: 11px; }
-    .messages { padding: 10px; gap: 6px; }
-    .msg { font-size: 13.5px; padding: 7px 11px; }
-    .input-area { padding: 6px 8px calc(6px + var(--safe-bottom)); }
-    .input-area input { padding: 9px 14px; }
-    .input-area button { min-height: 40px; }
-  }
-
-  /* ===== ОЧЕНЬ МАЛЕНЬКИЕ ЭКРАНЫ ===== */
-  @media (max-width: 360px) {
-    .chat-header { padding-left: 10px; padding-right: 10px; }
-    .avatar { width: 36px; height: 36px; font-size: 20px; }
-    .chat-header h1 { font-size: 15px; }
-    .msg { font-size: 14px; max-width: 85%; }
-    .input-area input { padding: 10px 14px; }
-    .input-area button { padding: 0 14px; min-width: 44px; }
-    .row { flex-direction: column; gap: 0; }
-  }
-
-  /* ===== ФОКУС ДЛЯ ДОСТУПНОСТИ ===== */
-  button:focus-visible,
-  input:focus-visible,
-  textarea:focus-visible,
-  select:focus-visible {
-    outline: 2px solid var(--brand);
-    outline-offset: 2px;
-  }
-
-  /* ===== СКРОЛЛБАР (ПК) ===== */
-  .messages::-webkit-scrollbar,
-  .editor::-webkit-scrollbar {
-    width: 8px;
-  }
-  .messages::-webkit-scrollbar-thumb,
-  .editor::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.15);
-    border-radius: 4px;
-  }
-  .messages::-webkit-scrollbar-thumb:hover,
-  .editor::-webkit-scrollbar-thumb:hover {
-    background: rgba(0,0,0,0.25);
+  .hints button {
+    background: #eef1ff;
+    color: #5560c8;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 12px;
   }
 </style>
 </head>
 <body>
+<div class="app">
+  <header>
+    🧮 ИИ по математике
+    <small>локальный · без интернета</small>
+  </header>
 
-<div class="chat" id="chat">
-  <div class="chat-header" id="header">
-    <div class="avatar" id="avatar">🤖</div>
-    <div class="info">
-      <h1 id="botName">Мой бот</h1>
-      <p id="botStatus">онлайн</p>
-    </div>
-    <button class="settings-btn" id="openEditor" aria-label="Настроить бота">⚙️</button>
+  <div id="chat">
+    <div class="msg bot">Привет! Я математический ИИ. Пиши примеры, уравнения или задачи.<br><br>Например: <b>2+2*3</b>, <b>sin(pi/2)</b>, <b>sqrt(16)</b>, <b>2^10</b>, <b>log(100)</b>, <b>5!</b></div>
   </div>
 
-  <div class="messages" id="messages" role="log" aria-live="polite"></div>
+  <div class="hints">
+    <button onclick="ask('2+2*3')">2+2*3</button>
+    <button onclick="ask('sqrt(144)')">sqrt(144)</button>
+    <button onclick="ask('sin(pi/2)')">sin(pi/2)</button>
+    <button onclick="ask('2^10')">2^10</button>
+    <button onclick="ask('log(100)')">log(100)</button>
+    <button onclick="ask('5!')">5!</button>
+  </div>
 
   <div class="input-area">
-    <input
-      type="text"
-      id="input"
-      placeholder="Напишите сообщение..."
-      autocomplete="off"
-      autocorrect="off"
-      autocapitalize="sentences"
-      spellcheck="false"
-      enterkeyhint="send"
-    >
-    <button id="send" aria-label="Отправить">➤</button>
-  </div>
-
-  <div class="editor-overlay" id="editorOverlay">
-    <div class="editor" role="dialog" aria-label="Настройка бота">
-      <h2>⚙️ Настройка бота <button id="closeEditor" aria-label="Закрыть">✕</button></h2>
-
-      <div class="row">
-        <div class="field">
-          <label for="cfgName">Имя бота</label>
-          <input type="text" id="cfgName" maxlength="30" placeholder="Мой бот">
-        </div>
-        <div class="field">
-          <label for="cfgAvatar">Аватар</label>
-          <input type="text" id="cfgAvatar" maxlength="4" placeholder="🤖">
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="field">
-          <label for="cfgColor">Основной цвет</label>
-          <input type="color" id="cfgColor" value="#667eea">
-        </div>
-        <div class="field">
-          <label for="cfgBg">Фон чата</label>
-          <input type="color" id="cfgBg" value="#f7f8fc">
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="cfgGreeting">Приветствие</label>
-        <textarea id="cfgGreeting" placeholder="Привет! Я твой бот..."></textarea>
-      </div>
-
-      <div class="field">
-        <label for="cfgStyle">Стиль общения</label>
-        <select id="cfgStyle">
-          <option value="polite">😇 Вежливый</option>
-          <option value="sassy">😈 Дерзкий</option>
-          <option value="neutral">🙂 Нейтральный</option>
-        </select>
-      </div>
-
-      <div class="field" style="margin-top: 20px;">
-        <label>Фразы бота</label>
-        <div class="cat-tabs" id="catTabs"></div>
-        <div class="phrase-list" id="phraseList"></div>
-        <button class="add-btn" id="addPhrase">+ Добавить фразу</button>
-      </div>
-
-      <div class="field">
-        <label for="cfgTriggers">Свои реакции на слова</label>
-        <div class="hint" style="margin-bottom:6px;">
-          Формат: <code>слово → фраза1; фраза2</code>
-        </div>
-        <textarea id="cfgTriggers" style="min-height:100px;" placeholder="привет → Привет!; Здравствуй!
-как дела → Отлично!; Нормально, а у тебя?"></textarea>
-      </div>
-
-      <div class="actions">
-        <button class="btn-reset" id="resetBtn">Сбросить</button>
-        <button class="btn-save" id="saveBtn">Сохранить</button>
-      </div>
-    </div>
+    <input id="input" placeholder="Введи пример или задачу..." onkeydown="if(event.key==='Enter')send()">
+    <button onclick="send()">➤</button>
   </div>
 </div>
 
 <script>
-// ============ КОНФИГ ============
-const DEFAULT_CONFIG = {
-  name: 'Мой бот',
-  avatar: '🤖',
-  color: '#667eea',
-  bg: '#f7f8fc',
-  greeting: 'Привет! 👋 Я твой персональный бот. Напиши что-нибудь!',
-  style: 'neutral',
-  phrases: {
-    greetings: ['Привет! 👋', 'Здравствуй!', 'Хэй! Как дела?', 'Салют! 🚀'],
-    howAreYou: ['У меня всё отлично! А у тебя? 😊', 'Супер! Ты как?', 'Лучше всех!'],
-    jokes: ['Почему программисты путают Хэллоуин и Рождество? Oct 31 == Dec 25 🎃🎄', 'Работает — не трогай! 😄'],
-    facts: ['🐙 У осьминога три сердца.', '🍯 Мёд не портится.', '🌌 Звёзд больше, чем песчинок.'],
-    motivation: ['💪 Ты справишься!', '✨ Маленькие шаги ведут к большим результатам.'],
-    goodbyes: ['Пока! 👋', 'До встречи!', 'Увидимся!'],
-    thanks: ['Пожалуйста! 🙌', 'Не за что! 😊'],
-    unknown: ['Интересно! Расскажи ещё 🤔', 'Хм, не знаю, что сказать. Спроси иначе 🙂']
-  },
-  triggers: {
-    'привет': ['Привет! 👋', 'Здравствуй!', 'Хай!'],
-    'как дела': ['Отлично!', 'Нормально, а у тебя?', 'Всё супер!'],
-    'пока': ['Пока!', 'До встречи!'],
-    'спасибо': ['Пожалуйста!', 'Не за что!']
-  }
-};
+/* ============================================
+   🧠 МИНИ-ИИ ПО МАТЕМАТИКЕ
+   - Понимает арифметику, функции, факториал
+   - Решает уравнения вида 2x+5=13
+   - Объясняет шаги
+   ============================================ */
 
-const CATEGORIES = {
-  greetings: '👋 Приветствия',
-  howAreYou: '😊 Как дела',
-  jokes: '😄 Шутки',
-  facts: '💡 Факты',
-  motivation: '💪 Мотивация',
-  goodbyes: '👋 Прощания',
-  thanks: '🙏 Спасибо',
-  unknown: '❓ Незнание',
-  questions: '❔ Вопросы'
-};
+const chat = document.getElementById('chat');
+const input = document.getElementById('input');
 
-let config = loadConfig();
-let currentCategory = 'greetings';
+function ask(text) { input.value = text; send(); }
 
-// ============ ХРАНИЛИЩЕ ============
-function loadConfig() {
-  try {
-    const saved = localStorage.getItem('myBotConfig');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return {
-        ...DEFAULT_CONFIG,
-        ...parsed,
-        phrases: { ...DEFAULT_CONFIG.phrases, ...(parsed.phrases || {}) },
-        triggers: { ...DEFAULT_CONFIG.triggers, ...(parsed.triggers || {}) }
-      };
-    }
-  } catch (e) { console.warn(e); }
-  return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
-}
-function saveConfig() {
-  try { localStorage.setItem('myBotConfig', JSON.stringify(config)); }
-  catch (e) { console.warn(e); }
-}
-
-// ============ ПРИМЕНЕНИЕ КОНФИГА ============
-function applyConfig() {
-  document.getElementById('botName').textContent = config.name;
-  document.getElementById('avatar').textContent = config.avatar;
-  document.getElementById('header').style.background = config.color;
-  document.getElementById('messages').style.background = config.bg;
-
-  document.documentElement.style.setProperty('--brand', config.color);
-  document.documentElement.style.setProperty('--bg-chat', config.bg);
-  document.body.style.background = `linear-gradient(135deg, ${config.color}, ${shadeColor(config.color, -30)})`;
-  document.querySelectorAll('.input-area button').forEach(b => b.style.background = config.color);
-  document.querySelector('meta[name="theme-color"]').setAttribute('content', config.color);
-}
-
-function shadeColor(hex, percent) {
-  const num = parseInt(hex.replace('#',''), 16);
-  const amt = Math.round(2.55 * percent);
-  const R = Math.max(0, Math.min(255, (num >> 16) + amt));
-  const G = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amt));
-  const B = Math.max(0, Math.min(255, (num & 0x0000FF) + amt));
-  return '#' + ((R << 16) | (G << 8) | B).toString(16).padStart(6, '0');
-}
-
-// ============ БОТ ============
-const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-
-function getBotReply(text) {
-  const t = text.toLowerCase().trim();
-
-  for (const [keyword, responses] of Object.entries(config.triggers)) {
-    if (t.includes(keyword.toLowerCase())) return pick(responses);
-  }
-
-  if (/привет|здравств|хай|hello|hi|салют/.test(t))
-    return pick(config.phrases.greetings || config.phrases.unknown);
-  if (/как дела|как ты|как жизнь/.test(t))
-    return pick(config.phrases.howAreYou || config.phrases.unknown);
-  if (/шутк|анекдот|пошути|рассмеши/.test(t))
-    return pick(config.phrases.jokes || config.phrases.unknown);
-  if (/факт|интересное/.test(t))
-    return pick(config.phrases.facts || config.phrases.unknown);
-  if (/мотивац|вдохнови|поддержи|грустно|тяжело/.test(t))
-    return pick(config.phrases.motivation || config.phrases.unknown);
-  if (/пока|до свидания|bye|прощай/.test(t))
-    return pick(config.phrases.goodbyes || config.phrases.unknown);
-  if (/спасибо|благодар|thanks/.test(t))
-    return pick(config.phrases.thanks || config.phrases.unknown);
-
-  if (/время|который час/.test(t))
-    return '🕐 ' + new Date().toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
-  if (/дата|какое число|какой день/.test(t))
-    return '📅 ' + new Date().toLocaleDateString('ru-RU', {day:'numeric', month:'long', year:'numeric'});
-
-  if (config.style === 'sassy' && /\?/.test(t))
-    return pick(config.phrases.unknown || ['Ты серьёзно? 🙄']);
-  if (config.style === 'sassy')
-    return 'И что мне с этим делать, лох? "' + text + '". Ну ок. 😏';
-
-  if (/\?/.test(t)) {
-    const q = config.phrases.questions;
-    if (q && q.length) return pick(config.phrases.unknown) + '\n\n' + pick(q);
-    return pick(config.phrases.unknown || ['Хм, интересный вопрос 🤔']);
-  }
-
-  return 'Ты написал: "' + text + '"\n\n' + pick(config.phrases.unknown || ['Расскажи ещё! 🙂']);
-}
-
-// ============ ЧАТ ============
-const messagesEl = document.getElementById('messages');
-const inputEl = document.getElementById('input');
-const sendBtn = document.getElementById('send');
-
-function addMessage(text, sender, system = false) {
+function addMsg(text, who) {
   const div = document.createElement('div');
-  div.className = system ? 'system-msg' : 'msg ' + sender;
-  div.textContent = text;
-  messagesEl.appendChild(div);
-  // Плавный скролл вниз
-  requestAnimationFrame(() => {
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-  });
-  return div;
+  div.className = 'msg ' + who;
+  div.innerHTML = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
 }
 
-function sendMessage() {
-  const text = inputEl.value.trim();
+function send() {
+  const text = input.value.trim();
   if (!text) return;
-
-  addMessage(text, 'user');
-  inputEl.value = '';
-  sendBtn.disabled = true;
-
-  const typing = addMessage('печатает...', 'bot');
-  typing.classList.add('typing');
-
+  addMsg(text, 'user');
+  input.value = '';
   setTimeout(() => {
-    typing.remove();
-    addMessage(getBotReply(text), 'bot');
-    sendBtn.disabled = false;
-    // На мобилке не возвращаем фокус, чтобы не выскакивала клавиатура
-    if (window.innerWidth >= 768) inputEl.focus();
-  }, 500 + Math.random() * 600);
+    const answer = solve(text);
+    addMsg(answer, 'bot');
+  }, 300);
 }
 
-sendBtn.addEventListener('click', sendMessage);
-inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+/* ---------- ПАРСЕР И ВЫЧИСЛИТЕЛЬ ---------- */
 
-// ============ РЕДАКТОР ============
-const overlay = document.getElementById('editorOverlay');
-const openBtn = document.getElementById('openEditor');
-const closeBtn = document.getElementById('closeEditor');
-const saveBtn = document.getElementById('saveBtn');
-const resetBtn = document.getElementById('resetBtn');
-const catTabs = document.getElementById('catTabs');
-const phraseList = document.getElementById('phraseList');
-const addPhraseBtn = document.getElementById('addPhrase');
+// Безопасный вычислитель выражений (замена eval)
+function evaluate(expr) {
+  expr = expr.replace(/,/g, '.');
+  // заменяем ^ на **
+  expr = expr.replace(/\^/g, '**');
 
-function openEditor() {
-  document.getElementById('cfgName').value = config.name;
-  document.getElementById('cfgAvatar').value = config.avatar;
-  document.getElementById('cfgColor').value = config.color;
-  document.getElementById('cfgBg').value = config.bg;
-  document.getElementById('cfgGreeting').value = config.greeting;
-  document.getElementById('cfgStyle').value = config.style;
+  // факториал: 5! -> factorial(5)
+  expr = expr.replace(/(\d+)!/g, 'fact($1)');
 
-  const triggersText = Object.entries(config.triggers)
-    .map(([k, v]) => `${k} → ${v.join('; ')}`)
-    .join('\n');
-  document.getElementById('cfgTriggers').value = triggersText;
+  // константы
+  expr = expr.replace(/\bpi\b/gi, 'Math.PI');
+  expr = expr.replace(/\be\b/g, 'Math.E');
 
-  currentCategory = 'greetings';
-  renderCatTabs();
-  renderPhrases();
+  // функции
+  expr = expr.replace(/\bsqrt\s*\(/gi, 'Math.sqrt(');
+  expr = expr.replace(/\bsin\s*\(/gi, 'Math.sin(');
+  expr = expr.replace(/\bcos\s*\(/gi, 'Math.cos(');
+  expr = expr.replace(/\btan\s*\(/gi, 'Math.tan(');
+  expr = expr.replace(/\basin\s*\(/gi, 'Math.asin(');
+  expr = expr.replace(/\bacos\s*\(/gi, 'Math.acos(');
+  expr = expr.replace(/\batan\s*\(/gi, 'Math.atan(');
+  expr = expr.replace(/\blog\s*\(/gi, 'Math.log10(');
+  expr = expr.replace(/\bln\s*\(/gi, 'Math.log(');
+  expr = expr.replace(/\babs\s*\(/gi, 'Math.abs(');
+  expr = expr.replace(/\bexp\s*\(/gi, 'Math.exp(');
 
-  overlay.classList.add('open');
-  // Блокируем прокрутку чата под редактором
-  document.body.style.overflow = 'hidden';
-}
-
-function closeEditor() {
-  overlay.classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function renderCatTabs() {
-  catTabs.innerHTML = '';
-  for (const [key, label] of Object.entries(CATEGORIES)) {
-    const btn = document.createElement('button');
-    btn.textContent = label;
-    btn.className = key === currentCategory ? 'active' : '';
-    btn.onclick = () => {
-      currentCategory = key;
-      renderCatTabs();
-      renderPhrases();
-    };
-    catTabs.appendChild(btn);
-  }
-}
-
-function renderPhrases() {
-  phraseList.innerHTML = '';
-  const arr = config.phrases[currentCategory] || [];
-  arr.forEach((phrase, idx) => {
-    const item = document.createElement('div');
-    item.className = 'phrase-item';
-
-    const ta = document.createElement('textarea');
-    ta.value = phrase;
-    ta.oninput = () => { config.phrases[currentCategory][idx] = ta.value; };
-
-    const del = document.createElement('button');
-    del.textContent = '✕';
-    del.setAttribute('aria-label', 'Удалить фразу');
-    del.onclick = () => {
-      config.phrases[currentCategory].splice(idx, 1);
-      renderPhrases();
-    };
-
-    item.appendChild(ta);
-    item.appendChild(del);
-    phraseList.appendChild(item);
-  });
-}
-
-addPhraseBtn.onclick = () => {
-  if (!config.phrases[currentCategory]) config.phrases[currentCategory] = [];
-  config.phrases[currentCategory].push('');
-  renderPhrases();
-  const list = phraseList.querySelectorAll('textarea');
-  if (list.length) {
-    list[list.length - 1].focus();
-    // Прокрутим к последнему
-    list[list.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-};
-
-saveBtn.onclick = () => {
-  config.name = document.getElementById('cfgName').value.trim() || 'Мой бот';
-  config.avatar = document.getElementById('cfgAvatar').value.trim() || '🤖';
-  config.color = document.getElementById('cfgColor').value;
-  config.bg = document.getElementById('cfgBg').value;
-  config.greeting = document.getElementById('cfgGreeting').value.trim();
-  config.style = document.getElementById('cfgStyle').value;
-
-  const trigText = document.getElementById('cfgTriggers').value;
-  const newTriggers = {};
-  trigText.split('\n').forEach(line => {
-    const m = line.split('→');
-    if (m.length === 2) {
-      const key = m[0].trim().toLowerCase();
-      const vals = m[1].split(';').map(s => s.trim()).filter(Boolean);
-      if (key && vals.length) newTriggers[key] = vals;
+  // проверка на безопасность: только цифры, операторы, Math., fact
+  if (!/^[0-9+\-*/().\s,MathPIEsqrtincos talgbxpf!]*$/i.test(expr)) {
+    // мягкая проверка — отсекаем явные атаки
+    if (/[a-zA-Z]/.test(expr.replace(/Math\.\w+|fact/g, ''))) {
+      throw new Error('Недопустимые символы');
     }
-  });
-  config.triggers = newTriggers;
-
-  for (const k in config.phrases) {
-    config.phrases[k] = config.phrases[k].filter(p => p.trim());
   }
 
-  saveConfig();
-  applyConfig();
-  closeEditor();
-  addMessage('⚙️ Настройки сохранены!', null, true);
-  setTimeout(() => addMessage(config.greeting, 'bot'), 400);
-};
+  const fact = n => (n < 0 ? NaN : n <= 1 ? 1 : n * fact(n - 1));
 
-resetBtn.onclick = () => {
-  if (!confirm('Сбросить все настройки бота?')) return;
-  localStorage.removeItem('myBotConfig');
-  config = loadConfig();
-  applyConfig();
-  closeEditor();
-  messagesEl.innerHTML = '';
-  addMessage('🔄 Настройки сброшены.', null, true);
-  setTimeout(() => addMessage(config.greeting, 'bot'), 400);
-};
+  // eslint-disable-next-line no-new-func
+  const fn = new Function('fact', 'return (' + expr + ');');
+  return fn(fact);
+}
 
-openBtn.onclick = openEditor;
-closeBtn.onclick = closeEditor;
-overlay.onclick = (e) => { if (e.target === overlay) closeEditor(); };
+/* ---------- РЕШЕНИЕ УРАВНЕНИЙ ax + b = c ---------- */
+function solveLinear(input) {
+  // убираем пробелы
+  let s = input.replace(/\s+/g, '').toLowerCase();
+  // должно быть ровно одно '='
+  if ((s.match(/=/g) || []).length !== 1) return null;
 
-// ESC закрывает редактор (ПК)
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && overlay.classList.contains('open')) closeEditor();
-});
+  let [left, right] = s.split('=');
 
-// ============ СТАРТ ============
-applyConfig();
-setTimeout(() => addMessage(config.greeting, 'bot'), 300);
+  // переносим всё влево: left - right = 0
+  const expr = `(${left})-(${right})`;
 
-// На мобилке — подстройка под клавиатуру через visualViewport
-if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', () => {
-    // Просто убеждаемся, что поле ввода видно
-    if (document.activeElement === inputEl) {
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-    }
-  });
+  // пробуем найти x через численный метод (бисекция) — универсально
+  // Сначала проверим, что в выражении есть x
+  if (!expr.includes('x')) return null;
+
+  // заменим x на переменную для функции
+  const f = (x) => {
+    const e = expr.replace(/x/g, `(${x})`);
+    return evaluate(e);
+  };
+
+  // ищем корень бисекцией в диапазоне [-1000, 1000]
+  let a = -1000, b = 1000;
+  let fa = f(a), fb = f(b);
+  if (!isFinite(fa) || !isFinite(fb) || fa * fb > 0) {
+    // попробуем меньший диапазон
+    a = -100; b = 100; fa = f(a); fb = f(b);
+    if (!isFinite(fa) || !isFinite(fb) || fa * fb > 0) return null;
+  }
+  for (let i = 0; i < 100; i++) {
+    const m = (a + b) / 2;
+    const fm = f(m);
+    if (Math.abs(fm) < 1e-10) { a = b = m; break; }
+    if (fa * fm < 0) { b = m; fb = fm; }
+    else { a = m; fa = fm; }
+  }
+  let x = (a + b) / 2;
+  x = Math.round(x * 1e6) / 1e6;
+
+  return `Решим уравнение: <b>${input.trim()}</b><br><br>
+  Перенесём всё в одну сторону: <code>${left} - (${right}) = 0</code><br>
+  Найдём <b>x</b> численным методом...<br><br>
+  ✅ <b>x = ${x}</b>`;
+}
+
+/* ---------- ГЛАВНЫЙ МОЗГ ---------- */
+function solve(text) {
+  const t = text.trim();
+
+  // 1) уравнение?
+  if (t.includes('=') && /x/i.test(t)) {
+    const r = solveLinear(t);
+    if (r) return r;
+  }
+
+  // 2) просто выражение
+  try {
+    const val = evaluate(t);
+    if (!isFinite(val)) return '⚠️ Результат не является числом (деление на ноль?).';
+    const rounded = Math.round(val * 1e10) / 1e10;
+    return `Выражение: <code>${t}</code><br><br>✅ <b>Ответ: ${rounded}</b>`;
+  } catch (err) {
+    return `🤔 Не смог распознать. Попробуй так:<br>
+    • <b>2+2*3</b><br>
+    • <b>sqrt(16)</b><br>
+    • <b>sin(pi/2)</b><br>
+    • <b>2x + 5 = 13</b><br>
+    • <b>log(100)</b>`;
+  }
 }
 </script>
-
 </body>
-</html>ы
+</html>
