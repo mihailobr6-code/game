@@ -6,31 +6,28 @@
 <title>Стим-Кликер Онлайн</title>
 <script type="module">
   window.FIREBASE_CONFIG = null;
+  // window.FIREBASE_CONFIG = {
+  //   apiKey: "AIza...",
+  //   authDomain: "xxx.firebaseapp.com",
+  //   databaseURL: "https://xxx-default-rtdb.firebaseio.com",
+  //   projectId: "xxx",
+  // };
 </script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body { overscroll-behavior: none; }
-  body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%);
-    color: #c7d5e0; min-height: 100vh; padding: 20px;
-    -webkit-text-size-adjust: 100%;
-  }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%); color: #c7d5e0; min-height: 100vh; padding: 20px; -webkit-text-size-adjust: 100%; }
   h1 { text-align: center; color: #66c0f4; margin-bottom: 20px; text-shadow: 0 0 10px #66c0f4; }
   .container { max-width: 1100px; margin: 0 auto; }
 
-  .topbar {
-    background: #171a21; border-radius: 10px; padding: 15px 25px;
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    flex-wrap: wrap; gap: 12px;
-  }
+  .topbar { background: #171a21; border-radius: 10px; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); flex-wrap: wrap; gap: 12px; }
   .topbar-left { display: flex; flex-direction: column; gap: 6px; }
   .money-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .money { font-size: 28px; color: #a4d007; font-weight: bold; }
   .reset-acc-btn { background: #6b2a2a; color: #fff; border: 2px solid #c23b3b; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s; }
   .reset-acc-btn:hover { background: #c23b3b; }
-  .reset-acc-btn:active { transform: scale(0.95); }
+  .room-badge { display: inline-flex; align-items: center; gap: 6px; background: #2a475e; border: 2px solid #66c0f4; padding: 4px 10px; border-radius: 12px; font-size: 12px; color: #66c0f4; font-weight: bold; cursor: pointer; }
+  .room-badge:hover { background: #66c0f4; color: #171a21; }
   .status { font-size: 12px; padding: 4px 10px; border-radius: 12px; display: inline-block; }
   .status.online { background: #1a4a1a; color: #6f6; }
   .status.offline { background: #4a2a1a; color: #fa6; }
@@ -40,11 +37,7 @@
   .nick-btn:hover { background: #66c0f4; color: #171a21; }
 
   .nav { display: flex; gap: 6px; flex-wrap: wrap; }
-  .nav button {
-    background: #2a475e; color: #c7d5e0; border: none; padding: 10px 16px;
-    border-radius: 6px; cursor: pointer; font-size: 14px; transition: 0.2s;
-    font-weight: 500;
-  }
+  .nav button { background: #2a475e; color: #c7d5e0; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; transition: 0.2s; font-weight: 500; }
   .nav button:hover { background: #66c0f4; color: #171a21; }
   .nav button.active { background: #66c0f4; color: #171a21; font-weight: bold; }
 
@@ -52,24 +45,34 @@
   .page.active { display: block; animation: fade 0.25s; }
   @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
+  /* ЭКРАН КОМНАТ */
+  .room-screen { max-width: 520px; margin: 40px auto; background: #171a21; border-radius: 12px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+  .room-screen h2 { color: #66c0f4; text-align: center; margin-bottom: 8px; }
+  .room-screen p.sub { text-align: center; color: #8f98a0; font-size: 14px; margin-bottom: 25px; }
+  .room-screen .field { margin-bottom: 12px; }
+  .room-screen label { display: block; font-size: 13px; color: #8f98a0; margin-bottom: 5px; }
+  .room-screen input { width: 100%; padding: 12px; background: #1b2838; border: 2px solid #2a475e; border-radius: 6px; color: #c7d5e0; font-size: 16px; text-align: center; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; }
+  .room-screen input:focus { outline: none; border-color: #66c0f4; }
+  .room-screen .room-btn { width: 100%; padding: 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; margin-top: 8px; transition: 0.2s; }
+  .btn-create-room { background: #a4d007; color: #171a21; }
+  .btn-create-room:hover { background: #b8e010; }
+  .btn-join-room { background: #66c0f4; color: #171a21; }
+  .btn-join-room:hover { background: #8fd0ff; }
+  .room-divider { text-align: center; color: #4a5a6a; margin: 18px 0; font-size: 13px; }
+  .room-players { margin-top: 15px; padding: 12px; background: #1b2838; border-radius: 6px; font-size: 13px; }
+  .room-players h4 { color: #66c0f4; margin-bottom: 8px; font-size: 13px; }
+  .room-players .player-row { padding: 5px 0; border-bottom: 1px solid #2a475e; color: #c7d5e0; }
+  .room-players .player-row:last-child { border-bottom: none; }
+  .room-players .player-row.you { color: #a4d007; font-weight: bold; }
+
   .clicker-area { text-align: center; padding: 30px 0; }
-  #clickBtn {
-    width: 220px; height: 220px; border-radius: 50%;
-    background: radial-gradient(circle, #66c0f4, #1b2838);
-    border: 5px solid #66c0f4; color: white; font-size: 22px;
-    cursor: pointer; font-weight: bold;
-    box-shadow: 0 0 30px rgba(102,192,244,0.6);
-    transition: transform 0.05s; touch-action: manipulation;
-  }
+  #clickBtn { width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, #66c0f4, #1b2838); border: 5px solid #66c0f4; color: white; font-size: 22px; cursor: pointer; font-weight: bold; box-shadow: 0 0 30px rgba(102,192,244,0.6); transition: transform 0.05s; touch-action: manipulation; }
   #clickBtn:active { transform: scale(0.92); }
   .click-info { margin-top: 20px; font-size: 18px; line-height: 1.6; }
   .click-info b { color: #a4d007; }
 
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; }
-  .card {
-    background: #1b2838; border: 1px solid #2a475e; border-radius: 10px;
-    padding: 15px; transition: 0.2s; display: flex; flex-direction: column;
-  }
+  .card { background: #1b2838; border: 1px solid #2a475e; border-radius: 10px; padding: 15px; transition: 0.2s; display: flex; flex-direction: column; }
   .card:hover { border-color: #66c0f4; transform: translateY(-2px); }
   .card h3 { color: #66c0f4; margin-bottom: 8px; font-size: 16px; word-break: break-word; }
   .card p { font-size: 13px; color: #8f98a0; margin-bottom: 10px; min-height: 36px; word-break: break-word; }
@@ -77,12 +80,7 @@
   .card .author { font-size: 11px; color: #66c0f4; margin-bottom: 6px; word-break: break-word; }
   .card .rating { font-size: 13px; color: #f5c542; margin-bottom: 8px; }
   .card .rating small { color: #8f98a0; }
-  .card button {
-    width: 100%; padding: 10px; background: #a4d007; color: #171a21;
-    border: none; border-radius: 6px; cursor: pointer; font-weight: bold;
-    margin-bottom: 6px; font-size: 14px; transition: 0.15s;
-    touch-action: manipulation;
-  }
+  .card button { width: 100%; padding: 10px; background: #a4d007; color: #171a21; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 6px; font-size: 14px; transition: 0.15s; touch-action: manipulation; }
   .card button:hover { background: #b8e010; }
   .card button:active { transform: scale(0.97); }
   .card button:disabled { background: #4a5a2a; color: #8f98a0; cursor: not-allowed; transform: none; }
@@ -94,242 +92,98 @@
   .card .download-btn:hover { background: #ffb833; }
   .card .view-btn { background: #8b5cf6; color: white; }
   .card .view-btn:hover { background: #a78bfa; }
-  .card .preview-reviews {
-    font-size: 11px; color: #8f98a0; margin-top: 6px; line-height: 1.35;
-    padding: 6px; background: #0e1419; border-radius: 4px;
-    max-height: 100px; overflow: hidden;
-  }
+  .card .preview-reviews { font-size: 11px; color: #8f98a0; margin-top: 6px; line-height: 1.35; padding: 6px; background: #0e1419; border-radius: 4px; max-height: 100px; overflow: hidden; }
   .card .preview-reviews b { color: #66c0f4; }
 
   .card-progress { margin: 8px 0; }
-  .card-progress .bar {
-    height: 10px; background: #0e1419; border-radius: 5px;
-    overflow: hidden; border: 1px solid #2a475e;
-  }
-  .card-progress .fill {
-    height: 100%; background: linear-gradient(90deg, #66c0f4, #a4d007);
-    transition: width 0.3s;
-  }
-  .card-progress .info {
-    display: flex; justify-content: space-between; font-size: 11px;
-    color: #8f98a0; margin-top: 4px;
-  }
+  .card-progress .bar { height: 10px; background: #0e1419; border-radius: 5px; overflow: hidden; border: 1px solid #2a475e; }
+  .card-progress .fill { height: 100%; background: linear-gradient(90deg, #66c0f4, #a4d007); transition: width 0.3s; }
+  .card-progress .info { display: flex; justify-content: space-between; font-size: 11px; color: #8f98a0; margin-top: 4px; }
   .card-progress .info b { color: #a4d007; }
 
-  /* Студия */
-  .studio-locked-overlay {
-    position: absolute; inset: 0; background: rgba(14,20,25,0.94);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    z-index: 10; border-radius: 10px; text-align: center; padding: 20px;
-  }
+  .studio-locked-overlay { position: absolute; inset: 0; background: rgba(14,20,25,0.94); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; border-radius: 10px; text-align: center; padding: 20px; }
   .studio-locked-overlay .lock-icon { font-size: 56px; margin-bottom: 12px; }
   .studio-locked-overlay h3 { color: #c23b3b; margin-bottom: 10px; }
   .studio-locked-overlay p { color: #8f98a0; max-width: 320px; line-height: 1.5; }
   .studio-locked-overlay b { color: #a4d007; }
 
-  .studio {
-    display: grid; grid-template-columns: 220px 1fr 280px; gap: 12px;
-    background: #171a21; border-radius: 10px; padding: 12px;
-    min-height: 560px; position: relative;
-  }
+  .studio { display: grid; grid-template-columns: 220px 1fr 280px; gap: 12px; background: #171a21; border-radius: 10px; padding: 12px; min-height: 560px; position: relative; }
   .studio.locked > *:not(.studio-locked-overlay) { pointer-events: none; filter: blur(2px); opacity: 0.5; }
-  .studio-panel {
-    background: #1b2838; border-radius: 8px; padding: 12px;
-    overflow-y: auto; max-height: 72vh;
-  }
-  .studio-panel h3 {
-    color: #66c0f4; font-size: 13px; margin-bottom: 8px;
-    text-transform: uppercase; letter-spacing: 1px;
-  }
-  .tool-btn {
-    display: flex; align-items: center; gap: 8px; width: 100%;
-    background: #2a475e; color: #c7d5e0; border: none; padding: 10px;
-    border-radius: 6px; cursor: pointer; margin-bottom: 5px; font-size: 13px;
-    text-align: left; transition: 0.15s; touch-action: manipulation;
-  }
+  .studio-panel { background: #1b2838; border-radius: 8px; padding: 12px; overflow-y: auto; max-height: 72vh; }
+  .studio-panel h3 { color: #66c0f4; font-size: 13px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .tool-btn { display: flex; align-items: center; gap: 8px; width: 100%; background: #2a475e; color: #c7d5e0; border: none; padding: 10px; border-radius: 6px; cursor: pointer; margin-bottom: 5px; font-size: 13px; text-align: left; transition: 0.15s; touch-action: manipulation; }
   .tool-btn:hover { background: #66c0f4; color: #171a21; }
   .tool-btn:active { transform: scale(0.98); }
 
-  #studioCanvas {
-    background: #0e1419; border: 2px dashed #2a475e; border-radius: 10px;
-    position: relative; overflow: hidden; min-height: 540px;
-    background-image:
-      linear-gradient(rgba(42,71,94,0.3) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(42,71,94,0.3) 1px, transparent 1px);
-    background-size: 20px 20px;
-  }
-  .studio-obj {
-    position: absolute; cursor: move; user-select: none;
-    display: flex; align-items: center; justify-content: center;
-    padding: 8px; border-radius: 6px; font-size: 14px; font-weight: bold;
-    border: 2px solid transparent; overflow: hidden; text-align: center;
-    touch-action: none;
-  }
+  #studioCanvas { background: #0e1419; border: 2px dashed #2a475e; border-radius: 10px; position: relative; overflow: hidden; min-height: 540px; background-image: linear-gradient(rgba(42,71,94,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(42,71,94,0.3) 1px, transparent 1px); background-size: 20px 20px; }
+  .studio-obj { position: absolute; cursor: move; user-select: none; display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 6px; font-size: 14px; font-weight: bold; border: 2px solid transparent; overflow: hidden; text-align: center; touch-action: none; }
   .studio-obj.selected { border-color: #a4d007; box-shadow: 0 0 15px #a4d007; }
   .studio-obj:hover { border-color: #66c0f4; }
-  .canvas-empty {
-    position: absolute; inset: 0; display: flex; align-items: center;
-    justify-content: center; color: #4a5a6a; font-size: 16px;
-    pointer-events: none; text-align: center; padding: 20px;
-  }
+  .canvas-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #4a5a6a; font-size: 16px; pointer-events: none; text-align: center; padding: 20px; }
 
   .prop-group { margin-bottom: 10px; }
   .prop-group label { display: block; font-size: 12px; color: #8f98a0; margin-bottom: 4px; }
-  .prop-group input, .prop-group select {
-    width: 100%; padding: 8px; background: #171a21; border: 1px solid #2a475e;
-    border-radius: 5px; color: #c7d5e0; font-size: 14px;
-  }
+  .prop-group input, .prop-group select { width: 100%; padding: 8px; background: #171a21; border: 1px solid #2a475e; border-radius: 5px; color: #c7d5e0; font-size: 14px; }
   .prop-group input[type="color"] { padding: 2px; height: 36px; cursor: pointer; }
   .prop-group input[type="range"] { padding: 0; height: 30px; }
-  .delete-btn {
-    width: 100%; padding: 10px; background: #c23b3b; color: white;
-    border: none; border-radius: 5px; cursor: pointer; font-weight: bold;
-    margin-top: 5px;
-  }
+  .delete-btn { width: 100%; padding: 10px; background: #c23b3b; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 5px; }
   .delete-btn:hover { background: #e04a4a; }
 
   .studio-actions { display: flex; gap: 8px; margin-top: 12px; }
-  .studio-actions button {
-    flex: 1; padding: 11px; border: none; border-radius: 6px;
-    font-weight: bold; cursor: pointer; font-size: 13px;
-  }
+  .studio-actions button { flex: 1; padding: 11px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; }
   .btn-test { background: #66c0f4; color: #171a21; }
   .btn-publish { background: #a4d007; color: #171a21; }
   .btn-clear { background: #2a475e; color: #c7d5e0; }
   .btn-publish:disabled { background: #4a5a2a; color: #8f98a0; cursor: not-allowed; }
-  .publish-hint {
-    text-align: center; font-size: 12px; color: #8f98a0; margin-top: 6px;
-  }
+  .publish-hint { text-align: center; font-size: 12px; color: #8f98a0; margin-top: 6px; }
   .publish-hint.ok { color: #a4d007; }
   .publish-hint.no { color: #c23b3b; }
 
   .studio-meta { margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
-  .studio-meta input {
-    flex: 1; min-width: 160px; padding: 10px;
-    background: #171a21; border: 1px solid #2a475e; border-radius: 6px;
-    color: #c7d5e0; font-size: 14px;
-  }
+  .studio-meta input { flex: 1; min-width: 160px; padding: 10px; background: #171a21; border: 1px solid #2a475e; border-radius: 6px; color: #c7d5e0; font-size: 14px; }
   .studio-meta input:focus { outline: none; border-color: #66c0f4; }
 
-  /* Модалка */
-  .modal {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-    z-index: 100; justify-content: center; align-items: center; padding: 20px;
-  }
+  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
   .modal.active { display: flex; }
-  .modal-content {
-    background: #1b2838; padding: 22px; border-radius: 12px;
-    max-width: 600px; width: 100%; border: 2px solid #66c0f4;
-    text-align: center; max-height: 90vh; overflow-y: auto;
-  }
+  .modal-content { background: #1b2838; padding: 22px; border-radius: 12px; max-width: 600px; width: 100%; border: 2px solid #66c0f4; text-align: center; max-height: 90vh; overflow-y: auto; }
   .modal-content h2 { color: #66c0f4; margin-bottom: 15px; word-break: break-word; }
-  .modal-content .close {
-    margin-top: 20px; padding: 12px 25px; background: #a4d007;
-    color: #171a21; border: none; border-radius: 6px;
-    cursor: pointer; font-weight: bold; font-size: 15px; width: 100%;
-  }
-  #playScene {
-    position: relative; background: #0e1419; border-radius: 8px;
-    min-height: 380px; overflow: hidden; margin: 10px 0;
-    background-image:
-      linear-gradient(rgba(42,71,94,0.2) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(42,71,94,0.2) 1px, transparent 1px);
-    background-size: 20px 20px;
-  }
-  .play-obj {
-    position: absolute; display: flex; align-items: center; justify-content: center;
-    padding: 8px; border-radius: 6px; font-size: 14px; font-weight: bold;
-    overflow: hidden; text-align: center;
-  }
+  .modal-content .close { margin-top: 20px; padding: 12px 25px; background: #a4d007; color: #171a21; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; width: 100%; }
+  #playScene { position: relative; background: #0e1419; border-radius: 8px; min-height: 380px; overflow: hidden; margin: 10px 0; background-image: linear-gradient(rgba(42,71,94,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(42,71,94,0.2) 1px, transparent 1px); background-size: 20px 20px; }
+  .play-obj { position: absolute; display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 6px; font-size: 14px; font-weight: bold; overflow: hidden; text-align: center; }
   .play-obj.clickable { cursor: pointer; transition: transform 0.05s; touch-action: manipulation; }
   .play-obj.clickable:active { transform: scale(0.95); }
   .msg { margin-top: 12px; font-size: 15px; min-height: 22px; color: #a4d007; }
 
   .view-screen { padding: 25px 15px; text-align: center; }
   .view-screen h3 { color: #8b5cf6; margin-bottom: 20px; font-size: 18px; }
-  .view-screen .big-progress {
-    height: 30px; background: #0e1419; border-radius: 15px; overflow: hidden;
-    margin-bottom: 15px; border: 2px solid #2a475e; position: relative;
-  }
-  .view-screen .big-progress-fill {
-    height: 100%; background: linear-gradient(90deg, #66c0f4, #a4d007);
-    transition: width 0.3s;
-  }
-  .view-screen .big-progress-pct {
-    position: absolute; inset: 0; display: flex; align-items: center;
-    justify-content: center; font-weight: bold; color: white;
-    text-shadow: 0 0 4px black; font-size: 14px;
-  }
+  .view-screen .big-progress { height: 30px; background: #0e1419; border-radius: 15px; overflow: hidden; margin-bottom: 15px; border: 2px solid #2a475e; position: relative; }
+  .view-screen .big-progress-fill { height: 100%; background: linear-gradient(90deg, #66c0f4, #a4d007); transition: width 0.3s; }
+  .view-screen .big-progress-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; text-shadow: 0 0 4px black; font-size: 14px; }
   .view-screen .stats { font-size: 14px; color: #8f98a0; margin-bottom: 15px; }
   .view-screen .stats b { color: #a4d007; }
-  .view-screen .status-msg {
-    padding: 12px; background: #171a21; border-radius: 6px;
-    color: #a4d007; font-weight: bold;
-  }
+  .view-screen .status-msg { padding: 12px; background: #171a21; border-radius: 6px; color: #a4d007; font-weight: bold; }
 
-  /* Отзывы */
-  .reviews-list {
-    max-height: 340px; overflow-y: auto; text-align: left;
-    margin-top: 15px; background: #171a21; border-radius: 6px; padding: 10px;
-  }
+  .reviews-list { max-height: 340px; overflow-y: auto; text-align: left; margin-top: 15px; background: #171a21; border-radius: 6px; padding: 10px; }
   .review-item { padding: 10px; border-bottom: 1px solid #2a475e; }
   .review-item:last-child { border-bottom: none; }
-  .review-head {
-    display: flex; justify-content: space-between; margin-bottom: 5px;
-    align-items: center; gap: 8px;
-  }
-  .review-author {
-    color: #66c0f4; font-size: 13px; font-weight: bold; flex: 1;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
+  .review-head { display: flex; justify-content: space-between; margin-bottom: 5px; align-items: center; gap: 8px; }
+  .review-author { color: #66c0f4; font-size: 13px; font-weight: bold; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .review-stars { color: #f5c542; font-size: 13px; flex-shrink: 0; }
-  .review-del {
-    background: #c23b3b; color: white; border: none; padding: 3px 8px;
-    border-radius: 4px; cursor: pointer; font-size: 11px; flex-shrink: 0;
-  }
+  .review-del { background: #c23b3b; color: white; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; flex-shrink: 0; }
   .review-del:hover { background: #e04a4a; }
   .review-text { color: #c7d5e0; font-size: 13px; line-height: 1.4; word-break: break-word; }
   .review-time { color: #8f98a0; font-size: 11px; margin-top: 3px; }
-  .review-form {
-    margin-top: 15px; padding: 12px; background: #171a21;
-    border-radius: 6px; text-align: left;
-  }
+  .review-form { margin-top: 15px; padding: 12px; background: #171a21; border-radius: 6px; text-align: left; }
   .review-form h4 { color: #66c0f4; font-size: 14px; margin-bottom: 10px; }
-  .review-form textarea {
-    width: 100%; min-height: 70px; padding: 10px;
-    background: #1b2838; border: 1px solid #2a475e; border-radius: 5px;
-    color: #c7d5e0; font-size: 14px; resize: vertical; margin-bottom: 8px;
-    font-family: inherit;
-  }
+  .review-form textarea { width: 100%; min-height: 70px; padding: 10px; background: #1b2838; border: 1px solid #2a475e; border-radius: 5px; color: #c7d5e0; font-size: 14px; resize: vertical; margin-bottom: 8px; font-family: inherit; }
   .review-form .stars-select { display: flex; gap: 5px; margin-bottom: 8px; }
-  .review-form .star-btn {
-    background: none; border: none; font-size: 28px; cursor: pointer;
-    color: #4a5a6a; padding: 0; line-height: 1;
-  }
+  .review-form .star-btn { background: none; border: none; font-size: 28px; cursor: pointer; color: #4a5a6a; padding: 0; line-height: 1; }
   .review-form .star-btn.active { color: #f5c542; }
-  .review-form button[type="submit"] {
-    width: 100%; padding: 10px; background: #a4d007; color: #171a21;
-    border: none; border-radius: 5px; cursor: pointer; font-weight: bold;
-    font-size: 14px;
-  }
+  .review-form button[type="submit"] { width: 100%; padding: 10px; background: #a4d007; color: #171a21; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; }
 
-  /* Уведомления */
-  #notifArea {
-    position: fixed; top: 15px; right: 15px; z-index: 300;
-    display: flex; flex-direction: column; gap: 10px;
-    pointer-events: none; max-width: 360px; width: calc(100% - 30px);
-  }
-  .sale-notif {
-    background: linear-gradient(135deg, #1b2838, #2a475e);
-    border: 2px solid #a4d007; border-left: 6px solid #a4d007;
-    border-radius: 8px; padding: 14px 16px;
-    box-shadow: 0 6px 25px rgba(0,0,0,0.7), 0 0 25px rgba(164,208,7,0.5);
-    animation: slideIn 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2);
-    pointer-events: auto; word-break: break-word;
-  }
-  .sale-notif .n-title {
-    color: #a4d007; font-weight: bold; font-size: 15px; margin-bottom: 6px;
-  }
+  #notifArea { position: fixed; top: 15px; right: 15px; z-index: 300; display: flex; flex-direction: column; gap: 10px; pointer-events: none; max-width: 360px; width: calc(100% - 30px); }
+  .sale-notif { background: linear-gradient(135deg, #1b2838, #2a475e); border: 2px solid #a4d007; border-left: 6px solid #a4d007; border-radius: 8px; padding: 14px 16px; box-shadow: 0 6px 25px rgba(0,0,0,0.7), 0 0 25px rgba(164,208,7,0.5); animation: slideIn 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2); pointer-events: auto; word-break: break-word; }
+  .sale-notif .n-title { color: #a4d007; font-weight: bold; font-size: 15px; margin-bottom: 6px; }
   .sale-notif .n-text { color: #c7d5e0; font-size: 13px; line-height: 1.5; }
   .sale-notif .n-money { color: #a4d007; font-weight: bold; font-size: 16px; }
   .sale-notif.fade-out { animation: slideOut 0.4s forwards; }
@@ -338,14 +192,11 @@
 
   .empty { text-align: center; padding: 40px 20px; color: #8f98a0; }
 
-  /* ===================== ПЛАНШЕТ ===================== */
   @media (max-width: 900px) {
     .studio { grid-template-columns: 1fr; min-height: auto; }
     .studio-panel { max-height: 250px; }
     #studioCanvas { min-height: 400px; }
   }
-
-  /* ===================== ТЕЛЕФОН ===================== */
   @media (max-width: 640px) {
     body { padding: 12px; }
     h1 { font-size: 20px; margin-bottom: 12px; }
@@ -353,10 +204,7 @@
     .money { font-size: 22px; }
     .reset-acc-btn { padding: 6px 10px; font-size: 12px; }
     .nav { gap: 5px; width: 100%; }
-    .nav button {
-      flex: 1 1 calc(50% - 5px); padding: 9px 8px;
-      font-size: 12px; text-align: center;
-    }
+    .nav button { flex: 1 1 calc(50% - 5px); padding: 9px 8px; font-size: 12px; text-align: center; }
     .grid { grid-template-columns: 1fr; gap: 12px; }
     .card { padding: 13px; }
     #clickBtn { width: 180px; height: 180px; font-size: 18px; }
@@ -373,8 +221,8 @@
     .view-screen { padding: 18px 8px; }
     .view-screen h3 { font-size: 16px; }
     .reviews-list { max-height: 240px; }
+    .room-screen { padding: 20px; margin: 20px auto; }
   }
-
   @media (max-width: 380px) {
     .nav button { font-size: 11px; padding: 8px 6px; }
     #clickBtn { width: 150px; height: 150px; font-size: 16px; }
@@ -384,17 +232,42 @@
 <body>
 <div id="notifArea"></div>
 
-<div class="container">
+<!-- ЭКРАН КОМНАТ -->
+<div id="roomScreen" class="room-screen">
+  <h2>🚪 Выбор комнаты</h2>
+  <p class="sub">Создай свою или войди по коду друга</p>
+
+  <div class="field">
+    <label>👤 Твой ник</label>
+    <input type="text" id="roomNick" placeholder="Игрок" maxlength="20" style="text-transform: none; letter-spacing: 0;">
+  </div>
+
+  <button class="room-btn btn-create-room" id="createRoomBtn">➕ Создать новую комнату</button>
+
+  <div class="room-divider">— или —</div>
+
+  <div class="field">
+    <label>🔗 Код комнаты</label>
+    <input type="text" id="roomCodeInput" placeholder="ABC123" maxlength="6" style="text-transform: uppercase; letter-spacing: 4px; font-size: 20px;">
+  </div>
+  <button class="room-btn btn-join-room" id="joinRoomBtn">🚪 Войти в комнату</button>
+
+  <div class="room-players" id="roomPlayersList" style="display:none;"></div>
+</div>
+
+<!-- ОСНОВНОЙ ИНТЕРФЕЙС -->
+<div class="container" id="mainApp" style="display:none;">
   <h1>🎮 СТИМ-КЛИКЕР ОНЛАЙН</h1>
   <div class="topbar">
     <div class="topbar-left">
       <div class="money-row">
         <span class="money">💰 <span id="money">0</span> ₽</span>
-        <button class="reset-acc-btn" id="resetAccBtn" title="Полный сброс аккаунта">🔄 Сброс аккаунта</button>
+        <button class="room-badge" id="roomBadge" title="Нажми, чтобы сменить комнату">🚪 <span id="roomCodeDisplay">—</span></button>
       </div>
       <div class="player-info">
         👤 <b id="playerNameDisplay">Игрок</b>
         <button class="nick-btn" id="changeNickBtn">✏️ Сменить ник</button>
+        <button class="reset-acc-btn" id="resetAccBtn" style="font-size: 11px; padding: 3px 8px;">🔄 Сброс</button>
       </div>
       <div><span id="serverStatus" class="status offline">Проверка...</span></div>
     </div>
@@ -404,6 +277,7 @@
       <button data-page="library">📚 Библиотека</button>
       <button data-page="studio">🛠️ Студия</button>
       <button data-page="mystore">📤 Мои игры</button>
+      <button data-page="players">👥 Игроки</button>
     </div>
   </div>
 
@@ -464,6 +338,11 @@
     <h2 style="color:#66c0f4; margin-bottom:15px;">📤 Мои игры в магазине</h2>
     <div class="grid" id="myStoreGrid"></div>
   </div>
+
+  <div class="page" id="page-players">
+    <h2 style="color:#66c0f4; margin-bottom:15px;">👥 Игроки в комнате</h2>
+    <div id="playersPageList" style="background:#171a21; border-radius:10px; padding:15px;"></div>
+  </div>
 </div>
 
 <div class="modal" id="modal">
@@ -482,7 +361,7 @@
           <button class="star-btn" data-v="4">★</button>
           <button class="star-btn" data-v="5">★</button>
         </div>
-        <textarea id="reviewText" placeholder="Что думаешь об игре? (хорошее или плохое)" maxlength="200"></textarea>
+        <textarea id="reviewText" placeholder="Что думаешь об игре?" maxlength="200"></textarea>
         <button id="submitReview" type="submit">Отправить отзыв</button>
       </div>
     </div>
@@ -494,80 +373,61 @@
 const PUBLISH_COST = 100;
 const DOWNLOAD_SECONDS = 100;
 
-// ============ ИМЯ ============
-function getPlayerName() {
-  let n = localStorage.getItem('playerName');
-  if (!n) {
-    n = prompt('Как тебя зовут?', 'Игрок' + Math.floor(Math.random()*999)) || 'Игрок' + Math.floor(Math.random()*999);
-    localStorage.setItem('playerName', n);
-  }
-  return n;
-}
-let PLAYER_NAME = getPlayerName();
-function updateNameDisplay() {
-  const el = document.getElementById('playerNameDisplay');
-  if (el) el.textContent = PLAYER_NAME;
-}
-document.getElementById('changeNickBtn').addEventListener('click', () => {
-  const newName = prompt('Введи новый ник:', PLAYER_NAME);
-  if (newName === null) return;
-  const trimmed = newName.trim();
-  if (!trimmed) return toast('❌ Ник не может быть пустым');
-  if (trimmed.length > 20) return toast('❌ Ник максимум 20 символов');
-  if (trimmed === PLAYER_NAME) return;
-  PLAYER_NAME = trimmed;
-  localStorage.setItem('playerName', PLAYER_NAME);
-  updateNameDisplay();
-  toast(`✅ Ник изменён на «${PLAYER_NAME}»`);
-});
+// ============ КОМНАТА ============
+let ROOM_CODE = localStorage.getItem('roomCode') || null;
+let PLAYER_NAME = localStorage.getItem('playerName') || null;
+let roomRef = null;       // ссылка на комнату в БД
+let playersRef = null;    // ссылка на список игроков
+let gamesRef = null;      // ссылка на игры комнаты
+let reviewsRef = null;    // ссылка на отзывы комнаты
+let currentPlayerKey = null; // ключ игрока в списке
 
-// ============ СБРОС АККАУНТА ============
-document.getElementById('resetAccBtn').addEventListener('click', () => {
-  if (!confirm('🔄 СБРОС АККАУНТА\n\nБудут УДАЛЕНЫ:\n• Все деньги\n• Все купленные игры\n• Все созданные игры\n• Все отзывы\n• Ник\n• Прогресс скачивания\n\nПродолжить?')) return;
-  localStorage.removeItem('steamClickerV13');
-  localStorage.removeItem('playerName');
-  toast('🔄 Аккаунт сброшен. Перезагрузка...');
-  setTimeout(() => location.reload(), 800);
-});
+function genRoomCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+
+function saveRoom(code) {
+  ROOM_CODE = code;
+  localStorage.setItem('roomCode', code);
+}
+
+function leaveRoom() {
+  if (currentPlayerKey && playersRef && db) {
+    try { db.remove(db.ref(db.database, `rooms/${ROOM_CODE}/players/${currentPlayerKey}`)); } catch(e) {}
+  }
+  localStorage.removeItem('roomCode');
+  ROOM_CODE = null;
+  location.reload();
+}
 
 // ============ СЕРВЕР ============
 let useServer = false;
 let db = null;
+
 async function initServer() {
   const statusEl = document.getElementById('serverStatus');
   if (!window.FIREBASE_CONFIG) {
     statusEl.className = 'status offline';
-    statusEl.textContent = '🔌 Локально';
-    return;
+    statusEl.textContent = '🔌 Локально (1 игрок)';
+    return false;
   }
   try {
     const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
-    const { getDatabase, ref, onValue, set, push, remove } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js');
+    const { getDatabase, ref, onValue, set, push, remove, onDisconnect } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js');
     const app = initializeApp(window.FIREBASE_CONFIG);
-    db = { getDatabase, ref, onValue, set, push, remove, database: getDatabase(app) };
+    db = { getDatabase, ref, onValue, set, push, remove, onDisconnect, database: getDatabase(app) };
     useServer = true;
     statusEl.className = 'status online';
     statusEl.textContent = '🌐 Онлайн';
-    db.onValue(db.ref(db.database, 'games'), (snap) => {
-      const remoteGames = Object.values(snap.val() || {});
-      const myIds = new Set(state.myGames.map(g => g.id));
-      state.shopGames = [
-        ...state.shopGames.filter(g => g.author === 'Valve' || myIds.has(g.id)),
-        ...remoteGames.filter(g => !myIds.has(g.id) && g.author !== 'Valve')
-      ];
-      renderAll();
-    });
-    db.onValue(db.ref(db.database, 'reviews'), (snap) => {
-      const remote = snap.val() || {};
-      const merged = { ...(state.allReviews || {}) };
-      for (const k in remote) if (!merged[k]) merged[k] = remote[k];
-      state.allReviews = merged;
-      renderAll();
-    });
+    return true;
   } catch(e) {
     console.error('Firebase error:', e);
     statusEl.className = 'status offline';
-    statusEl.textContent = '🔌 Локально';
+    statusEl.textContent = '🔌 Локально (ошибка)';
+    return false;
   }
 }
 
@@ -611,84 +471,21 @@ const STARTER_GAMES = [
       { id: 'o1', type: 'btn', x: 30, y: 80, w: 110, h: 80, color: '#66c0f4', text: 'МАЛО +2', reward: 2 },
       { id: 'o2', type: 'btn', x: 150, y: 80, w: 110, h: 80, color: '#a4d007', text: 'СРЕДНЕ +7', reward: 7 },
       { id: 'o3', type: 'btn', x: 270, y: 80, w: 110, h: 80, color: '#f5c542', text: 'МНОГО +15', reward: 15 },
-      { id: 'o4', type: 'text', x: 80, y: 30, w: 300, h: 40, color: '#66c0f4', text: 'Выбери свою награду' } ] },
-  { id: 'g11', name: 'Кот-Кликер', desc: 'Мяукай и зарабатывай!', price: 70, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 100, y: 100, w: 180, h: 100, color: '#ff9e00', text: '🐱 МЯУ', reward: 7 },
-      { id: 'o2', type: 'text', x: 80, y: 40, w: 250, h: 40, color: '#ff9e00', text: 'Кот-Кликер' } ] },
-  { id: 'g12', name: 'Тёмное Подземелье', desc: 'Выбери свой путь.', price: 250, author: 'Valve', objects: [
-      { id: 'o1', type: 'text', x: 40, y: 20, w: 320, h: 60, color: '#8f98a0', text: 'Ты спускаешься в подземелье...' },
-      { id: 'o2', type: 'btn', x: 40, y: 100, w: 140, h: 70, color: '#a4d007', text: '⚔️ Атаковать', reward: 25 },
-      { id: 'o3', type: 'btn', x: 200, y: 100, w: 140, h: 70, color: '#66c0f4', text: '🛡️ Защищаться', reward: 10 },
-      { id: 'o4', type: 'btn', x: 40, y: 190, w: 140, h: 70, color: '#c23b3b', text: '🏃 Убежать', reward: -10 },
-      { id: 'o5', type: 'btn', x: 200, y: 190, w: 140, h: 70, color: '#f5c542', text: '💰 Обыскать', reward: 40 } ] },
-  { id: 'g13', name: 'Космо-Магазин', desc: 'Торгуй в космосе.', price: 160, author: 'Valve', objects: [
-      { id: 'o1', type: 'text', x: 80, y: 30, w: 280, h: 40, color: '#66c0f4', text: '🛸 Космо-Магазин' },
-      { id: 'o2', type: 'btn', x: 40, y: 100, w: 130, h: 80, color: '#a4d007', text: 'Купить +5', reward: 5 },
-      { id: 'o3', type: 'btn', x: 190, y: 100, w: 130, h: 80, color: '#f5c542', text: 'Продать +15', reward: 15 } ] },
-  { id: 'g14', name: 'Пиксельный Мир', desc: 'Строй и зарабатывай.', price: 220, author: 'Valve', objects: [
-      { id: 'o1', type: 'square', x: 60, y: 100, w: 100, h: 100, color: '#66c0f4', text: '', reward: 8 },
-      { id: 'o2', type: 'square', x: 180, y: 100, w: 100, h: 100, color: '#a4d007', text: '', reward: 12 },
-      { id: 'o3', type: 'text', x: 60, y: 40, w: 250, h: 40, color: '#66c0f4', text: 'Пиксельный Мир 🟦' } ] },
-  { id: 'g15', name: 'Гонка', desc: 'Обгони всех!', price: 130, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 40, y: 60, w: 120, h: 80, color: '#a4d007', text: '🏎️ ГАЗ', reward: 12 },
-      { id: 'o2', type: 'btn', x: 180, y: 60, w: 120, h: 80, color: '#c23b3b', text: '🛑 ТОРМОЗ', reward: -3 },
-      { id: 'o3', type: 'text', x: 60, y: 20, w: 250, h: 30, color: '#66c0f4', text: 'Гонка' } ] },
-  { id: 'g16', name: 'Магическая Башня', desc: 'Поднимайся наверх.', price: 400, author: 'Valve', objects: [
-      { id: 'o1', type: 'text', x: 60, y: 20, w: 280, h: 40, color: '#8f98a0', text: '🗼 Башня мага' },
-      { id: 'o2', type: 'btn', x: 80, y: 90, w: 180, h: 60, color: '#a4d007', text: '⬆️ Этаж 1 (+20)', reward: 20 },
-      { id: 'o3', type: 'btn', x: 80, y: 170, w: 180, h: 60, color: '#f5c542', text: '⬆️ Этаж 2 (+50)', reward: 50 },
-      { id: 'o4', type: 'btn', x: 80, y: 250, w: 180, h: 60, color: '#ff6b00', text: '⬆️ Этаж 3 (+150)', reward: 150 } ] },
-  { id: 'g17', name: 'Морской Бой', desc: 'Стреляй по клеткам.', price: 140, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 30, y: 60, w: 70, h: 60, color: '#66c0f4', text: '💧', reward: 1 },
-      { id: 'o2', type: 'btn', x: 110, y: 60, w: 70, h: 60, color: '#66c0f4', text: '💧', reward: 1 },
-      { id: 'o3', type: 'btn', x: 190, y: 60, w: 70, h: 60, color: '#ff6b00', text: '💥', reward: 25 },
-      { id: 'o4', type: 'btn', x: 30, y: 130, w: 70, h: 60, color: '#66c0f4', text: '💧', reward: 1 },
-      { id: 'o5', type: 'btn', x: 110, y: 130, w: 70, h: 60, color: '#ff6b00', text: '💥', reward: 25 },
-      { id: 'o6', type: 'btn', x: 190, y: 130, w: 70, h: 60, color: '#66c0f4', text: '💧', reward: 1 } ] },
-  { id: 'g18', name: 'Ферма', desc: 'Собирай урожай.', price: 100, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 40, y: 80, w: 110, h: 80, color: '#a4d007', text: '🌾 Пшеница', reward: 4 },
-      { id: 'o2', type: 'btn', x: 170, y: 80, w: 110, h: 80, color: '#ff9e00', text: '🥕 Морковь', reward: 6 },
-      { id: 'o3', type: 'text', x: 60, y: 30, w: 250, h: 40, color: '#a4d007', text: '🌱 Ферма' } ] },
-  { id: 'g19', name: 'Зомби-Апокалипсис', desc: 'Отстреливайся!', price: 320, author: 'Valve', objects: [
-      { id: 'o1', type: 'text', x: 40, y: 20, w: 300, h: 40, color: '#c23b3b', text: '🧟 Зомби атакуют!' },
-      { id: 'o2', type: 'btn', x: 40, y: 80, w: 130, h: 100, color: '#c23b3b', text: '🔫 ПЛИ', reward: 30 },
-      { id: 'o3', type: 'btn', x: 190, y: 80, w: 130, h: 100, color: '#f5c542', text: '🏃 Бежать', reward: 5 } ] },
-  { id: 'g20', name: 'Сокровищница', desc: 'Открывай сундуки.', price: 280, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 60, y: 80, w: 120, h: 100, color: '#a4d007', text: '📦 Сундук', reward: 25 },
-      { id: 'o2', type: 'btn', x: 200, y: 80, w: 120, h: 100, color: '#f5c542', text: '💎 Сундук', reward: 60 },
-      { id: 'o3', type: 'text', x: 80, y: 30, w: 250, h: 40, color: '#f5c542', text: 'Сокровищница' } ] },
-  { id: 'g21', name: 'Снежная Битва', desc: 'Кидай снежки!', price: 110, author: 'Valve', objects: [
-      { id: 'o1', type: 'circle', x: 60, y: 80, w: 100, h: 100, color: '#66c0f4', text: '❄️', reward: 8 },
-      { id: 'o2', type: 'circle', x: 180, y: 80, w: 100, h: 100, color: '#f5c542', text: '⛄', reward: 20 },
-      { id: 'o3', type: 'text', x: 60, y: 30, w: 280, h: 40, color: '#66c0f4', text: '❄️ Снежная Битва' } ] },
-  { id: 'g22', name: 'Космическая Станция', desc: 'Управляй станцией.', price: 350, author: 'Valve', objects: [
-      { id: 'o1', type: 'text', x: 60, y: 20, w: 260, h: 40, color: '#66c0f4', text: '🚀 Станция' },
-      { id: 'o2', type: 'btn', x: 30, y: 80, w: 100, h: 70, color: '#a4d007', text: '⚙️ Починить', reward: 15 },
-      { id: 'o3', type: 'btn', x: 140, y: 80, w: 100, h: 70, color: '#f5c542', text: '📡 Связь', reward: 20 },
-      { id: 'o4', type: 'btn', x: 250, y: 80, w: 100, h: 70, color: '#ff6b00', text: '🚀 Запуск', reward: 40 } ] },
-  { id: 'g23', name: 'Мистический Лес', desc: 'Исследуй лес.', price: 240, author: 'Valve', objects: [
-      { id: 'o1', type: 'text', x: 40, y: 20, w: 320, h: 40, color: '#a4d007', text: '🌲 Мистический Лес' },
-      { id: 'o2', type: 'btn', x: 40, y: 80, w: 130, h: 80, color: '#a4d007', text: '🍄 Идти вглубь', reward: 12 },
-      { id: 'o3', type: 'btn', x: 190, y: 80, w: 130, h: 80, color: '#66c0f4', text: '🌊 К реке', reward: 15 } ] },
-  { id: 'g24', name: 'Киберпанк', desc: 'Взломай систему!', price: 450, author: 'Valve', objects: [
-      { id: 'o1', type: 'text', x: 40, y: 20, w: 300, h: 40, color: '#ff00ff', text: '🤖 КИБЕРПАНК' },
-      { id: 'o2', type: 'btn', x: 30, y: 80, w: 140, h: 100, color: '#ff00ff', text: '💻 Взлом', reward: 70 },
-      { id: 'o3', type: 'btn', x: 190, y: 80, w: 140, h: 100, color: '#66c0f4', text: '⚡ Импланты', reward: 30 } ] },
-  { id: 'g25', name: 'Лавка Чудес', desc: 'Продавай чудеса.', price: 190, author: 'Valve', objects: [
-      { id: 'o1', type: 'text', x: 60, y: 30, w: 280, h: 40, color: '#f5c542', text: '✨ Лавка Чудес' },
-      { id: 'o2', type: 'btn', x: 40, y: 100, w: 130, h: 80, color: '#a4d007', text: '🪄 Продать', reward: 18 },
-      { id: 'o3', type: 'btn', x: 190, y: 100, w: 130, h: 80, color: '#f5c542', text: '🔮 Купить', reward: -10 } ] }
+      { id: 'o4', type: 'text', x: 80, y: 30, w: 300, h: 40, color: '#66c0f4', text: 'Выбери свою награду' } ] }
 ];
 
 // ============ СОСТОЯНИЕ ============
 const DEFAULT_STATE = { money: 0, perClick: 1, totalClicks: 0, ownedGames: [], myGames: [], shopGames: [], allReviews: {}, downloadedGames: {} };
 let state = loadState();
+let players = {}; // { playerKey: { name, lastSeen } }
+
 function loadState() {
   try {
-    const saved = localStorage.getItem('steamClickerV13');
+    const key = ROOM_CODE ? 'steamClickerRoom_' + ROOM_CODE : 'steamClickerLocal';
+    const saved = localStorage.getItem(key);
     if (saved) {
       const s = JSON.parse(saved);
-      if (!s.shopGames || s.shopGames.filter(g => g.author === 'Valve').length < 25) {
+      if (!s.shopGames || s.shopGames.filter(g => g.author === 'Valve').length < 10) {
         const my = (s.shopGames || []).filter(g => g.author !== 'Valve');
         s.shopGames = [...JSON.parse(JSON.stringify(STARTER_GAMES)), ...my];
       }
@@ -698,7 +495,10 @@ function loadState() {
   } catch(e) {}
   return { ...DEFAULT_STATE, shopGames: JSON.parse(JSON.stringify(STARTER_GAMES)) };
 }
-function saveState() { localStorage.setItem('steamClickerV13', JSON.stringify(state)); }
+function saveState() {
+  const key = ROOM_CODE ? 'steamClickerRoom_' + ROOM_CODE : 'steamClickerLocal';
+  localStorage.setItem(key, JSON.stringify(state));
+}
 function updateMoney() { document.getElementById('money').textContent = Math.floor(state.money); updatePublishHint(); updateStudioLock(); }
 
 function getReviewStats(gameId) {
@@ -875,7 +675,7 @@ function updateLibraryCardProgress(gameId) {
   if (left) left.textContent = getDownloadTimeLeft(gameId) + ' сек';
 }
 
-// ============ МОДАЛКА ПРОСМОТРА ============
+// ============ ПРОСМОТР ============
 let currentlyViewing = null;
 let viewInterval = null;
 
@@ -1047,7 +847,7 @@ async function deleteMyGame(id) {
     delete downloadTimers[id];
   }
   saveState(); renderAll();
-  if (useServer && db) { try { await db.remove(db.ref(db.database, 'games/' + id)); } catch(e) {} }
+  if (useServer && db && ROOM_CODE) { try { await db.remove(db.ref(db.database, `rooms/${ROOM_CODE}/games/${id}`)); } catch(e) {} }
   toast(`🗑️ Игра «${g.name}» удалена`);
 }
 
@@ -1117,8 +917,8 @@ async function deleteReview(key, gameId) {
     saveState();
     renderReviewsList(gameId);
     renderAll();
-    if (useServer && db) {
-      try { await db.remove(db.ref(db.database, 'reviews/' + key)); } catch(e) { console.error(e); }
+    if (useServer && db && ROOM_CODE) {
+      try { await db.remove(db.ref(db.database, `rooms/${ROOM_CODE}/reviews/${key}`)); } catch(e) { console.error(e); }
     }
     toast('🗑️ Отзыв удалён');
   }
@@ -1133,7 +933,7 @@ document.getElementById('submitReview').addEventListener('click', async () => {
   const key = 'rev_' + Date.now() + '_' + Math.random().toString(36).slice(2);
   state.allReviews[key] = review;
   saveState();
-  if (useServer && db) { try { await db.set(db.ref(db.database, 'reviews/' + key), review); } catch(e) {} }
+  if (useServer && db && ROOM_CODE) { try { await db.set(db.ref(db.database, `rooms/${ROOM_CODE}/reviews/${key}`), review); } catch(e) {} }
   document.getElementById('reviewText').value = '';
   renderReviewsList(currentReviewGame.id);
   renderAll();
@@ -1337,7 +1137,7 @@ document.getElementById('publishBtn').addEventListener('click', async () => {
   const game = { id: 'my_' + Date.now() + '_' + Math.random().toString(36).slice(2,6), name, desc, price, author: PLAYER_NAME, objects: JSON.parse(JSON.stringify(studioObjects)), botBuys: 0, earnings: 0 };
   state.myGames.push(game); state.shopGames.push(game);
   saveState(); renderAll();
-  if (useServer && db) { try { await db.set(db.ref(db.database, 'games/' + game.id), game); } catch(e) {} }
+  if (useServer && db && ROOM_CODE) { try { await db.set(db.ref(db.database, `rooms/${ROOM_CODE}/games/${game.id}`), game); } catch(e) {} }
   toast(`🎉 Опубликовано: ${name} (-${PUBLISH_COST} ₽)`);
   document.getElementById('studioName').value = '';
   document.getElementById('studioDesc').value = '';
@@ -1393,6 +1193,35 @@ function playGame(g) {
   });
 }
 
+// ============ СПИСОК ИГРОКОВ ============
+function renderPlayers() {
+  const list = document.getElementById('roomPlayersList');
+  const playersPage = document.getElementById('playersPageList');
+  const playerArr = Object.entries(players || {});
+  if (playerArr.length === 0) {
+    if (list) list.style.display = 'none';
+    if (playersPage) playersPage.innerHTML = '<div class="empty">Пока никого нет в комнате</div>';
+    return;
+  }
+  if (list) {
+    list.style.display = 'block';
+    list.innerHTML = `<h4>👥 Игроков: ${playerArr.length}</h4>` +
+      playerArr.map(([key, p]) => {
+        const isYou = p.name === PLAYER_NAME;
+        return `<div class="player-row ${isYou ? 'you' : ''}">${isYou ? '👑' : '👤'} ${escapeHtml(p.name)}${isYou ? ' (ты)' : ''}</div>`;
+      }).join('');
+  }
+  if (playersPage) {
+    playersPage.innerHTML = `<div style="color:#a4d007; margin-bottom:10px;">👥 Игроков в комнате: <b>${playerArr.length}</b></div>` +
+      playerArr.map(([key, p]) => {
+        const isYou = p.name === PLAYER_NAME;
+        return `<div style="padding:10px; border-bottom:1px solid #2a475e; ${isYou ? 'color:#a4d007; font-weight:bold;' : ''}">
+          ${isYou ? '👑' : '👤'} ${escapeHtml(p.name)}${isYou ? ' (ты)' : ''}
+        </div>`;
+      }).join('');
+  }
+}
+
 // ============ БОТЫ ============
 function scheduleBotTick() {
   const delayMs = (30 + Math.random() * 70) * 1000;
@@ -1418,7 +1247,7 @@ function scheduleBotTick() {
       const isMine = state.myGames.some(g => g.id === targetGame.id);
       if (isMine) showReviewNotification(author, targetGame.name, stars, text, true);
       saveState(); renderAll();
-      if (useServer && db) { try { db.set(db.ref(db.database, 'reviews/' + key), review); } catch(e) {} }
+      if (useServer && db && ROOM_CODE) { try { db.set(db.ref(db.database, `rooms/${ROOM_CODE}/reviews/${key}`), review); } catch(e) {} }
     }
     scheduleBotTick();
   }, delayMs);
@@ -1426,22 +1255,160 @@ function scheduleBotTick() {
 
 // ============ СТАРТ ============
 async function boot() {
-  updateNameDisplay();
-  await initServer();
-  scheduleBotTick();
-  renderStudio(); renderProps(); renderAll();
-  updateStudioLock();
-  toast(`👋 Привет, ${PLAYER_NAME}!`);
+  // Проверяем Firebase
+  const serverOk = await initServer();
+
+  // Если есть сохранённая комната — входим сразу
+  if (ROOM_CODE && PLAYER_NAME) {
+    enterRoom(ROOM_CODE, PLAYER_NAME);
+    return;
+  }
+
+  // Иначе показываем экран комнат
+  const roomScreen = document.getElementById('roomScreen');
+  const mainApp = document.getElementById('mainApp');
+  roomScreen.style.display = 'block';
+  mainApp.style.display = 'none';
+
+  // Восстанавливаем ник в поле
+  const nickInput = document.getElementById('roomNick');
+  if (localStorage.getItem('playerName')) nickInput.value = localStorage.getItem('playerName');
+
+  document.getElementById('createRoomBtn').addEventListener('click', () => {
+    const nick = nickInput.value.trim() || 'Игрок' + Math.floor(Math.random()*999);
+    localStorage.setItem('playerName', nick);
+    const code = genRoomCode();
+    saveRoom(code);
+    location.reload();
+  });
+
+  document.getElementById('joinRoomBtn').addEventListener('click', () => {
+    const nick = nickInput.value.trim() || 'Игрок' + Math.floor(Math.random()*999);
+    localStorage.setItem('playerName', nick);
+    const code = document.getElementById('roomCodeInput').value.trim().toUpperCase();
+    if (!code || code.length < 4) return toast('❌ Введи код комнаты!');
+    saveRoom(code);
+    location.reload();
+  });
 }
+
+async function enterRoom(code, nick) {
+  // Показываем основной интерфейс
+  document.getElementById('roomScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+
+  PLAYER_NAME = nick;
+  document.getElementById('playerNameDisplay').textContent = PLAYER_NAME;
+  document.getElementById('roomCodeDisplay').textContent = code;
+  document.getElementById('perClick').textContent = state.perClick;
+  document.getElementById('totalClicks').textContent = state.totalClicks;
+
+  // Кнопка выхода из комнаты
+  document.getElementById('roomBadge').addEventListener('click', () => {
+    if (confirm('Выйти из комнаты и сменить её?')) leaveRoom();
+  });
+
+  // Смена ника
+  document.getElementById('changeNickBtn').addEventListener('click', () => {
+    const newName = prompt('Введи новый ник:', PLAYER_NAME);
+    if (newName === null) return;
+    const trimmed = newName.trim();
+    if (!trimmed) return toast('❌ Ник не может быть пустым');
+    if (trimmed.length > 20) return toast('❌ Ник максимум 20 символов');
+    if (trimmed === PLAYER_NAME) return;
+    PLAYER_NAME = trimmed;
+    localStorage.setItem('playerName', PLAYER_NAME);
+    document.getElementById('playerNameDisplay').textContent = PLAYER_NAME;
+    // Обновляем имя в БД
+    if (useServer && db && ROOM_CODE && currentPlayerKey) {
+      try { db.set(db.ref(db.database, `rooms/${ROOM_CODE}/players/${currentPlayerKey}/name`), PLAYER_NAME); } catch(e) {}
+    }
+    toast(`✅ Ник изменён на «${PLAYER_NAME}»`);
+  });
+
+  // Сброс аккаунта
+  document.getElementById('resetAccBtn').addEventListener('click', () => {
+    if (!confirm('🔄 СБРОС АККАУНТА\n\nБудут УДАЛЕНЫ:\n• Все деньги\n• Все игры\n• Все отзывы\n• Прогресс скачивания\n\nПродолжить?')) return;
+    localStorage.removeItem('steamClickerRoom_' + ROOM_CODE);
+    localStorage.removeItem('steamClickerLocal');
+    toast('🔄 Аккаунт сброшен. Перезагрузка...');
+    setTimeout(() => location.reload(), 800);
+  });
+
+  // Регистрируемся в комнате (если Firebase)
+  if (useServer && db) {
+    roomRef = db.ref(db.database, 'rooms/' + code);
+    playersRef = db.ref(db.database, `rooms/${code}/players`);
+    gamesRef = db.ref(db.database, `rooms/${code}/games`);
+    reviewsRef = db.ref(db.database, `rooms/${code}/reviews`);
+
+    // Регистрируем себя
+    const meRef = db.push(playersRef);
+    currentPlayerKey = meRef.key;
+    db.set(meRef, { name: PLAYER_NAME, lastSeen: Date.now() });
+    // Удаляем себя при выходе
+    try {
+      db.onDisconnect(meRef).remove();
+    } catch(e) {}
+
+    // Слушаем игроков
+    db.onValue(playersRef, (snap) => {
+      players = snap.val() || {};
+      renderPlayers();
+    });
+
+    // Слушаем игры комнаты
+    db.onValue(gamesRef, (snap) => {
+      const remoteGames = Object.values(snap.val() || {});
+      const myIds = new Set(state.myGames.map(g => g.id));
+      state.shopGames = [
+        ...state.shopGames.filter(g => g.author === 'Valve' || myIds.has(g.id)),
+        ...remoteGames.filter(g => !myIds.has(g.id) && g.author !== 'Valve')
+      ];
+      renderAll();
+    });
+
+    // Слушаем отзывы комнаты
+    db.onValue(reviewsRef, (snap) => {
+      const remote = snap.val() || {};
+      const merged = { ...(state.allReviews || {}) };
+      for (const k in remote) if (!merged[k]) merged[k] = remote[k];
+      state.allReviews = merged;
+      renderAll();
+    });
+
+    // Heartbeat — обновляем lastSeen
+    setInterval(() => {
+      if (currentPlayerKey) {
+        try { db.set(db.ref(db.database, `rooms/${code}/players/${currentPlayerKey}/lastSeen`), Date.now()); } catch(e) {}
+      }
+    }, 30000);
+  } else {
+    // Локальный режим — просто фейковые "игроки"
+    players = { 'local': { name: PLAYER_NAME } };
+    renderPlayers();
+  }
+
+  // Запускаем рендер и ботов
+  renderStudio();
+  renderProps();
+  renderAll();
+  updateStudioLock();
+  scheduleBotTick();
+  toast(`👋 Привет, ${PLAYER_NAME}! Комната: ${code}`);
+}
+
 boot();
 
 function renderAll() {
+  if (!ROOM_CODE) return;
   updateMoney();
   document.getElementById('perClick').textContent = state.perClick;
   document.getElementById('totalClicks').textContent = state.totalClicks;
   renderShop(); renderLibrary(); renderMyStore();
   updatePublishHint();
   updateStudioLock();
+  renderPlayers();
 }
 </script>
 </body>
