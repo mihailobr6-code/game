@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Стим-Кликер Онлайн</title>
+<title>Стим-Кликер — Мультирежим</title>
 <script type="module">
   window.FIREBASE_CONFIG = null;
   // window.FIREBASE_CONFIG = {
@@ -13,28 +13,52 @@
   //   projectId: "xxx",
   // };
 </script>
+<!-- QR-генератор (локально, без интернета после загрузки) -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<!-- QR-сканер -->
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { overscroll-behavior: none; }
   body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%); color: #c7d5e0; min-height: 100vh; padding: 20px; -webkit-text-size-adjust: 100%; }
   h1 { text-align: center; color: #66c0f4; margin-bottom: 20px; text-shadow: 0 0 10px #66c0f4; }
   .container { max-width: 1100px; margin: 0 auto; }
 
+  /* ===== СТАРТОВЫЙ ЭКРАН ===== */
+  .start-screen { max-width: 560px; margin: 40px auto; background: #171a21; border-radius: 14px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.7); }
+  .start-screen h2 { color: #66c0f4; text-align: center; margin-bottom: 6px; font-size: 22px; }
+  .start-screen p.sub { text-align: center; color: #8f98a0; font-size: 14px; margin-bottom: 25px; }
+  .mode-card { background: #1b2838; border: 2px solid #2a475e; border-radius: 10px; padding: 18px; margin-bottom: 12px; cursor: pointer; transition: 0.2s; }
+  .mode-card:hover { border-color: #66c0f4; transform: translateY(-2px); }
+  .mode-card.active { border-color: #a4d007; background: #1a2a1a; }
+  .mode-card h3 { color: #66c0f4; font-size: 16px; margin-bottom: 6px; }
+  .mode-card p { color: #8f98a0; font-size: 13px; line-height: 1.4; }
+  .mode-card .tag { display: inline-block; background: #2a475e; color: #a4d007; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-top: 6px; font-weight: bold; }
+  .mode-card .tag.no-net { background: #2a4a2a; color: #a4d007; }
+  .mode-card .tag.net { background: #4a2a2a; color: #c23b3b; }
+
+  .start-btn { width: 100%; padding: 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; transition: 0.2s; }
+  .start-btn:hover { transform: translateY(-1px); }
+  .start-btn.green { background: #a4d007; color: #171a21; }
+  .start-btn.blue { background: #66c0f4; color: #171a21; }
+  .start-btn.purple { background: #8b5cf6; color: white; }
+  .start-btn.gray { background: #2a475e; color: #c7d5e0; }
+
+  /* ===== ОСНОВНОЙ ИНТЕРФЕЙС ===== */
   .topbar { background: #171a21; border-radius: 10px; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); flex-wrap: wrap; gap: 12px; }
   .topbar-left { display: flex; flex-direction: column; gap: 6px; }
   .money-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .money { font-size: 28px; color: #a4d007; font-weight: bold; }
-  .reset-acc-btn { background: #6b2a2a; color: #fff; border: 2px solid #c23b3b; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s; }
-  .reset-acc-btn:hover { background: #c23b3b; }
-  .room-badge { display: inline-flex; align-items: center; gap: 6px; background: #2a475e; border: 2px solid #66c0f4; padding: 4px 10px; border-radius: 12px; font-size: 12px; color: #66c0f4; font-weight: bold; cursor: pointer; }
-  .room-badge:hover { background: #66c0f4; color: #171a21; }
+  .mode-badge { display: inline-flex; align-items: center; gap: 6px; background: #2a475e; border: 2px solid #66c0f4; padding: 4px 10px; border-radius: 12px; font-size: 12px; color: #66c0f4; font-weight: bold; cursor: pointer; }
+  .mode-badge:hover { background: #66c0f4; color: #171a21; }
   .status { font-size: 12px; padding: 4px 10px; border-radius: 12px; display: inline-block; }
   .status.online { background: #1a4a1a; color: #6f6; }
   .status.offline { background: #4a2a1a; color: #fa6; }
   .player-info { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #8f98a0; flex-wrap: wrap; }
   .player-info b { color: #66c0f4; }
-  .nick-btn { background: #2a475e; color: #c7d5e0; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
+  .nick-btn, .reset-btn { background: #2a475e; color: #c7d5e0; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
   .nick-btn:hover { background: #66c0f4; color: #171a21; }
+  .reset-btn { background: #6b2a2a; border: 2px solid #c23b3b; color: #fff; }
+  .reset-btn:hover { background: #c23b3b; }
 
   .nav { display: flex; gap: 6px; flex-wrap: wrap; }
   .nav button { background: #2a475e; color: #c7d5e0; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; transition: 0.2s; font-weight: 500; }
@@ -44,26 +68,6 @@
   .page { display: none; }
   .page.active { display: block; animation: fade 0.25s; }
   @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-
-  /* ЭКРАН КОМНАТ */
-  .room-screen { max-width: 520px; margin: 40px auto; background: #171a21; border-radius: 12px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
-  .room-screen h2 { color: #66c0f4; text-align: center; margin-bottom: 8px; }
-  .room-screen p.sub { text-align: center; color: #8f98a0; font-size: 14px; margin-bottom: 25px; }
-  .room-screen .field { margin-bottom: 12px; }
-  .room-screen label { display: block; font-size: 13px; color: #8f98a0; margin-bottom: 5px; }
-  .room-screen input { width: 100%; padding: 12px; background: #1b2838; border: 2px solid #2a475e; border-radius: 6px; color: #c7d5e0; font-size: 16px; text-align: center; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; }
-  .room-screen input:focus { outline: none; border-color: #66c0f4; }
-  .room-screen .room-btn { width: 100%; padding: 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; margin-top: 8px; transition: 0.2s; }
-  .btn-create-room { background: #a4d007; color: #171a21; }
-  .btn-create-room:hover { background: #b8e010; }
-  .btn-join-room { background: #66c0f4; color: #171a21; }
-  .btn-join-room:hover { background: #8fd0ff; }
-  .room-divider { text-align: center; color: #4a5a6a; margin: 18px 0; font-size: 13px; }
-  .room-players { margin-top: 15px; padding: 12px; background: #1b2838; border-radius: 6px; font-size: 13px; }
-  .room-players h4 { color: #66c0f4; margin-bottom: 8px; font-size: 13px; }
-  .room-players .player-row { padding: 5px 0; border-bottom: 1px solid #2a475e; color: #c7d5e0; }
-  .room-players .player-row:last-child { border-bottom: none; }
-  .room-players .player-row.you { color: #a4d007; font-weight: bold; }
 
   .clicker-area { text-align: center; padding: 30px 0; }
   #clickBtn { width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, #66c0f4, #1b2838); border: 5px solid #66c0f4; color: white; font-size: 22px; cursor: pointer; font-weight: bold; box-shadow: 0 0 30px rgba(102,192,244,0.6); transition: transform 0.05s; touch-action: manipulation; }
@@ -83,7 +87,7 @@
   .card button { width: 100%; padding: 10px; background: #a4d007; color: #171a21; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 6px; font-size: 14px; transition: 0.15s; touch-action: manipulation; }
   .card button:hover { background: #b8e010; }
   .card button:active { transform: scale(0.97); }
-  .card button:disabled { background: #4a5a2a; color: #8f98a0; cursor: not-allowed; transform: none; }
+  .card button:disabled { background: #4a5a2a; color: #8f98a0; cursor: not-allowed; }
   .card .del-btn { background: #c23b3b; color: white; }
   .card .del-btn:hover { background: #e04a4a; }
   .card .review-btn { background: #66c0f4; color: #171a21; }
@@ -92,8 +96,6 @@
   .card .download-btn:hover { background: #ffb833; }
   .card .view-btn { background: #8b5cf6; color: white; }
   .card .view-btn:hover { background: #a78bfa; }
-  .card .preview-reviews { font-size: 11px; color: #8f98a0; margin-top: 6px; line-height: 1.35; padding: 6px; background: #0e1419; border-radius: 4px; max-height: 100px; overflow: hidden; }
-  .card .preview-reviews b { color: #66c0f4; }
 
   .card-progress { margin: 8px 0; }
   .card-progress .bar { height: 10px; background: #0e1419; border-radius: 5px; overflow: hidden; border: 1px solid #2a475e; }
@@ -101,34 +103,28 @@
   .card-progress .info { display: flex; justify-content: space-between; font-size: 11px; color: #8f98a0; margin-top: 4px; }
   .card-progress .info b { color: #a4d007; }
 
+  /* Студия */
+  .studio { display: grid; grid-template-columns: 220px 1fr 280px; gap: 12px; background: #171a21; border-radius: 10px; padding: 12px; min-height: 560px; position: relative; }
+  .studio.locked > *:not(.studio-locked-overlay) { pointer-events: none; filter: blur(2px); opacity: 0.5; }
   .studio-locked-overlay { position: absolute; inset: 0; background: rgba(14,20,25,0.94); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; border-radius: 10px; text-align: center; padding: 20px; }
   .studio-locked-overlay .lock-icon { font-size: 56px; margin-bottom: 12px; }
   .studio-locked-overlay h3 { color: #c23b3b; margin-bottom: 10px; }
   .studio-locked-overlay p { color: #8f98a0; max-width: 320px; line-height: 1.5; }
   .studio-locked-overlay b { color: #a4d007; }
-
-  .studio { display: grid; grid-template-columns: 220px 1fr 280px; gap: 12px; background: #171a21; border-radius: 10px; padding: 12px; min-height: 560px; position: relative; }
-  .studio.locked > *:not(.studio-locked-overlay) { pointer-events: none; filter: blur(2px); opacity: 0.5; }
   .studio-panel { background: #1b2838; border-radius: 8px; padding: 12px; overflow-y: auto; max-height: 72vh; }
   .studio-panel h3 { color: #66c0f4; font-size: 13px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-  .tool-btn { display: flex; align-items: center; gap: 8px; width: 100%; background: #2a475e; color: #c7d5e0; border: none; padding: 10px; border-radius: 6px; cursor: pointer; margin-bottom: 5px; font-size: 13px; text-align: left; transition: 0.15s; touch-action: manipulation; }
+  .tool-btn { display: flex; align-items: center; gap: 8px; width: 100%; background: #2a475e; color: #c7d5e0; border: none; padding: 10px; border-radius: 6px; cursor: pointer; margin-bottom: 5px; font-size: 13px; text-align: left; transition: 0.15s; }
   .tool-btn:hover { background: #66c0f4; color: #171a21; }
-  .tool-btn:active { transform: scale(0.98); }
-
   #studioCanvas { background: #0e1419; border: 2px dashed #2a475e; border-radius: 10px; position: relative; overflow: hidden; min-height: 540px; background-image: linear-gradient(rgba(42,71,94,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(42,71,94,0.3) 1px, transparent 1px); background-size: 20px 20px; }
   .studio-obj { position: absolute; cursor: move; user-select: none; display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 6px; font-size: 14px; font-weight: bold; border: 2px solid transparent; overflow: hidden; text-align: center; touch-action: none; }
   .studio-obj.selected { border-color: #a4d007; box-shadow: 0 0 15px #a4d007; }
-  .studio-obj:hover { border-color: #66c0f4; }
   .canvas-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #4a5a6a; font-size: 16px; pointer-events: none; text-align: center; padding: 20px; }
-
   .prop-group { margin-bottom: 10px; }
   .prop-group label { display: block; font-size: 12px; color: #8f98a0; margin-bottom: 4px; }
   .prop-group input, .prop-group select { width: 100%; padding: 8px; background: #171a21; border: 1px solid #2a475e; border-radius: 5px; color: #c7d5e0; font-size: 14px; }
   .prop-group input[type="color"] { padding: 2px; height: 36px; cursor: pointer; }
   .prop-group input[type="range"] { padding: 0; height: 30px; }
   .delete-btn { width: 100%; padding: 10px; background: #c23b3b; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 5px; }
-  .delete-btn:hover { background: #e04a4a; }
-
   .studio-actions { display: flex; gap: 8px; margin-top: 12px; }
   .studio-actions button { flex: 1; padding: 11px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; }
   .btn-test { background: #66c0f4; color: #171a21; }
@@ -138,14 +134,13 @@
   .publish-hint { text-align: center; font-size: 12px; color: #8f98a0; margin-top: 6px; }
   .publish-hint.ok { color: #a4d007; }
   .publish-hint.no { color: #c23b3b; }
-
   .studio-meta { margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
   .studio-meta input { flex: 1; min-width: 160px; padding: 10px; background: #171a21; border: 1px solid #2a475e; border-radius: 6px; color: #c7d5e0; font-size: 14px; }
-  .studio-meta input:focus { outline: none; border-color: #66c0f4; }
 
-  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
+  /* Модалка */
+  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
   .modal.active { display: flex; }
-  .modal-content { background: #1b2838; padding: 22px; border-radius: 12px; max-width: 600px; width: 100%; border: 2px solid #66c0f4; text-align: center; max-height: 90vh; overflow-y: auto; }
+  .modal-content { background: #1b2838; padding: 22px; border-radius: 12px; max-width: 600px; width: 100%; border: 2px solid #66c0f4; text-align: center; max-height: 92vh; overflow-y: auto; }
   .modal-content h2 { color: #66c0f4; margin-bottom: 15px; word-break: break-word; }
   .modal-content .close { margin-top: 20px; padding: 12px 25px; background: #a4d007; color: #171a21; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; width: 100%; }
   #playScene { position: relative; background: #0e1419; border-radius: 8px; min-height: 380px; overflow: hidden; margin: 10px 0; background-image: linear-gradient(rgba(42,71,94,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(42,71,94,0.2) 1px, transparent 1px); background-size: 20px 20px; }
@@ -154,6 +149,7 @@
   .play-obj.clickable:active { transform: scale(0.95); }
   .msg { margin-top: 12px; font-size: 15px; min-height: 22px; color: #a4d007; }
 
+  /* Просмотр */
   .view-screen { padding: 25px 15px; text-align: center; }
   .view-screen h3 { color: #8b5cf6; margin-bottom: 20px; font-size: 18px; }
   .view-screen .big-progress { height: 30px; background: #0e1419; border-radius: 15px; overflow: hidden; margin-bottom: 15px; border: 2px solid #2a475e; position: relative; }
@@ -163,6 +159,7 @@
   .view-screen .stats b { color: #a4d007; }
   .view-screen .status-msg { padding: 12px; background: #171a21; border-radius: 6px; color: #a4d007; font-weight: bold; }
 
+  /* Отзывы */
   .reviews-list { max-height: 340px; overflow-y: auto; text-align: left; margin-top: 15px; background: #171a21; border-radius: 6px; padding: 10px; }
   .review-item { padding: 10px; border-bottom: 1px solid #2a475e; }
   .review-item:last-child { border-bottom: none; }
@@ -170,7 +167,6 @@
   .review-author { color: #66c0f4; font-size: 13px; font-weight: bold; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .review-stars { color: #f5c542; font-size: 13px; flex-shrink: 0; }
   .review-del { background: #c23b3b; color: white; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; flex-shrink: 0; }
-  .review-del:hover { background: #e04a4a; }
   .review-text { color: #c7d5e0; font-size: 13px; line-height: 1.4; word-break: break-word; }
   .review-time { color: #8f98a0; font-size: 11px; margin-top: 3px; }
   .review-form { margin-top: 15px; padding: 12px; background: #171a21; border-radius: 6px; text-align: left; }
@@ -182,15 +178,19 @@
   .review-form button[type="submit"] { width: 100%; padding: 10px; background: #a4d007; color: #171a21; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; }
 
   #notifArea { position: fixed; top: 15px; right: 15px; z-index: 300; display: flex; flex-direction: column; gap: 10px; pointer-events: none; max-width: 360px; width: calc(100% - 30px); }
-  .sale-notif { background: linear-gradient(135deg, #1b2838, #2a475e); border: 2px solid #a4d007; border-left: 6px solid #a4d007; border-radius: 8px; padding: 14px 16px; box-shadow: 0 6px 25px rgba(0,0,0,0.7), 0 0 25px rgba(164,208,7,0.5); animation: slideIn 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2); pointer-events: auto; word-break: break-word; }
+  .sale-notif { background: linear-gradient(135deg, #1b2838, #2a475e); border: 2px solid #a4d007; border-left: 6px solid #a4d007; border-radius: 8px; padding: 14px 16px; box-shadow: 0 6px 25px rgba(0,0,0,0.7); animation: slideIn 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2); pointer-events: auto; word-break: break-word; }
   .sale-notif .n-title { color: #a4d007; font-weight: bold; font-size: 15px; margin-bottom: 6px; }
   .sale-notif .n-text { color: #c7d5e0; font-size: 13px; line-height: 1.5; }
-  .sale-notif .n-money { color: #a4d007; font-weight: bold; font-size: 16px; }
   .sale-notif.fade-out { animation: slideOut 0.4s forwards; }
   @keyframes slideIn { from { transform: translateX(450px); opacity: 0; } to { transform: none; opacity: 1; } }
   @keyframes slideOut { to { transform: translateX(470px); opacity: 0; } }
 
   .empty { text-align: center; padding: 40px 20px; color: #8f98a0; }
+
+  /* QR-модалка */
+  .qr-box { background: #fff; padding: 15px; border-radius: 8px; display: inline-block; margin: 15px 0; }
+  .qr-box canvas, .qr-box img { display: block; }
+  #qrVideo { width: 100%; max-width: 400px; border-radius: 8px; margin: 10px 0; background: #000; }
 
   @media (max-width: 900px) {
     .studio { grid-template-columns: 1fr; min-height: auto; }
@@ -199,75 +199,70 @@
   }
   @media (max-width: 640px) {
     body { padding: 12px; }
-    h1 { font-size: 20px; margin-bottom: 12px; }
-    .topbar { padding: 12px 14px; border-radius: 8px; }
+    h1 { font-size: 20px; }
+    .topbar { padding: 12px 14px; }
     .money { font-size: 22px; }
-    .reset-acc-btn { padding: 6px 10px; font-size: 12px; }
     .nav { gap: 5px; width: 100%; }
     .nav button { flex: 1 1 calc(50% - 5px); padding: 9px 8px; font-size: 12px; text-align: center; }
     .grid { grid-template-columns: 1fr; gap: 12px; }
-    .card { padding: 13px; }
     #clickBtn { width: 180px; height: 180px; font-size: 18px; }
     .click-info { font-size: 15px; }
     .studio { padding: 8px; gap: 8px; }
     #studioCanvas { min-height: 350px; }
-    .studio-meta input { min-width: 0; flex: 1 1 100%; padding: 10px; font-size: 14px; }
-    .modal-content { padding: 16px; max-height: 94vh; }
-    .modal-content h2 { font-size: 17px; }
-    #notifArea { top: 10px; right: 10px; max-width: calc(100% - 20px); }
-    .sale-notif { padding: 11px 13px; }
-    .sale-notif .n-title { font-size: 13px; }
-    .sale-notif .n-text { font-size: 12px; }
-    .view-screen { padding: 18px 8px; }
-    .view-screen h3 { font-size: 16px; }
-    .reviews-list { max-height: 240px; }
-    .room-screen { padding: 20px; margin: 20px auto; }
-  }
-  @media (max-width: 380px) {
-    .nav button { font-size: 11px; padding: 8px 6px; }
-    #clickBtn { width: 150px; height: 150px; font-size: 16px; }
+    .studio-meta input { min-width: 0; flex: 1 1 100%; }
+    .modal-content { padding: 16px; }
+    .start-screen { padding: 20px; margin: 20px auto; }
   }
 </style>
 </head>
 <body>
 <div id="notifArea"></div>
 
-<!-- ЭКРАН КОМНАТ -->
-<div id="roomScreen" class="room-screen">
-  <h2>🚪 Выбор комнаты</h2>
-  <p class="sub">Создай свою или войди по коду друга</p>
+<!-- ========== СТАРТОВЫЙ ЭКРАН ========== -->
+<div id="startScreen" class="start-screen">
+  <h2>🎮 СТИМ-КЛИКЕР</h2>
+  <p class="sub">Выбери режим игры</p>
 
-  <div class="field">
-    <label>👤 Твой ник</label>
-    <input type="text" id="roomNick" placeholder="Игрок" maxlength="20" style="text-transform: none; letter-spacing: 0;">
+  <div class="mode-card" data-mode="solo">
+    <h3>👤 Одиночная игра</h3>
+    <p>Классический режим. Играй один, копи деньги, создавай игры.</p>
+    <span class="tag no-net">📴 Без интернета</span>
   </div>
 
-  <button class="room-btn btn-create-room" id="createRoomBtn">➕ Создать новую комнату</button>
-
-  <div class="room-divider">— или —</div>
-
-  <div class="field">
-    <label>🔗 Код комнаты</label>
-    <input type="text" id="roomCodeInput" placeholder="ABC123" maxlength="6" style="text-transform: uppercase; letter-spacing: 4px; font-size: 20px;">
+  <div class="mode-card" data-mode="qr">
+    <h3>📱 Игра по очереди через QR</h3>
+    <p>Ходите по очереди. Один делает ход → QR-код → второй сканирует и продолжает. Работает полностью без интернета.</p>
+    <span class="tag no-net">📴 Без интернета</span>
   </div>
-  <button class="room-btn btn-join-room" id="joinRoomBtn">🚪 Войти в комнату</button>
 
-  <div class="room-players" id="roomPlayersList" style="display:none;"></div>
+  <div class="mode-card" data-mode="lan">
+    <h3>🖥️ Локальный сервер (Wi-Fi)</h3>
+    <p>Запусти Node.js на одном устройстве. Другой зайдёт по IP. Настоящая игра вдвоём по Wi-Fi без интернета.</p>
+    <span class="tag no-net">📴 Без интернета</span>
+  </div>
+
+  <div class="mode-card" data-mode="online">
+    <h3>🌐 Онлайн через Firebase</h3>
+    <p>Играй с друзьями через интернет. Комнаты, общий магазин, отзывы.</p>
+    <span class="tag net">🌐 Нужен интернет</span>
+  </div>
+
+  <button class="start-btn green" id="startBtn" style="margin-top: 15px;">▶️ Начать</button>
 </div>
 
-<!-- ОСНОВНОЙ ИНТЕРФЕЙС -->
+<!-- ========== ОСНОВНОЙ ИНТЕРФЕЙС ========== -->
 <div class="container" id="mainApp" style="display:none;">
-  <h1>🎮 СТИМ-КЛИКЕР ОНЛАЙН</h1>
+  <h1>🎮 СТИМ-КЛИКЕР</h1>
   <div class="topbar">
     <div class="topbar-left">
       <div class="money-row">
         <span class="money">💰 <span id="money">0</span> ₽</span>
-        <button class="room-badge" id="roomBadge" title="Нажми, чтобы сменить комнату">🚪 <span id="roomCodeDisplay">—</span></button>
+        <button class="mode-badge" id="modeBadge" title="Сменить режим">🎮 <span id="modeDisplay">Одиночная</span></button>
       </div>
       <div class="player-info">
         👤 <b id="playerNameDisplay">Игрок</b>
-        <button class="nick-btn" id="changeNickBtn">✏️ Сменить ник</button>
-        <button class="reset-acc-btn" id="resetAccBtn" style="font-size: 11px; padding: 3px 8px;">🔄 Сброс</button>
+        <button class="nick-btn" id="changeNickBtn">✏️ Ник</button>
+        <button class="reset-btn" id="resetAccBtn">🔄 Сброс</button>
       </div>
       <div><span id="serverStatus" class="status offline">Проверка...</span></div>
     </div>
@@ -277,7 +272,7 @@
       <button data-page="library">📚 Библиотека</button>
       <button data-page="studio">🛠️ Студия</button>
       <button data-page="mystore">📤 Мои игры</button>
-      <button data-page="players">👥 Игроки</button>
+      <button data-page="sync" id="syncTab">🔄 Синхронизация</button>
     </div>
   </div>
 
@@ -339,20 +334,25 @@
     <div class="grid" id="myStoreGrid"></div>
   </div>
 
-  <div class="page" id="page-players">
-    <h2 style="color:#66c0f4; margin-bottom:15px;">👥 Игроки в комнате</h2>
-    <div id="playersPageList" style="background:#171a21; border-radius:10px; padding:15px;"></div>
+  <div class="page" id="page-sync">
+    <h2 style="color:#66c0f4; margin-bottom:15px;">🔄 Синхронизация хода</h2>
+    <div style="background:#171a21; border-radius:10px; padding:20px;">
+      <p style="color:#8f98a0; margin-bottom:15px;">В режиме «по очереди» передавай ход другу через QR-код.</p>
+      <button class="start-btn blue" id="exportQrBtn" style="margin-bottom:10px;">📤 Экспортировать мой ход (QR)</button>
+      <button class="start-btn purple" id="importQrBtn">📥 Импортировать ход друга (камера)</button>
+    </div>
   </div>
 </div>
 
+<!-- ========== МОДАЛКА ========== -->
 <div class="modal" id="modal">
   <div class="modal-content">
-    <h2 id="modalTitle">Игра</h2>
+    <h2 id="modalTitle">Заголовок</h2>
     <div id="playScene"></div>
     <div class="msg" id="playMsg"></div>
     <div id="reviewsSection" style="display:none;">
       <div id="reviewsList" class="reviews-list"></div>
-      <div class="review-form" id="reviewForm">
+      <div class="review-form">
         <h4>✍️ Оставить отзыв</h4>
         <div class="stars-select" id="starsSelect">
           <button class="star-btn" data-v="1">★</button>
@@ -373,116 +373,49 @@
 const PUBLISH_COST = 100;
 const DOWNLOAD_SECONDS = 100;
 
-// ============ КОМНАТА ============
-let ROOM_CODE = localStorage.getItem('roomCode') || null;
-let PLAYER_NAME = localStorage.getItem('playerName') || null;
-let roomRef = null;       // ссылка на комнату в БД
-let playersRef = null;    // ссылка на список игроков
-let gamesRef = null;      // ссылка на игры комнаты
-let reviewsRef = null;    // ссылка на отзывы комнаты
-let currentPlayerKey = null; // ключ игрока в списке
+// ============ РЕЖИМ ============
+let MODE = 'solo'; // solo | qr | lan | online
+let ROOM_CODE = null;
+let PLAYER_NAME = localStorage.getItem('playerName') || 'Игрок' + Math.floor(Math.random()*999);
 
-function genRoomCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = '';
-  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random()*chars.length)];
-  return code;
-}
-
-function saveRoom(code) {
-  ROOM_CODE = code;
-  localStorage.setItem('roomCode', code);
-}
-
-function leaveRoom() {
-  if (currentPlayerKey && playersRef && db) {
-    try { db.remove(db.ref(db.database, `rooms/${ROOM_CODE}/players/${currentPlayerKey}`)); } catch(e) {}
-  }
-  localStorage.removeItem('roomCode');
-  ROOM_CODE = null;
-  location.reload();
-}
-
-// ============ СЕРВЕР ============
-let useServer = false;
-let db = null;
-
-async function initServer() {
-  const statusEl = document.getElementById('serverStatus');
-  if (!window.FIREBASE_CONFIG) {
-    statusEl.className = 'status offline';
-    statusEl.textContent = '🔌 Локально (1 игрок)';
-    return false;
-  }
-  try {
-    const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
-    const { getDatabase, ref, onValue, set, push, remove, onDisconnect } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js');
-    const app = initializeApp(window.FIREBASE_CONFIG);
-    db = { getDatabase, ref, onValue, set, push, remove, onDisconnect, database: getDatabase(app) };
-    useServer = true;
-    statusEl.className = 'status online';
-    statusEl.textContent = '🌐 Онлайн';
-    return true;
-  } catch(e) {
-    console.error('Firebase error:', e);
-    statusEl.className = 'status offline';
-    statusEl.textContent = '🔌 Локально (ошибка)';
-    return false;
-  }
-}
-
-// ============ ИГРЫ ============
 const STARTER_GAMES = [
-  { id: 'g1', name: 'Космический Рейс', desc: 'Кликай кнопки — зарабатывай!', price: 50, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 60, y: 80, w: 160, h: 60, color: '#66c0f4', text: 'ЖМИ МЕНЯ!', reward: 1 },
-      { id: 'o2', type: 'text', x: 60, y: 20, w: 200, h: 40, color: '#a4d007', text: 'Космический Рейс 🚀' } ] },
-  { id: 'g2', name: 'Быстрая Реакция', desc: 'Нажимай на кнопки!', price: 80, author: 'Valve', objects: [
+  { id: 'g1', name: 'Космический Рейс', desc: 'Кликай кнопки!', price: 50, author: 'Valve', objects: [
+      { id: 'o1', type: 'btn', x: 60, y: 80, w: 160, h: 60, color: '#66c0f4', text: 'ЖМИ!', reward: 1 },
+      { id: 'o2', type: 'text', x: 60, y: 20, w: 200, h: 40, color: '#a4d007', text: 'Космос 🚀' } ] },
+  { id: 'g2', name: 'Быстрая Реакция', desc: 'Нажимай!', price: 80, author: 'Valve', objects: [
       { id: 'o1', type: 'btn', x: 40, y: 60, w: 100, h: 80, color: '#a4d007', text: 'СТАРТ', reward: 2 },
-      { id: 'o2', type: 'btn', x: 170, y: 60, w: 100, h: 80, color: '#c23b3b', text: 'ФИНИШ', reward: 5 },
-      { id: 'o3', type: 'text', x: 40, y: 20, w: 250, h: 30, color: '#66c0f4', text: 'Успей нажать!' } ] },
-  { id: 'g3', name: 'Золотая Кнопка', desc: 'Одна кнопка — много денег.', price: 120, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 120, y: 100, w: 140, h: 100, color: '#f5c542', text: '💰 ЗОЛОТО', reward: 10 },
-      { id: 'o2', type: 'text', x: 100, y: 50, w: 200, h: 40, color: '#f5c542', text: 'Золотая Кнопка' } ] },
-  { id: 'g4', name: 'Мега Клик', desc: 'Жми мега-кнопку!', price: 200, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 100, y: 100, w: 200, h: 120, color: '#ff6b00', text: '💥 МЕГА', reward: 50 },
-      { id: 'o2', type: 'text', x: 80, y: 40, w: 250, h: 40, color: '#ff6b00', text: 'Мега Клик' } ] },
-  { id: 'g5', name: 'Бомба-Игра', desc: 'Осторожно! Есть кнопка-бомба.', price: 90, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 40, y: 60, w: 100, h: 80, color: '#a4d007', text: 'БОНУС +5', reward: 5 },
-      { id: 'o2', type: 'btn', x: 170, y: 60, w: 100, h: 80, color: '#c23b3b', text: 'БОМБА -5', reward: -5 },
-      { id: 'o3', type: 'text', x: 40, y: 20, w: 250, h: 30, color: '#c23b3b', text: 'Не нажми бомбу!' } ] },
-  { id: 'g6', name: 'Текстовый Квест', desc: 'Читай и кликай.', price: 60, author: 'Valve', objects: [
-      { id: 'o1', type: 'text', x: 40, y: 20, w: 300, h: 60, color: '#66c0f4', text: 'Ты в тёмной комнате...' },
-      { id: 'o2', type: 'btn', x: 40, y: 100, w: 130, h: 60, color: '#a4d007', text: 'Включить свет', reward: 10 },
-      { id: 'o3', type: 'btn', x: 190, y: 100, w: 130, h: 60, color: '#c23b3b', text: 'Крикнуть', reward: 2 } ] },
-  { id: 'g7', name: 'Кнопочный Ад', desc: 'Много кнопок — много денег.', price: 300, author: 'Valve', objects: [
+      { id: 'o2', type: 'btn', x: 170, y: 60, w: 100, h: 80, color: '#c23b3b', text: 'ФИНИШ', reward: 5 } ] },
+  { id: 'g3', name: 'Золотая Кнопка', desc: 'Много денег!', price: 120, author: 'Valve', objects: [
+      { id: 'o1', type: 'btn', x: 120, y: 100, w: 140, h: 100, color: '#f5c542', text: '💰 ЗОЛОТО', reward: 10 } ] },
+  { id: 'g4', name: 'Мега Клик', desc: 'Жми!', price: 200, author: 'Valve', objects: [
+      { id: 'o1', type: 'btn', x: 100, y: 100, w: 200, h: 120, color: '#ff6b00', text: '💥 МЕГА', reward: 50 } ] },
+  { id: 'g5', name: 'Бомба-Игра', desc: 'Есть бомба!', price: 90, author: 'Valve', objects: [
+      { id: 'o1', type: 'btn', x: 40, y: 60, w: 100, h: 80, color: '#a4d007', text: '+5', reward: 5 },
+      { id: 'o2', type: 'btn', x: 170, y: 60, w: 100, h: 80, color: '#c23b3b', text: '-5', reward: -5 } ] },
+  { id: 'g6', name: 'Текстовый Квест', desc: 'Читай!', price: 60, author: 'Valve', objects: [
+      { id: 'o1', type: 'text', x: 40, y: 20, w: 300, h: 60, color: '#66c0f4', text: 'Ты в комнате...' },
+      { id: 'o2', type: 'btn', x: 40, y: 100, w: 130, h: 60, color: '#a4d007', text: 'Свет', reward: 10 } ] },
+  { id: 'g7', name: 'Кнопочный Ад', desc: 'Много кнопок!', price: 300, author: 'Valve', objects: [
       { id: 'o1', type: 'btn', x: 20, y: 20, w: 80, h: 60, color: '#66c0f4', text: '+3', reward: 3 },
       { id: 'o2', type: 'btn', x: 120, y: 20, w: 80, h: 60, color: '#a4d007', text: '+3', reward: 3 },
-      { id: 'o3', type: 'btn', x: 220, y: 20, w: 80, h: 60, color: '#f5c542', text: '+3', reward: 3 },
-      { id: 'o4', type: 'btn', x: 20, y: 100, w: 80, h: 60, color: '#66c0f4', text: '+3', reward: 3 },
-      { id: 'o5', type: 'btn', x: 120, y: 100, w: 80, h: 60, color: '#a4d007', text: '+3', reward: 3 },
-      { id: 'o6', type: 'btn', x: 220, y: 100, w: 80, h: 60, color: '#f5c542', text: '+3', reward: 3 } ] },
-  { id: 'g8', name: 'Круг Удачи', desc: 'Кликай по кругу.', price: 150, author: 'Valve', objects: [
-      { id: 'o1', type: 'circle', x: 100, y: 80, w: 180, h: 180, color: '#a4d007', text: '🎯', reward: 15 },
-      { id: 'o2', type: 'text', x: 100, y: 30, w: 200, h: 30, color: '#66c0f4', text: 'Круг Удачи' } ] },
-  { id: 'g9', name: 'Победный Клик', desc: 'Нажми победную кнопку!', price: 500, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 100, y: 100, w: 220, h: 130, color: '#f5c542', text: '🏆 ПОБЕДА +100', reward: 100 },
-      { id: 'o2', type: 'text', x: 100, y: 40, w: 250, h: 40, color: '#f5c542', text: 'Победный Клик' } ] },
-  { id: 'g10', name: 'Мульти-Кнопки', desc: '3 разных кнопки на выбор.', price: 180, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 30, y: 80, w: 110, h: 80, color: '#66c0f4', text: 'МАЛО +2', reward: 2 },
-      { id: 'o2', type: 'btn', x: 150, y: 80, w: 110, h: 80, color: '#a4d007', text: 'СРЕДНЕ +7', reward: 7 },
-      { id: 'o3', type: 'btn', x: 270, y: 80, w: 110, h: 80, color: '#f5c542', text: 'МНОГО +15', reward: 15 },
-      { id: 'o4', type: 'text', x: 80, y: 30, w: 300, h: 40, color: '#66c0f4', text: 'Выбери свою награду' } ] }
+      { id: 'o3', type: 'btn', x: 220, y: 20, w: 80, h: 60, color: '#f5c542', text: '+3', reward: 3 } ] },
+  { id: 'g8', name: 'Круг Удачи', desc: 'Крути!', price: 150, author: 'Valve', objects: [
+      { id: 'o1', type: 'circle', x: 100, y: 80, w: 180, h: 180, color: '#a4d007', text: '🎯', reward: 15 } ] },
+  { id: 'g9', name: 'Победный Клик', desc: 'Победа!', price: 500, author: 'Valve', objects: [
+      { id: 'o1', type: 'btn', x: 100, y: 100, w: 220, h: 130, color: '#f5c542', text: '🏆 +100', reward: 100 } ] },
+  { id: 'g10', name: 'Мульти-Кнопки', desc: 'Выбирай!', price: 180, author: 'Valve', objects: [
+      { id: 'o1', type: 'btn', x: 30, y: 80, w: 110, h: 80, color: '#66c0f4', text: '+2', reward: 2 },
+      { id: 'o2', type: 'btn', x: 150, y: 80, w: 110, h: 80, color: '#a4d007', text: '+7', reward: 7 },
+      { id: 'o3', type: 'btn', x: 270, y: 80, w: 110, h: 80, color: '#f5c542', text: '+15', reward: 15 } ] }
 ];
 
 // ============ СОСТОЯНИЕ ============
 const DEFAULT_STATE = { money: 0, perClick: 1, totalClicks: 0, ownedGames: [], myGames: [], shopGames: [], allReviews: {}, downloadedGames: {} };
 let state = loadState();
-let players = {}; // { playerKey: { name, lastSeen } }
 
 function loadState() {
   try {
-    const key = ROOM_CODE ? 'steamClickerRoom_' + ROOM_CODE : 'steamClickerLocal';
-    const saved = localStorage.getItem(key);
+    const saved = localStorage.getItem('steamClicker_' + MODE);
     if (saved) {
       const s = JSON.parse(saved);
       if (!s.shopGames || s.shopGames.filter(g => g.author === 'Valve').length < 10) {
@@ -495,10 +428,7 @@ function loadState() {
   } catch(e) {}
   return { ...DEFAULT_STATE, shopGames: JSON.parse(JSON.stringify(STARTER_GAMES)) };
 }
-function saveState() {
-  const key = ROOM_CODE ? 'steamClickerRoom_' + ROOM_CODE : 'steamClickerLocal';
-  localStorage.setItem(key, JSON.stringify(state));
-}
+function saveState() { localStorage.setItem('steamClicker_' + MODE, JSON.stringify(state)); }
 function updateMoney() { document.getElementById('money').textContent = Math.floor(state.money); updatePublishHint(); updateStudioLock(); }
 
 function getReviewStats(gameId) {
@@ -509,357 +439,248 @@ function getReviewStats(gameId) {
   return { avg: (sum / list.length).toFixed(1), count: list.length };
 }
 
-const BOT_NAMES = ['xX_DarkSlayer_Xx','ProGamer2010','КиберКот','NoobMaster','Снайпер777','MegaBot','ТёмныйЛорд','Pixell_King','СтримерВася','Лаки_Люк','GameOver99','Звёздный_Волк','TrollFace','Мастер_Игр','Феникс','CyberDragon','Тихий_Ниндзя','Мистер_Босс','Ракета11','VibeChecker','КосмоКапитан','КиберПанк2077','МегаМозг','Счастливчик','АнимеШка','Pro100_Игрок','Легенда','Лунный_Кот','РобоКоп','Золотой_Дракон'];
-function randomBotName() { return BOT_NAMES[Math.floor(Math.random()*BOT_NAMES.length)] + '_' + Math.floor(Math.random()*999); }
-
-const GOOD_REVIEWS = ['Отличная игра!', 'Очень понравилось!', 'Классно сделано 👍', 'Рекомендую!', 'Затягивает!', 'Супер!', 'Лучшая игра!', 'Круто!', 'Неплохо, играбельно', 'За эти деньги — огонь!'];
-const BAD_REVIEWS = ['Скучно...', 'Не понравилось', 'Слишком просто', 'Не стоит этих денег', 'Мало контента', 'Лучше бы не покупал', 'Ужас', 'Разочарован', 'Плохо сделано', 'Не рекомендую'];
-function randomReviewText(stars) {
-  const pool = stars >= 4 ? GOOD_REVIEWS : stars <= 2 ? BAD_REVIEWS : [...GOOD_REVIEWS, ...BAD_REVIEWS];
-  return pool[Math.floor(Math.random()*pool.length)];
-}
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 // ============ УВЕДОМЛЕНИЯ ============
-function showSaleNotification(botName, gameName, price) {
-  const area = document.getElementById('notifArea');
-  const el = document.createElement('div'); el.className = 'sale-notif';
-  el.innerHTML = `
-    <div class="n-title">🎉 Игрок купил твою игру!</div>
-    <div class="n-text">
-      <b style="color:#66c0f4;">${botName}</b> купил игру<br>
-      <b>«${gameName}»</b><br>
-      <span class="n-money">+${price} ₽</span>
-    </div>`;
-  area.appendChild(el);
-  setTimeout(() => { el.classList.add('fade-out'); setTimeout(() => el.remove(), 400); }, 5000);
-}
-function showReviewNotification(author, gameName, stars, text, isMine) {
-  const area = document.getElementById('notifArea');
-  const el = document.createElement('div'); el.className = 'sale-notif';
-  el.style.borderColor = stars >= 4 ? '#a4d007' : stars <= 2 ? '#c23b3b' : '#f5c542';
-  const title = isMine ? '📝 Новый отзыв на твою игру!' : '💬 Новый отзыв';
-  el.innerHTML = `
-    <div class="n-title" style="color:${stars >= 4 ? '#a4d007' : stars <= 2 ? '#c23b3b' : '#f5c542'};">${title}</div>
-    <div class="n-text">
-      <b style="color:#66c0f4;">${author}</b> — ${'★'.repeat(stars)}${'☆'.repeat(5-stars)}<br>
-      <b>«${gameName}»</b><br>
-      «${text}»
-    </div>`;
-  area.appendChild(el);
-  setTimeout(() => { el.classList.add('fade-out'); setTimeout(() => el.remove(), 400); }, 6000);
-}
 function toast(msg) {
   const el = document.createElement('div'); el.className = 'sale-notif';
   el.innerHTML = `<div class="n-text" style="font-size:14px;">${msg}</div>`;
   document.getElementById('notifArea').appendChild(el);
   setTimeout(() => { el.classList.add('fade-out'); setTimeout(() => el.remove(), 400); }, 2500);
 }
+function showSaleNotification(bot, game, price) {
+  const el = document.createElement('div'); el.className = 'sale-notif';
+  el.innerHTML = `<div class="n-title">🎉 Игрок купил твою игру!</div>
+    <div class="n-text"><b style="color:#66c0f4;">${bot}</b> купил «${game}»<br>+${price} ₽</div>`;
+  document.getElementById('notifArea').appendChild(el);
+  setTimeout(() => { el.classList.add('fade-out'); setTimeout(() => el.remove(), 400); }, 5000);
+}
 
-// ============ НАВИГАЦИЯ ============
-document.querySelectorAll('.nav button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('page-' + btn.dataset.page).classList.add('active');
-    renderAll();
+// ============ СТАРТ ============
+let selectedMode = 'solo';
+document.querySelectorAll('.mode-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    selectedMode = card.dataset.mode;
   });
 });
 
-// ============ КЛИКЕР ============
-document.getElementById('clickBtn').addEventListener('click', () => {
-  state.money += state.perClick; state.totalClicks++;
-  document.getElementById('totalClicks').textContent = state.totalClicks;
-  updateMoney(); saveState();
+document.getElementById('startBtn').addEventListener('click', () => {
+  MODE = selectedMode;
+  if (MODE === 'online' && !window.FIREBASE_CONFIG) {
+    if (!confirm('Firebase не настроен. Онлайн не будет работать.\nПродолжить в локальном режиме?')) return;
+  }
+  localStorage.setItem('steamClickerMode', MODE);
+  startGame();
 });
+
+function startGame() {
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+  document.getElementById('modeDisplay').textContent = {solo:'Одиночная', qr:'QR-очередь', lan:'Wi-Fi', online:'Онлайн'}[MODE];
+  document.getElementById('playerNameDisplay').textContent = PLAYER_NAME;
+  document.getElementById('perClick').textContent = state.perClick;
+  document.getElementById('totalClicks').textContent = state.totalClicks;
+
+  if (MODE !== 'qr') document.getElementById('syncTab').style.display = 'none';
+
+  bindAll();
+  renderAll();
+  if (MODE === 'online') initFirebase();
+  if (MODE === 'solo' || MODE === 'qr') scheduleBotTick();
+}
+
+function bindAll() {
+  document.querySelectorAll('.nav button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('page-' + btn.dataset.page).classList.add('active');
+      renderAll();
+    });
+  });
+  document.getElementById('clickBtn').addEventListener('click', () => {
+    state.money += state.perClick; state.totalClicks++;
+    document.getElementById('totalClicks').textContent = state.totalClicks;
+    updateMoney(); saveState();
+  });
+  document.getElementById('modeBadge').addEventListener('click', () => {
+    if (confirm('Вернуться к выбору режима? Прогресс сохранится.')) {
+      localStorage.removeItem('steamClickerMode');
+      location.reload();
+    }
+  });
+  document.getElementById('changeNickBtn').addEventListener('click', () => {
+    const n = prompt('Новый ник:', PLAYER_NAME);
+    if (!n || !n.trim()) return;
+    PLAYER_NAME = n.trim().slice(0, 20);
+    localStorage.setItem('playerName', PLAYER_NAME);
+    document.getElementById('playerNameDisplay').textContent = PLAYER_NAME;
+    toast('✅ Ник изменён');
+  });
+  document.getElementById('resetAccBtn').addEventListener('click', () => {
+    if (!confirm('Сбросить весь прогресс?')) return;
+    localStorage.removeItem('steamClicker_' + MODE);
+    location.reload();
+  });
+}
+
+function renderAll() {
+  updateMoney();
+  document.getElementById('perClick').textContent = state.perClick;
+  document.getElementById('totalClicks').textContent = state.totalClicks;
+  renderShop(); renderLibrary(); renderMyStore();
+}
 
 // ============ МАГАЗИН ============
 function renderShop() {
   const grid = document.getElementById('shopGrid'); grid.innerHTML = '';
-  if (state.shopGames.length === 0) { grid.innerHTML = '<div class="empty">Магазин пуст</div>'; return; }
   state.shopGames.forEach(g => {
     const owned = state.ownedGames.includes(g.id) || state.myGames.some(m => m.id === g.id);
     const isMine = state.myGames.some(m => m.id === g.id);
     const stats = getReviewStats(g.id);
-    const ratingStr = stats.count > 0 ? `⭐ ${stats.avg} <small>(${stats.count})</small>` : '<small>Нет отзывов</small>';
-    const preview = getPreviewReviews(g.id);
+    const rating = stats.count > 0 ? `⭐ ${stats.avg} <small>(${stats.count})</small>` : '<small>Нет отзывов</small>';
     const card = document.createElement('div'); card.className = 'card';
-    card.innerHTML = `
-      <h3>${g.name}</h3>
-      <div class="author">👤 ${g.author}</div>
-      <p>${g.desc}</p>
-      <div class="rating">${ratingStr}</div>
-      ${preview}
+    card.innerHTML = `<h3>${g.name}</h3><div class="author">👤 ${g.author}</div><p>${g.desc}</p>
+      <div class="rating">${rating}</div>
       <div class="price">${g.price} ₽</div>
       <button class="buy-btn" ${owned || state.money < g.price ? 'disabled' : ''}>${owned ? '✅ Куплено' : (state.money < g.price ? 'Не хватает' : 'Купить')}</button>
-      <button class="review-btn">📝 Отзывы / Написать</button>
-      ${isMine ? '<button class="del-btn">🗑️ Удалить свою игру</button>' : ''}`;
+      <button class="review-btn">📝 Отзывы</button>
+      ${isMine ? '<button class="del-btn">🗑️ Удалить</button>' : ''}`;
     if (!owned) card.querySelector('.buy-btn').addEventListener('click', () => buyGame(g));
     card.querySelector('.review-btn').addEventListener('click', () => openReviews(g));
     if (isMine) card.querySelector('.del-btn').addEventListener('click', () => deleteMyGame(g.id));
     grid.appendChild(card);
   });
 }
-
-function getPreviewReviews(gameId) {
-  const all = state.allReviews || {};
-  const list = Object.values(all).filter(r => r.gameId === gameId).sort((a,b) => b.time - a.time).slice(0, 2);
-  if (list.length === 0) return '';
-  const html = list.map(r => {
-    return `<div style="margin-bottom:4px;"><b>${escapeHtml(r.author)}</b>: ${'★'.repeat(r.stars)}<br>«${escapeHtml(r.text.slice(0, 40))}${r.text.length > 40 ? '...' : ''}»</div>`;
-  }).join('');
-  return `<div class="preview-reviews">${html}</div>`;
-}
-
 function buyGame(g) {
   if (state.money < g.price) return toast('❌ Не хватает денег!');
   state.money -= g.price; state.ownedGames.push(g.id);
   updateMoney(); saveState(); renderAll(); toast(`✅ Куплено: ${g.name}`);
 }
 
-// ============ СКАЧИВАНИЕ ============
-const downloadingGames = {};
-const downloadTimers = {};
-
-function getDownloadProgress(gameId) {
-  const dl = downloadingGames[gameId];
-  if (!dl) return 0;
-  const total = DOWNLOAD_SECONDS * 1000;
-  const elapsed = Date.now() - dl.startTime;
-  return Math.min(100, (elapsed / total) * 100);
-}
-
-function getDownloadTimeLeft(gameId) {
-  const dl = downloadingGames[gameId];
-  if (!dl) return DOWNLOAD_SECONDS;
-  const total = DOWNLOAD_SECONDS * 1000;
-  const elapsed = Date.now() - dl.startTime;
-  return Math.max(0, Math.ceil((total - elapsed) / 1000));
-}
-
-function startDownload(g) {
-  if (downloadingGames[g.id]) return toast('⏳ Уже качается...');
-  if (state.downloadedGames[g.id]) return toast('✅ Уже скачано!');
-
-  downloadingGames[g.id] = { progress: 0, startTime: Date.now() };
-  renderAll();
-
-  const interval = setInterval(() => {
-    const progress = getDownloadProgress(g.id);
-    downloadingGames[g.id].progress = progress;
-    updateLibraryCardProgress(g.id);
-
-    if (progress >= 100) {
-      clearInterval(interval);
-      delete downloadingGames[g.id];
-      delete downloadTimers[g.id];
-      state.downloadedGames[g.id] = Date.now();
-      saveState();
-      renderAll();
-      toast(`✅ «${g.name}» скачана! Можно играть`);
-      if (currentlyViewing === g.id) renderViewModal(g);
-    }
-  }, 250);
-  downloadTimers[g.id] = interval;
-}
-
-function updateLibraryCardProgress(gameId) {
-  const card = document.querySelector(`[data-game-id="${gameId}"]`);
-  if (!card) return;
-  const progress = getDownloadProgress(gameId);
-  const fill = card.querySelector('.card-progress .fill');
-  const pct = card.querySelector('.card-progress .pct');
-  const left = card.querySelector('.card-progress .left');
-  if (fill) fill.style.width = progress + '%';
-  if (pct) pct.textContent = Math.floor(progress) + '%';
-  if (left) left.textContent = getDownloadTimeLeft(gameId) + ' сек';
-}
-
-// ============ ПРОСМОТР ============
-let currentlyViewing = null;
-let viewInterval = null;
-
-function openViewModal(g) {
-  currentlyViewing = g.id;
-  modal.classList.add('active');
-  modalTitle.textContent = '👁️ ' + g.name;
-  playMsg.textContent = '';
-  document.getElementById('reviewsSection').style.display = 'none';
-  playScene.style.display = 'block';
-  renderViewModal(g);
-
-  if (viewInterval) clearInterval(viewInterval);
-  viewInterval = setInterval(() => {
-    if (currentlyViewing === g.id && modal.classList.contains('active')) {
-      if (downloadingGames[g.id]) renderViewModal(g);
-    }
-  }, 250);
-}
-
-function renderViewModal(g) {
-  const downloaded = !!state.downloadedGames[g.id];
-  const isDownloading = !!downloadingGames[g.id];
-  const progress = getDownloadProgress(g.id);
-  const left = getDownloadTimeLeft(g.id);
-
-  if (downloaded) {
-    playScene.innerHTML = `
-      <div class="view-screen">
-        <h3>✅ Игра установлена</h3>
-        <div class="status-msg" style="margin-bottom:15px;">«${g.name}» готова к запуску!</div>
-        <button class="play-btn" style="width:100%;padding:14px;font-size:16px;" id="viewPlayBtn">▶️ Играть</button>
-      </div>
-    `;
-    document.getElementById('viewPlayBtn').addEventListener('click', () => {
-      modal.classList.remove('active');
-      playGame(g);
-    });
-    return;
-  }
-  if (isDownloading) {
-    playScene.innerHTML = `
-      <div class="view-screen">
-        <h3>📥 Скачивание «${g.name}»</h3>
-        <div class="big-progress">
-          <div class="big-progress-fill" style="width:${progress}%"></div>
-          <div class="big-progress-pct">${Math.floor(progress)}%</div>
-        </div>
-        <div class="stats">Осталось: <b>${left} сек</b></div>
-        <div class="status-msg">Не закрывай страницу — загрузка идёт...</div>
-      </div>
-    `;
-    return;
-  }
-  playScene.innerHTML = `
-    <div class="view-screen">
-      <h3>👁️ «${g.name}»</h3>
-      <div class="status-msg" style="margin-bottom:15px;">Игра ещё не скачана на твой компьютер</div>
-      <button class="download-btn" style="width:100%;padding:14px;font-size:16px;" id="viewDownloadBtn">📥 Скачать (${DOWNLOAD_SECONDS} сек)</button>
-    </div>
-  `;
-  document.getElementById('viewDownloadBtn').addEventListener('click', () => {
-    startDownload(g);
-    renderViewModal(g);
-  });
-}
-
 // ============ БИБЛИОТЕКА ============
+const downloadingGames = {};
+function getDownloadProgress(id) {
+  const dl = downloadingGames[id];
+  if (!dl) return 0;
+  return Math.min(100, ((Date.now() - dl.startTime) / (DOWNLOAD_SECONDS*1000)) * 100);
+}
+function getDownloadTimeLeft(id) {
+  const dl = downloadingGames[id];
+  if (!dl) return DOWNLOAD_SECONDS;
+  return Math.max(0, Math.ceil((DOWNLOAD_SECONDS*1000 - (Date.now() - dl.startTime)) / 1000));
+}
+function startDownload(g) {
+  if (downloadingGames[g.id]) return;
+  if (state.downloadedGames[g.id]) return;
+  downloadingGames[g.id] = { startTime: Date.now() };
+  renderAll();
+  const iv = setInterval(() => {
+    if (getDownloadProgress(g.id) >= 100) {
+      clearInterval(iv);
+      delete downloadingGames[g.id];
+      state.downloadedGames[g.id] = Date.now();
+      saveState(); renderAll();
+      toast(`✅ «${g.name}» скачана!`);
+    } else {
+      const card = document.querySelector(`[data-game-id="${g.id}"]`);
+      if (card) {
+        const fill = card.querySelector('.card-progress .fill');
+        const pct = card.querySelector('.card-progress .pct');
+        const left = card.querySelector('.card-progress .left');
+        if (fill) fill.style.width = getDownloadProgress(g.id) + '%';
+        if (pct) pct.textContent = Math.floor(getDownloadProgress(g.id)) + '%';
+        if (left) left.textContent = getDownloadTimeLeft(g.id) + ' сек';
+      }
+    }
+  }, 250);
+}
 function renderLibrary() {
   const grid = document.getElementById('libraryGrid'); grid.innerHTML = '';
   const all = [...state.shopGames, ...state.myGames];
   const seen = new Set();
   const owned = all.filter(g => { if (seen.has(g.id)) return false; seen.add(g.id); return state.ownedGames.includes(g.id) || state.myGames.some(m => m.id === g.id); });
-  if (owned.length === 0) { grid.innerHTML = '<div class="empty">У тебя пока нет игр. Купи что-нибудь в Магазине!</div>'; return; }
+  if (owned.length === 0) { grid.innerHTML = '<div class="empty">Нет игр. Купи в Магазине!</div>'; return; }
   owned.forEach(g => {
-    const stats = getReviewStats(g.id);
-    const ratingStr = stats.count > 0 ? `⭐ ${stats.avg} <small>(${stats.count})</small>` : '<small>Нет отзывов</small>';
     const downloaded = !!state.downloadedGames[g.id];
-    const isDownloading = !!downloadingGames[g.id];
-    const isMyGame = state.myGames.some(m => m.id === g.id);
-    const progress = getDownloadProgress(g.id);
-    const left = getDownloadTimeLeft(g.id);
-
-    const card = document.createElement('div'); card.className = 'card';
-    card.dataset.gameId = g.id;
+    const isDl = !!downloadingGames[g.id];
+    const isMine = state.myGames.some(m => m.id === g.id);
+    const card = document.createElement('div'); card.className = 'card'; card.dataset.gameId = g.id;
     let progressBlock = '';
-    if (isDownloading) {
-      progressBlock = `
-        <div class="card-progress">
-          <div class="bar"><div class="fill" style="width:${progress}%"></div></div>
-          <div class="info">
-            <span class="pct"><b>${Math.floor(progress)}%</b></span>
-            <span class="left">${left} сек</span>
-          </div>
-        </div>
-      `;
+    if (isDl) {
+      progressBlock = `<div class="card-progress"><div class="bar"><div class="fill" style="width:${getDownloadProgress(g.id)}%"></div></div>
+        <div class="info"><span class="pct"><b>${Math.floor(getDownloadProgress(g.id))}%</b></span><span class="left">${getDownloadTimeLeft(g.id)} сек</span></div></div>`;
     }
-
-    let mainBtn = '';
-    if (downloaded) mainBtn = `<button class="play-btn">▶️ Играть</button>`;
-    else if (isDownloading) mainBtn = `<button class="download-btn" disabled>📥 Скачивается...</button>`;
-    else mainBtn = `<button class="download-btn">📥 Скачать (${DOWNLOAD_SECONDS} сек)</button>`;
-
+    let mainBtn = downloaded ? `<button class="play-btn">▶️ Играть</button>` :
+                  isDl ? `<button class="download-btn" disabled>📥 Скачивается...</button>` :
+                  `<button class="download-btn">📥 Скачать (${DOWNLOAD_SECONDS} сек)</button>`;
     card.innerHTML = `<h3>${g.name}</h3><div class="author">👤 ${g.author}</div><p>${g.desc}</p>
-      <div class="rating">${ratingStr}</div>
-      ${progressBlock}
-      ${mainBtn}
-      <button class="view-btn">👁️ Посмотреть</button>
+      ${progressBlock}${mainBtn}
       <button class="review-btn">📝 Отзывы</button>
-      ${!isMyGame ? '<button class="del-btn">🗑️ Удалить из библиотеки</button>' : ''}`;
-
+      ${!isMine ? '<button class="del-btn">🗑️ Удалить</button>' : ''}`;
     if (downloaded) card.querySelector('.play-btn').addEventListener('click', () => playGame(g));
-    else if (!isDownloading) card.querySelector('.download-btn').addEventListener('click', () => startDownload(g));
-    card.querySelector('.view-btn').addEventListener('click', () => openViewModal(g));
+    else if (!isDl) card.querySelector('.download-btn').addEventListener('click', () => startDownload(g));
     card.querySelector('.review-btn').addEventListener('click', () => openReviews(g));
-    if (!isMyGame) card.querySelector('.del-btn').addEventListener('click', () => deleteFromLibrary(g.id));
+    if (!isMine) card.querySelector('.del-btn').addEventListener('click', () => {
+      if (confirm('Удалить из библиотеки?')) {
+        state.ownedGames = state.ownedGames.filter(x => x !== g.id);
+        delete state.downloadedGames[g.id];
+        saveState(); renderAll();
+      }
+    });
     grid.appendChild(card);
   });
-}
-
-function deleteFromLibrary(gameId) {
-  const g = state.shopGames.find(x => x.id === gameId) || state.myGames.find(x => x.id === gameId);
-  if (!g) return;
-  if (!confirm(`Удалить «${g.name}» из библиотеки? Скачивание тоже сбросится.`)) return;
-  state.ownedGames = state.ownedGames.filter(id => id !== gameId);
-  delete state.downloadedGames[gameId];
-  if (downloadingGames[gameId]) {
-    if (downloadTimers[gameId]) clearInterval(downloadTimers[gameId]);
-    delete downloadingGames[gameId];
-    delete downloadTimers[gameId];
-  }
-  saveState(); renderAll();
-  toast(`🗑️ «${g.name}» удалена из библиотеки`);
 }
 
 // ============ МОИ ИГРЫ ============
 function renderMyStore() {
   const grid = document.getElementById('myStoreGrid'); grid.innerHTML = '';
-  if (state.myGames.length === 0) { grid.innerHTML = '<div class="empty">Создай игру в Студии! (Публикация: 100 ₽)</div>'; }
-  else state.myGames.forEach(g => {
+  if (state.myGames.length === 0) { grid.innerHTML = '<div class="empty">Создай игру в Студии!</div>'; return; }
+  state.myGames.forEach(g => {
     const stats = getReviewStats(g.id);
-    const ratingStr = stats.count > 0 ? `⭐ ${stats.avg} <small>(${stats.count} отз.)</small>` : '<small>Нет отзывов</small>';
+    const rating = stats.count > 0 ? `⭐ ${stats.avg} (${stats.count})` : 'Нет отзывов';
     const card = document.createElement('div'); card.className = 'card';
     card.innerHTML = `<h3>${g.name}</h3><p>${g.desc}</p>
-      <div class="rating">${ratingStr}</div>
+      <div class="rating">${rating}</div>
       <div class="price">${g.price} ₽</div>
-      <div style="font-size:13px; color:#a4d007; margin-bottom:8px;">🤖 Продано: ${g.botBuys||0}<br>💰 Заработано: ${g.earnings||0} ₽</div>
+      <div style="font-size:13px; color:#a4d007; margin-bottom:8px;">🤖 ${g.botBuys||0} продаж<br>💰 ${g.earnings||0} ₽</div>
       <button class="play-btn">▶️ Тест</button>
       <button class="review-btn">📝 Отзывы</button>
       <button class="del-btn">🗑️ Удалить</button>`;
     card.querySelector('.play-btn').addEventListener('click', () => playGame(g));
     card.querySelector('.review-btn').addEventListener('click', () => openReviews(g));
-    card.querySelector('.del-btn').addEventListener('click', () => deleteMyGame(g.id));
+    card.querySelector('.del-btn').addEventListener('click', () => {
+      if (!confirm('Удалить игру?')) return;
+      state.myGames = state.myGames.filter(x => x.id !== g.id);
+      state.shopGames = state.shopGames.filter(x => x.id !== g.id);
+      state.ownedGames = state.ownedGames.filter(x => x !== g.id);
+      delete state.downloadedGames[g.id];
+      saveState(); renderAll();
+    });
     grid.appendChild(card);
   });
 }
-
-async function deleteMyGame(id) {
-  const g = state.myGames.find(x => x.id === id);
-  if (!g) return;
-  if (!confirm(`Удалить игру «${g.name}» отовсюду?`)) return;
+function deleteMyGame(id) {
+  if (!confirm('Удалить игру отовсюду?')) return;
   state.myGames = state.myGames.filter(x => x.id !== id);
   state.shopGames = state.shopGames.filter(x => x.id !== id);
   state.ownedGames = state.ownedGames.filter(x => x !== id);
   delete state.downloadedGames[id];
-  if (downloadingGames[id]) {
-    if (downloadTimers[id]) clearInterval(downloadTimers[id]);
-    delete downloadingGames[id];
-    delete downloadTimers[id];
-  }
   saveState(); renderAll();
-  if (useServer && db && ROOM_CODE) { try { await db.remove(db.ref(db.database, `rooms/${ROOM_CODE}/games/${id}`)); } catch(e) {} }
-  toast(`🗑️ Игра «${g.name}» удалена`);
 }
 
 // ============ ОТЗЫВЫ ============
-let currentReviewGame = null;
-let selectedStars = 5;
+let currentReviewGame = null, selectedStars = 5;
+const modal = document.getElementById('modal');
+const modalTitle = document.getElementById('modalTitle');
+const playScene = document.getElementById('playScene');
+const playMsg = document.getElementById('playMsg');
 
 function openReviews(g) {
-  currentReviewGame = g;
-  selectedStars = 5;
-  currentlyViewing = null;
-  if (viewInterval) { clearInterval(viewInterval); viewInterval = null; }
+  currentReviewGame = g; selectedStars = 5;
   modal.classList.add('active');
   modalTitle.textContent = '📝 Отзывы: ' + g.name;
   playScene.style.display = 'none';
@@ -870,140 +691,122 @@ function openReviews(g) {
   document.getElementById('reviewText').value = '';
 }
 function renderStarsSelect() {
-  document.querySelectorAll('#starsSelect .star-btn').forEach(btn => {
-    btn.classList.toggle('active', +btn.dataset.v <= selectedStars);
-  });
+  document.querySelectorAll('#starsSelect .star-btn').forEach(b => b.classList.toggle('active', +b.dataset.v <= selectedStars));
 }
-document.querySelectorAll('#starsSelect .star-btn').forEach(btn => {
-  btn.addEventListener('click', () => { selectedStars = +btn.dataset.v; renderStarsSelect(); });
-});
-
+document.querySelectorAll('#starsSelect .star-btn').forEach(b => b.addEventListener('click', () => { selectedStars = +b.dataset.v; renderStarsSelect(); }));
 function renderReviewsList(gameId) {
   const list = document.getElementById('reviewsList');
-  const all = state.allReviews || {};
-  const reviews = Object.entries(all)
-    .filter(([k, r]) => r.gameId === gameId)
-    .sort((a, b) => b[1].time - a[1].time);
-  if (reviews.length === 0) {
-    list.innerHTML = '<div class="empty" style="padding:20px;">Отзывов пока нет. Будь первым!</div>';
-    return;
-  }
+  const reviews = Object.entries(state.allReviews || {}).filter(([k, r]) => r.gameId === gameId).sort((a, b) => b[1].time - a[1].time);
+  if (reviews.length === 0) { list.innerHTML = '<div class="empty" style="padding:20px;">Нет отзывов</div>'; return; }
   list.innerHTML = reviews.map(([key, r]) => {
-    const isMyReview = (r.author === PLAYER_NAME && r.authorType === 'player');
-    const delBtn = isMyReview
-      ? `<button class="review-del" data-key="${key}" title="Удалить свой отзыв">🗑️ Удалить</button>`
-      : '';
-    return `
-      <div class="review-item">
-        <div class="review-head">
-          <span class="review-author">${escapeHtml(r.author)}</span>
-          <span class="review-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</span>
-          ${delBtn}
-        </div>
-        <div class="review-text">${escapeHtml(r.text)}</div>
-        <div class="review-time">${new Date(r.time).toLocaleString('ru-RU')}</div>
-      </div>`;
+    const mine = r.author === PLAYER_NAME && r.authorType === 'player';
+    return `<div class="review-item"><div class="review-head">
+      <span class="review-author">${escapeHtml(r.author)}</span>
+      <span class="review-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</span>
+      ${mine ? `<button class="review-del" data-key="${key}">🗑️</button>` : ''}</div>
+      <div class="review-text">${escapeHtml(r.text)}</div>
+      <div class="review-time">${new Date(r.time).toLocaleString('ru-RU')}</div></div>`;
   }).join('');
-
-  list.querySelectorAll('.review-del').forEach(btn => {
-    btn.addEventListener('click', () => deleteReview(btn.dataset.key, gameId));
-  });
+  list.querySelectorAll('.review-del').forEach(b => b.addEventListener('click', () => {
+    if (!confirm('Удалить отзыв?')) return;
+    delete state.allReviews[b.dataset.key];
+    saveState(); renderReviewsList(gameId); renderAll();
+  }));
 }
-
-async function deleteReview(key, gameId) {
-  if (!confirm('Удалить свой отзыв?')) return;
-  if (state.allReviews && state.allReviews[key]) {
-    delete state.allReviews[key];
-    saveState();
-    renderReviewsList(gameId);
-    renderAll();
-    if (useServer && db && ROOM_CODE) {
-      try { await db.remove(db.ref(db.database, `rooms/${ROOM_CODE}/reviews/${key}`)); } catch(e) { console.error(e); }
-    }
-    toast('🗑️ Отзыв удалён');
-  }
-}
-
-document.getElementById('submitReview').addEventListener('click', async () => {
+document.getElementById('submitReview').addEventListener('click', () => {
   if (!currentReviewGame) return;
   const text = document.getElementById('reviewText').value.trim();
-  if (!text) return toast('❌ Напиши что-нибудь!');
-  const review = { gameId: currentReviewGame.id, gameName: currentReviewGame.name, author: PLAYER_NAME, authorType: 'player', stars: selectedStars, text, time: Date.now() };
-  if (!state.allReviews) state.allReviews = {};
+  if (!text) return toast('❌ Напиши отзыв!');
   const key = 'rev_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-  state.allReviews[key] = review;
+  state.allReviews[key] = { gameId: currentReviewGame.id, gameName: currentReviewGame.name, author: PLAYER_NAME, authorType: 'player', stars: selectedStars, text, time: Date.now() };
   saveState();
-  if (useServer && db && ROOM_CODE) { try { await db.set(db.ref(db.database, `rooms/${ROOM_CODE}/reviews/${key}`), review); } catch(e) {} }
   document.getElementById('reviewText').value = '';
-  renderReviewsList(currentReviewGame.id);
-  renderAll();
-  toast('✅ Отзыв добавлен!');
+  renderReviewsList(currentReviewGame.id); renderAll();
+  toast('✅ Отзыв добавлен');
+});
+document.getElementById('closeModal').addEventListener('click', () => {
+  modal.classList.remove('active');
+  playScene.innerHTML = ''; playScene.style.display = 'block';
+  document.getElementById('reviewsSection').style.display = 'none';
 });
 
-function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+// ============ ПЛЕЕР ============
+function playGame(g) {
+  modal.classList.add('active');
+  modalTitle.textContent = '🎮 ' + g.name;
+  playMsg.textContent = ''; playScene.innerHTML = '';
+  playScene.style.display = 'block';
+  document.getElementById('reviewsSection').style.display = 'none';
+  if (!g.objects) return;
+  g.objects.forEach(obj => {
+    const el = document.createElement('div'); el.className = 'play-obj';
+    Object.assign(el.style, { left: obj.x+'px', top: obj.y+'px', width: obj.w+'px', height: obj.h+'px',
+      background: obj.isImage ? 'transparent' : obj.color,
+      color: (obj.type==='text'||obj.isImage) ? obj.color : '#171a21' });
+    if (obj.type === 'circle') el.style.borderRadius = '50%';
+    el.textContent = obj.text;
+    if (obj.type === 'btn' || obj.type === 'circle') {
+      el.classList.add('clickable');
+      el.addEventListener('click', () => {
+        const r = obj.reward || 1;
+        state.money = Math.max(0, state.money + r);
+        updateMoney(); saveState();
+        playMsg.textContent = r >= 0 ? `+${r} ₽` : `${r} ₽`;
+      });
+    }
+    playScene.appendChild(el);
+  });
+}
 
 // ============ СТУДИЯ ============
 let studioObjects = [], selectedId = null, nextObjId = 1;
 const canvas = document.getElementById('studioCanvas');
-const propsPanel = document.getElementById('propsPanel');
 const canvasEmpty = document.getElementById('canvasEmpty');
+const propsPanel = document.getElementById('propsPanel');
 const studioContainer = document.getElementById('studioContainer');
 
 function updateStudioLock() {
-  const hasMoney = state.money >= PUBLISH_COST;
+  const locked = state.money < PUBLISH_COST;
   const existing = studioContainer.querySelector('.studio-locked-overlay');
-  if (!hasMoney && !existing) {
+  if (locked && !existing) {
     studioContainer.classList.add('locked');
-    const overlay = document.createElement('div');
-    overlay.className = 'studio-locked-overlay';
-    overlay.innerHTML = `
-      <div class="lock-icon">🔒</div>
-      <h3>Студия заблокирована</h3>
-      <p>Нужно минимум <b>${PUBLISH_COST} ₽</b> для работы в студии.<br>У тебя сейчас: <b>${Math.floor(state.money)} ₽</b></p>
-      <p style="margin-top:15px;">Прокликай ещё немного монет, чтобы разблокировать!</p>
-    `;
-    studioContainer.appendChild(overlay);
-  } else if (hasMoney && existing) {
-    existing.remove();
-    studioContainer.classList.remove('locked');
+    const ov = document.createElement('div'); ov.className = 'studio-locked-overlay';
+    ov.innerHTML = `<div class="lock-icon">🔒</div><h3>Студия заблокирована</h3>
+      <p>Нужно минимум <b>${PUBLISH_COST} ₽</b>.<br>У тебя: <b>${Math.floor(state.money)} ₽</b></p>`;
+    studioContainer.appendChild(ov);
+  } else if (!locked && existing) {
+    existing.remove(); studioContainer.classList.remove('locked');
   }
 }
-
 function updatePublishHint() {
-  const hint = document.getElementById('publishHint');
-  const btn = document.getElementById('publishBtn');
+  const hint = document.getElementById('publishHint'), btn = document.getElementById('publishBtn');
   if (!hint || !btn) return;
   if (state.money >= PUBLISH_COST) {
-    hint.textContent = `✅ Готово! Спишется ${PUBLISH_COST} ₽ (у тебя ${Math.floor(state.money)} ₽)`;
-    hint.className = 'publish-hint ok';
-    btn.disabled = false;
-    btn.textContent = `📤 Опубликовать (${PUBLISH_COST} ₽)`;
+    hint.textContent = `✅ Спишется ${PUBLISH_COST} ₽`; hint.className = 'publish-hint ok';
+    btn.disabled = false; btn.textContent = `📤 Опубликовать (${PUBLISH_COST} ₽)`;
   } else {
-    hint.textContent = `❌ Нужно ${PUBLISH_COST} ₽. У тебя ${Math.floor(state.money)} ₽`;
-    hint.className = 'publish-hint no';
-    btn.disabled = true;
-    btn.textContent = `📤 Нужно ${PUBLISH_COST} ₽`;
+    hint.textContent = `❌ Нужно ${PUBLISH_COST} ₽`; hint.className = 'publish-hint no';
+    btn.disabled = true; btn.textContent = `📤 Нужно ${PUBLISH_COST} ₽`;
   }
 }
-
 function newObj(type) {
   const base = { id: 'obj_' + (nextObjId++), type: 'btn', x: 50, y: 50, w: 140, h: 50 };
-  switch(type) {
-    case 'btn': base.color='#66c0f4'; base.text='Кнопка'; base.reward=1; break;
-    case 'bigbtn': base.color='#f5c542'; base.text='БОЛЬШАЯ'; base.reward=10; base.w=180; base.h=80; break;
-    case 'mega': base.color='#ff6b00'; base.text='💥 МЕГА'; base.reward=50; base.w=200; base.h=100; break;
-    case 'bomb': base.color='#c23b3b'; base.text='💣 БОМБА'; base.reward=-5; base.w=120; base.h=70; break;
-    case 'winbtn': base.color='#f5c542'; base.text='🏆 ПОБЕДА'; base.reward=100; base.w=200; base.h=100; break;
-    case 'text': base.type='text'; base.color='#a4d007'; base.text='Текст'; base.w=200; base.h=40; break;
-    case 'title': base.type='text'; base.color='#66c0f4'; base.text='ЗАГОЛОВОК'; base.w=300; base.h=50; break;
-    case 'hint': base.type='text'; base.color='#8f98a0'; base.text='Подсказка...'; base.w=200; base.h=30; break;
-    case 'image': base.type='image'; base.color='#66c0f4'; base.text='🖼️'; base.w=100; base.h=100; base.isImage=true; break;
-    case 'input': base.type='input'; base.color='#2a475e'; base.text=''; base.w=200; base.h=40; break;
-    case 'counter': base.type='counter'; base.color='#a4d007'; base.text='Счётчик: 0'; base.w=150; base.h=40; break;
-    case 'square': base.type='square'; base.color='#66c0f4'; base.text=''; base.w=80; base.h=80; break;
-    case 'circle': base.type='circle'; base.color='#a4d007'; base.text='⭕'; base.reward=5; base.w=100; base.h=100; break;
-  }
-  return base;
+  const cfg = {
+    btn: { color:'#66c0f4', text:'Кнопка', reward:1 },
+    bigbtn: { color:'#f5c542', text:'БОЛЬШАЯ', reward:10, w:180, h:80 },
+    mega: { color:'#ff6b00', text:'💥 МЕГА', reward:50, w:200, h:100 },
+    bomb: { color:'#c23b3b', text:'💣 БОМБА', reward:-5, w:120, h:70 },
+    winbtn: { color:'#f5c542', text:'🏆 ПОБЕДА', reward:100, w:200, h:100 },
+    text: { type:'text', color:'#a4d007', text:'Текст', w:200, h:40 },
+    title: { type:'text', color:'#66c0f4', text:'ЗАГОЛОВОК', w:300, h:50 },
+    hint: { type:'text', color:'#8f98a0', text:'Подсказка', w:200, h:30 },
+    image: { type:'image', color:'#66c0f4', text:'🖼️', w:100, h:100, isImage:true },
+    input: { type:'input', color:'#2a475e', text:'', w:200, h:40 },
+    counter: { type:'counter', color:'#a4d007', text:'0', w:150, h:40 },
+    square: { type:'square', color:'#66c0f4', text:'', w:80, h:80 },
+    circle: { type:'circle', color:'#a4d007', text:'⭕', reward:5, w:100, h:100 }
+  };
+  return { ...base, ...cfg[type] };
 }
 function renderStudio() {
   canvas.querySelectorAll('.studio-obj').forEach(e => e.remove());
@@ -1011,405 +814,165 @@ function renderStudio() {
   studioObjects.forEach(obj => {
     const el = document.createElement('div');
     el.className = 'studio-obj' + (obj.id === selectedId ? ' selected' : '');
-    el.style.left = obj.x+'px'; el.style.top = obj.y+'px';
-    el.style.width = obj.w+'px'; el.style.height = obj.h+'px';
-    el.style.background = obj.isImage ? 'transparent' : obj.color;
-    el.style.color = (obj.type==='text'||obj.isImage) ? obj.color : '#171a21';
-    el.style.border = obj.isImage ? '2px dashed #66c0f4' : 'none';
+    Object.assign(el.style, { left: obj.x+'px', top: obj.y+'px', width: obj.w+'px', height: obj.h+'px',
+      background: obj.isImage ? 'transparent' : obj.color,
+      color: (obj.type==='text'||obj.isImage) ? obj.color : '#171a21',
+      border: obj.isImage ? '2px dashed #66c0f4' : 'none' });
     if (obj.type === 'circle') el.style.borderRadius = '50%';
-    el.style.fontSize = Math.max(11, Math.min(22, obj.h/3))+'px';
     el.textContent = obj.text; el.dataset.id = obj.id;
     el.addEventListener('mousedown', (e) => {
       e.stopPropagation(); selectedId = obj.id;
       canvas.querySelectorAll('.studio-obj').forEach(x => x.classList.remove('selected'));
-      el.classList.add('selected'); renderProps(); startDrag(e, obj, el);
+      el.classList.add('selected'); renderProps();
+      const sx = e.clientX, sy = e.clientY, ox = obj.x, oy = obj.y;
+      const mv = (e) => {
+        obj.x = Math.max(0, Math.min(canvas.clientWidth - obj.w, ox + e.clientX - sx));
+        obj.y = Math.max(0, Math.min(canvas.clientHeight - obj.h, oy + e.clientY - sy));
+        el.style.left = obj.x+'px'; el.style.top = obj.y+'px';
+      };
+      const up = () => { document.removeEventListener('mousemove', mv); document.removeEventListener('mouseup', up); };
+      document.addEventListener('mousemove', mv); document.addEventListener('mouseup', up);
     });
-    el.addEventListener('touchstart', (e) => {
-      e.stopPropagation(); selectedId = obj.id;
-      canvas.querySelectorAll('.studio-obj').forEach(x => x.classList.remove('selected'));
-      el.classList.add('selected'); renderProps(); startDragTouch(e, obj, el);
-    }, {passive: false});
     canvas.appendChild(el);
   });
 }
-function startDrag(startEvent, obj, el) {
-  const sx = startEvent.clientX, sy = startEvent.clientY, ox = obj.x, oy = obj.y;
-  const move = (e) => {
-    obj.x = Math.max(0, Math.min(canvas.clientWidth - obj.w, ox + e.clientX - sx));
-    obj.y = Math.max(0, Math.min(canvas.clientHeight - obj.h, oy + e.clientY - sy));
-    el.style.left = obj.x+'px'; el.style.top = obj.y+'px';
-    const pX = document.getElementById('pX'), pY = document.getElementById('pY');
-    if (pX) { pX.value = obj.x; document.getElementById('pXv').textContent = obj.x; }
-    if (pY) { pY.value = obj.y; document.getElementById('pYv').textContent = obj.y; }
-  };
-  const up = () => { document.removeEventListener('mousemove', move); document.removeEventListener('mouseup', up); };
-  document.addEventListener('mousemove', move); document.addEventListener('mouseup', up);
-}
-function startDragTouch(startEvent, obj, el) {
-  if (!startEvent.touches[0]) return;
-  const t = startEvent.touches[0];
-  const sx = t.clientX, sy = t.clientY, ox = obj.x, oy = obj.y;
-  const move = (e) => {
-    if (!e.touches[0]) return;
-    e.preventDefault();
-    const tt = e.touches[0];
-    obj.x = Math.max(0, Math.min(canvas.clientWidth - obj.w, ox + tt.clientX - sx));
-    obj.y = Math.max(0, Math.min(canvas.clientHeight - obj.h, oy + tt.clientY - sy));
-    el.style.left = obj.x+'px'; el.style.top = obj.y+'px';
-    const pX = document.getElementById('pX'), pY = document.getElementById('pY');
-    if (pX) { pX.value = obj.x; document.getElementById('pXv').textContent = obj.x; }
-    if (pY) { pY.value = obj.y; document.getElementById('pYv').textContent = obj.y; }
-  };
-  const up = () => {
-    document.removeEventListener('touchmove', move);
-    document.removeEventListener('touchend', up);
-  };
-  document.addEventListener('touchmove', move, {passive: false});
-  document.addEventListener('touchend', up);
-}
-canvas.addEventListener('click', (e) => {
-  if (e.target === canvas || e.target === canvasEmpty) {
-    selectedId = null; canvas.querySelectorAll('.studio-obj').forEach(x => x.classList.remove('selected')); renderProps();
-  }
-});
 function renderProps() {
   const obj = studioObjects.find(o => o.id === selectedId);
-  if (!obj) { propsPanel.innerHTML = '<div class="empty" style="padding:20px; font-size:13px;">Выбери объект на холсте</div>'; return; }
+  if (!obj) { propsPanel.innerHTML = '<div class="empty" style="padding:20px; font-size:13px;">Выбери объект</div>'; return; }
   propsPanel.innerHTML = `
     <div class="prop-group"><label>Текст</label><input type="text" id="pText" value="${escapeHtml(obj.text||'')}" maxlength="40"></div>
     <div class="prop-group"><label>Цвет</label><input type="color" id="pColor" value="${obj.isImage ? '#66c0f4' : obj.color}"></div>
-    <div class="prop-group"><label>X: <span id="pXv">${obj.x}</span></label><input type="range" id="pX" min="0" max="650" value="${obj.x}"></div>
-    <div class="prop-group"><label>Y: <span id="pYv">${obj.y}</span></label><input type="range" id="pY" min="0" max="500" value="${obj.y}"></div>
-    <div class="prop-group"><label>Ширина: <span id="pWv">${obj.w}</span></label><input type="range" id="pW" min="40" max="400" value="${obj.w}"></div>
-    <div class="prop-group"><label>Высота: <span id="pHv">${obj.h}</span></label><input type="range" id="pH" min="30" max="300" value="${obj.h}"></div>
-    ${(obj.type==='btn'||obj.type==='circle') ? `<div class="prop-group"><label>Награда за клик (₽): <span id="pRv">${obj.reward}</span></label><input type="range" id="pR" min="-50" max="200" value="${obj.reward}"></div>` : ''}
+    <div class="prop-group"><label>X: ${obj.x}</label><input type="range" id="pX" min="0" max="650" value="${obj.x}"></div>
+    <div class="prop-group"><label>Y: ${obj.y}</label><input type="range" id="pY" min="0" max="500" value="${obj.y}"></div>
+    <div class="prop-group"><label>Ширина: ${obj.w}</label><input type="range" id="pW" min="40" max="400" value="${obj.w}"></div>
+    <div class="prop-group"><label>Высота: ${obj.h}</label><input type="range" id="pH" min="30" max="300" value="${obj.h}"></div>
+    ${(obj.type==='btn'||obj.type==='circle') ? `<div class="prop-group"><label>Награда: ${obj.reward}</label><input type="range" id="pR" min="-50" max="200" value="${obj.reward}"></div>` : ''}
     <button class="delete-btn" id="pDelete">🗑️ Удалить объект</button>`;
-  const upd = (sel, fn) => { const el = document.getElementById(sel); if (el) el.addEventListener('input', fn); };
-  upd('pText', e => { obj.text = e.target.value; const el = canvas.querySelector(`[data-id="${obj.id}"]`); if (el) el.textContent = obj.text; });
-  upd('pColor', e => { obj.color = e.target.value; const el = canvas.querySelector(`[data-id="${obj.id}"]`); if (el) { el.style.background = obj.isImage ? 'transparent' : obj.color; el.style.color = (obj.type==='text'||obj.isImage) ? obj.color : '#171a21'; } });
-  upd('pX', e => { obj.x = +e.target.value; document.getElementById('pXv').textContent = obj.x; const el = canvas.querySelector(`[data-id="${obj.id}"]`); if (el) el.style.left = obj.x+'px'; });
-  upd('pY', e => { obj.y = +e.target.value; document.getElementById('pYv').textContent = obj.y; const el = canvas.querySelector(`[data-id="${obj.id}"]`); if (el) el.style.top = obj.y+'px'; });
-  upd('pW', e => { obj.w = +e.target.value; document.getElementById('pWv').textContent = obj.w; const el = canvas.querySelector(`[data-id="${obj.id}"]`); if (el) el.style.width = obj.w+'px'; });
-  upd('pH', e => { obj.h = +e.target.value; document.getElementById('pHv').textContent = obj.h; const el = canvas.querySelector(`[data-id="${obj.id}"]`); if (el) el.style.height = obj.h+'px'; });
-  if (obj.type==='btn' || obj.type==='circle') upd('pR', e => { obj.reward = +e.target.value; document.getElementById('pRv').textContent = obj.reward; });
+  const el = canvas.querySelector(`[data-id="${obj.id}"]`);
+  document.getElementById('pText').addEventListener('input', e => { obj.text = e.target.value; if (el) el.textContent = obj.text; });
+  document.getElementById('pColor').addEventListener('input', e => { obj.color = e.target.value; if (el) el.style.background = obj.isImage ? 'transparent' : obj.color; });
+  document.getElementById('pX').addEventListener('input', e => { obj.x = +e.target.value; if (el) el.style.left = obj.x+'px'; });
+  document.getElementById('pY').addEventListener('input', e => { obj.y = +e.target.value; if (el) el.style.top = obj.y+'px'; });
+  document.getElementById('pW').addEventListener('input', e => { obj.w = +e.target.value; if (el) el.style.width = obj.w+'px'; });
+  document.getElementById('pH').addEventListener('input', e => { obj.h = +e.target.value; if (el) el.style.height = obj.h+'px'; });
+  if (obj.type==='btn'||obj.type==='circle') document.getElementById('pR').addEventListener('input', e => { obj.reward = +e.target.value; });
   document.getElementById('pDelete').addEventListener('click', () => {
     studioObjects = studioObjects.filter(o => o.id !== obj.id);
     selectedId = null; renderStudio(); renderProps();
   });
 }
 function addObj(type) {
-  if (state.money < PUBLISH_COST) return toast(`🔒 Студия заблокирована. Нужно ${PUBLISH_COST} ₽`);
-  studioObjects.push(newObj(type)); selectedId = studioObjects[studioObjects.length-1].id; renderStudio(); renderProps();
+  if (state.money < PUBLISH_COST) return toast(`🔒 Нужно ${PUBLISH_COST} ₽`);
+  studioObjects.push(newObj(type)); selectedId = studioObjects[studioObjects.length-1].id;
+  renderStudio(); renderProps();
 }
-document.getElementById('addBtn').addEventListener('click', () => addObj('btn'));
-document.getElementById('addBigBtn').addEventListener('click', () => addObj('bigbtn'));
-document.getElementById('addMegaBtn').addEventListener('click', () => addObj('mega'));
-document.getElementById('addBomb').addEventListener('click', () => addObj('bomb'));
-document.getElementById('addWinBtn').addEventListener('click', () => addObj('winbtn'));
-document.getElementById('addText').addEventListener('click', () => addObj('text'));
-document.getElementById('addTitle').addEventListener('click', () => addObj('title'));
-document.getElementById('addHint').addEventListener('click', () => addObj('hint'));
-document.getElementById('addImage').addEventListener('click', () => addObj('image'));
-document.getElementById('addInput').addEventListener('click', () => addObj('input'));
-document.getElementById('addCounter').addEventListener('click', () => addObj('counter'));
-document.getElementById('addSquare').addEventListener('click', () => addObj('square'));
-document.getElementById('addCircle').addEventListener('click', () => addObj('circle'));
+['addBtn|btn','addBigBtn|bigbtn','addMegaBtn|mega','addBomb|bomb','addWinBtn|winbtn','addText|text','addTitle|title','addHint|hint','addImage|image','addInput|input','addCounter|counter','addSquare|square','addCircle|circle'].forEach(s => {
+  const [id, type] = s.split('|');
+  document.getElementById(id).addEventListener('click', () => addObj(type));
+});
 document.getElementById('clearBtn').addEventListener('click', () => {
-  if (state.money < PUBLISH_COST) return toast(`🔒 Студия заблокирована. Нужно ${PUBLISH_COST} ₽`);
   if (studioObjects.length === 0) return;
-  if (confirm('Очистить холст?')) { studioObjects = []; selectedId = null; renderStudio(); renderProps(); }
+  if (confirm('Очистить холст?')) { studioObjects = []; renderStudio(); renderProps(); }
 });
 document.getElementById('testBtn').addEventListener('click', () => {
-  if (state.money < PUBLISH_COST) return toast(`🔒 Студия заблокирована. Нужно ${PUBLISH_COST} ₽`);
-  if (studioObjects.length === 0) return toast('❌ Добавь хотя бы один объект!');
-  playGame({ name: document.getElementById('studioName').value || 'Тест', objects: studioObjects });
+  if (studioObjects.length === 0) return toast('❌ Добавь объекты');
+  playGame({ name: 'Тест', objects: studioObjects });
 });
-
-document.getElementById('publishBtn').addEventListener('click', async () => {
-  if (state.money < PUBLISH_COST) return toast(`🔒 Студия заблокирована. Нужно ${PUBLISH_COST} ₽`);
+document.getElementById('publishBtn').addEventListener('click', () => {
+  if (state.money < PUBLISH_COST) return;
   const name = document.getElementById('studioName').value.trim();
-  const desc = document.getElementById('studioDesc').value.trim() || 'Без описания';
-  const price = parseInt(document.getElementById('studioPrice').value) || 100;
-  if (!name) return toast('❌ Введи название игры!');
-  if (price < 10) return toast('❌ Цена минимум 10₽');
-  if (studioObjects.length === 0) return toast('❌ Добавь объекты на холст!');
+  if (!name) return toast('❌ Введи название!');
   state.money -= PUBLISH_COST;
-  const game = { id: 'my_' + Date.now() + '_' + Math.random().toString(36).slice(2,6), name, desc, price, author: PLAYER_NAME, objects: JSON.parse(JSON.stringify(studioObjects)), botBuys: 0, earnings: 0 };
+  const game = { id: 'my_' + Date.now(), name, desc: document.getElementById('studioDesc').value.trim() || 'Без описания',
+    price: parseInt(document.getElementById('studioPrice').value) || 100, author: PLAYER_NAME,
+    objects: JSON.parse(JSON.stringify(studioObjects)), botBuys: 0, earnings: 0 };
   state.myGames.push(game); state.shopGames.push(game);
   saveState(); renderAll();
-  if (useServer && db && ROOM_CODE) { try { await db.set(db.ref(db.database, `rooms/${ROOM_CODE}/games/${game.id}`), game); } catch(e) {} }
-  toast(`🎉 Опубликовано: ${name} (-${PUBLISH_COST} ₽)`);
+  toast(`🎉 Опубликовано: ${name}`);
   document.getElementById('studioName').value = '';
   document.getElementById('studioDesc').value = '';
 });
 
-// ============ ПЛЕЕР ============
-const modal = document.getElementById('modal');
-const modalTitle = document.getElementById('modalTitle');
-const playScene = document.getElementById('playScene');
-const playMsg = document.getElementById('playMsg');
-document.getElementById('closeModal').addEventListener('click', () => {
-  modal.classList.remove('active'); playScene.innerHTML=''; playMsg.textContent='';
-  playScene.style.display = 'block';
-  document.getElementById('reviewsSection').style.display = 'none';
-  currentReviewGame = null;
-  currentlyViewing = null;
-  if (viewInterval) { clearInterval(viewInterval); viewInterval = null; }
-});
-function playGame(g) {
-  modal.classList.add('active');
-  modalTitle.textContent = '🎮 ' + g.name;
-  playMsg.textContent = ''; playScene.innerHTML = '';
-  playScene.style.display = 'block';
-  document.getElementById('reviewsSection').style.display = 'none';
-  if (!g.objects || g.objects.length === 0) { playScene.innerHTML = '<div class="empty" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">В игре нет объектов</div>'; return; }
-  g.objects.forEach(obj => {
-    const el = document.createElement('div');
-    el.className = 'play-obj';
-    el.style.left = obj.x+'px'; el.style.top = obj.y+'px';
-    el.style.width = obj.w+'px'; el.style.height = obj.h+'px';
-    el.style.background = obj.isImage ? 'transparent' : obj.color;
-    el.style.color = (obj.type==='text'||obj.isImage) ? obj.color : '#171a21';
-    el.style.border = obj.isImage ? '2px dashed #66c0f4' : 'none';
-    if (obj.type === 'circle') el.style.borderRadius = '50%';
-    el.style.fontSize = Math.max(11, Math.min(22, obj.h/3))+'px';
-    el.textContent = obj.text;
-    if (obj.type === 'input') {
-      const inp = document.createElement('input');
-      inp.type = 'text'; inp.placeholder = 'Введи...';
-      inp.style.width = '100%'; inp.style.height = '100%'; inp.style.background = 'transparent';
-      inp.style.border = 'none'; inp.style.color = '#c7d5e0'; inp.style.fontSize = '14px'; inp.style.padding = '4px';
-      el.textContent = ''; el.appendChild(inp);
-    } else if (obj.type === 'btn' || obj.type === 'circle') {
-      el.classList.add('clickable');
-      el.addEventListener('click', () => {
-        const r = obj.reward || 1; state.money += r;
-        if (state.money < 0) state.money = 0;
-        updateMoney(); saveState();
-        playMsg.textContent = r >= 0 ? `+${r} ₽` : `${r} ₽ 😢`;
-      });
-    }
-    playScene.appendChild(el);
-  });
-}
-
-// ============ СПИСОК ИГРОКОВ ============
-function renderPlayers() {
-  const list = document.getElementById('roomPlayersList');
-  const playersPage = document.getElementById('playersPageList');
-  const playerArr = Object.entries(players || {});
-  if (playerArr.length === 0) {
-    if (list) list.style.display = 'none';
-    if (playersPage) playersPage.innerHTML = '<div class="empty">Пока никого нет в комнате</div>';
-    return;
-  }
-  if (list) {
-    list.style.display = 'block';
-    list.innerHTML = `<h4>👥 Игроков: ${playerArr.length}</h4>` +
-      playerArr.map(([key, p]) => {
-        const isYou = p.name === PLAYER_NAME;
-        return `<div class="player-row ${isYou ? 'you' : ''}">${isYou ? '👑' : '👤'} ${escapeHtml(p.name)}${isYou ? ' (ты)' : ''}</div>`;
-      }).join('');
-  }
-  if (playersPage) {
-    playersPage.innerHTML = `<div style="color:#a4d007; margin-bottom:10px;">👥 Игроков в комнате: <b>${playerArr.length}</b></div>` +
-      playerArr.map(([key, p]) => {
-        const isYou = p.name === PLAYER_NAME;
-        return `<div style="padding:10px; border-bottom:1px solid #2a475e; ${isYou ? 'color:#a4d007; font-weight:bold;' : ''}">
-          ${isYou ? '👑' : '👤'} ${escapeHtml(p.name)}${isYou ? ' (ты)' : ''}
-        </div>`;
-      }).join('');
-  }
-}
-
 // ============ БОТЫ ============
 function scheduleBotTick() {
-  const delayMs = (30 + Math.random() * 70) * 1000;
   setTimeout(() => {
-    if (state.myGames.length > 0 && Math.random() < 0.7) {
-      const game = state.myGames[Math.floor(Math.random() * state.myGames.length)];
-      const bot = randomBotName();
-      game.botBuys = (game.botBuys || 0) + 1;
-      game.earnings = (game.earnings || 0) + game.price;
-      state.money += game.price;
-      showSaleNotification(bot, game.name, game.price);
+    if (state.myGames.length > 0 && Math.random() < 0.5) {
+      const g = state.myGames[Math.floor(Math.random() * state.myGames.length)];
+      g.botBuys = (g.botBuys || 0) + 1;
+      g.earnings = (g.earnings || 0) + g.price;
+      state.money += g.price;
+      showSaleNotification('Бот_' + Math.floor(Math.random()*999), g.name, g.price);
       updateMoney(); saveState(); renderMyStore(); renderAll();
     }
-    if (state.shopGames.length > 0 && Math.random() < 0.5) {
-      const targetGame = state.shopGames[Math.floor(Math.random() * state.shopGames.length)];
+    if (state.shopGames.length > 0 && Math.random() < 0.3) {
+      const g = state.shopGames[Math.floor(Math.random() * state.shopGames.length)];
       const stars = Math.random() < 0.65 ? 4 + Math.floor(Math.random()*2) : 1 + Math.floor(Math.random()*3);
-      const text = randomReviewText(stars);
-      const author = randomBotName();
-      const review = { gameId: targetGame.id, gameName: targetGame.name, author, authorType: 'bot', stars, text, time: Date.now() };
-      if (!state.allReviews) state.allReviews = {};
-      const key = 'rev_bot_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-      state.allReviews[key] = review;
-      const isMine = state.myGames.some(g => g.id === targetGame.id);
-      if (isMine) showReviewNotification(author, targetGame.name, stars, text, true);
+      const key = 'bot_' + Date.now();
+      state.allReviews[key] = { gameId: g.id, author: 'Бот_' + Math.floor(Math.random()*999), authorType: 'bot',
+        stars, text: stars >= 4 ? 'Отлично!' : 'Скучно...', time: Date.now() };
       saveState(); renderAll();
-      if (useServer && db && ROOM_CODE) { try { db.set(db.ref(db.database, `rooms/${ROOM_CODE}/reviews/${key}`), review); } catch(e) {} }
     }
     scheduleBotTick();
-  }, delayMs);
+  }, 30000 + Math.random() * 70000);
 }
+
+// ============ QR-СИНХРОНИЗАЦИЯ ============
+document.getElementById('exportQrBtn').addEventListener('click', () => {
+  const data = JSON.stringify({ money: state.money, myGames: state.myGames, shopGames: state.shopGames, from: PLAYER_NAME });
+  const encoded = btoa(unescape(encodeURIComponent(data)));
+  modal.classList.add('active');
+  modalTitle.textContent = '📤 Твой ход (покажи другу)';
+  playScene.style.display = 'block';
+  document.getElementById('reviewsSection').style.display = 'none';
+  playScene.innerHTML = '<div style="padding:20px; text-align:center;"><p style="color:#8f98a0; margin-bottom:15px;">Друг сканирует этот код:</p><div class="qr-box" id="qrBox"></div><p style="color:#8f98a0; font-size:12px; margin-top:10px;">Код: ' + encoded.length + ' байт</p></div>';
+  try {
+    QRCode.toCanvas(document.createElement('canvas'), encoded.slice(0, 2000), (err, c) => {
+      if (!err) document.getElementById('qrBox').appendChild(c);
+    });
+  } catch(e) { toast('❌ Слишком много данных для QR'); }
+});
+
+document.getElementById('importQrBtn').addEventListener('click', async () => {
+  modal.classList.add('active');
+  modalTitle.textContent = '📥 Сканирование';
+  playScene.style.display = 'block';
+  document.getElementById('reviewsSection').style.display = 'none';
+  playScene.innerHTML = '<div style="padding:10px; text-align:center;"><video id="qrVideo" autoplay muted playsinline></video><p style="color:#8f98a0;">Наведи камеру на QR-код</p></div>';
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    const video = document.getElementById('qrVideo');
+    video.srcObject = stream;
+    const c = document.createElement('canvas');
+    const ctx = c.getContext('2d');
+    const scan = () => {
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        c.width = video.videoWidth; c.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0);
+        const img = ctx.getImageData(0, 0, c.width, c.height);
+        const code = window.jsQR ? jsQR(img.data, img.width, img.height) : null;
+        if (code) {
+          stream.getTracks().forEach(t => t.stop());
+          try {
+            const data = JSON.parse(decodeURIComponent(escape(atob(code.data))));
+            state.money = data.money;
+            state.myGames = data.myGames;
+            state.shopGames = data.shopGames;
+            saveState(); renderAll();
+            modal.classList.remove('active');
+            toast('✅ Ход импортирован от ' + data.from);
+            return;
+          } catch(e) { toast('❌ Ошибка чтения'); }
+        }
+      }
+      requestAnimationFrame(scan);
+    };
+    scan();
+  } catch(e) { toast('❌ Нет доступа к камере'); }
+});
 
 // ============ СТАРТ ============
-async function boot() {
-  // Проверяем Firebase
-  const serverOk = await initServer();
-
-  // Если есть сохранённая комната — входим сразу
-  if (ROOM_CODE && PLAYER_NAME) {
-    enterRoom(ROOM_CODE, PLAYER_NAME);
-    return;
-  }
-
-  // Иначе показываем экран комнат
-  const roomScreen = document.getElementById('roomScreen');
-  const mainApp = document.getElementById('mainApp');
-  roomScreen.style.display = 'block';
-  mainApp.style.display = 'none';
-
-  // Восстанавливаем ник в поле
-  const nickInput = document.getElementById('roomNick');
-  if (localStorage.getItem('playerName')) nickInput.value = localStorage.getItem('playerName');
-
-  document.getElementById('createRoomBtn').addEventListener('click', () => {
-    const nick = nickInput.value.trim() || 'Игрок' + Math.floor(Math.random()*999);
-    localStorage.setItem('playerName', nick);
-    const code = genRoomCode();
-    saveRoom(code);
-    location.reload();
-  });
-
-  document.getElementById('joinRoomBtn').addEventListener('click', () => {
-    const nick = nickInput.value.trim() || 'Игрок' + Math.floor(Math.random()*999);
-    localStorage.setItem('playerName', nick);
-    const code = document.getElementById('roomCodeInput').value.trim().toUpperCase();
-    if (!code || code.length < 4) return toast('❌ Введи код комнаты!');
-    saveRoom(code);
-    location.reload();
-  });
-}
-
-async function enterRoom(code, nick) {
-  // Показываем основной интерфейс
-  document.getElementById('roomScreen').style.display = 'none';
-  document.getElementById('mainApp').style.display = 'block';
-
-  PLAYER_NAME = nick;
-  document.getElementById('playerNameDisplay').textContent = PLAYER_NAME;
-  document.getElementById('roomCodeDisplay').textContent = code;
-  document.getElementById('perClick').textContent = state.perClick;
-  document.getElementById('totalClicks').textContent = state.totalClicks;
-
-  // Кнопка выхода из комнаты
-  document.getElementById('roomBadge').addEventListener('click', () => {
-    if (confirm('Выйти из комнаты и сменить её?')) leaveRoom();
-  });
-
-  // Смена ника
-  document.getElementById('changeNickBtn').addEventListener('click', () => {
-    const newName = prompt('Введи новый ник:', PLAYER_NAME);
-    if (newName === null) return;
-    const trimmed = newName.trim();
-    if (!trimmed) return toast('❌ Ник не может быть пустым');
-    if (trimmed.length > 20) return toast('❌ Ник максимум 20 символов');
-    if (trimmed === PLAYER_NAME) return;
-    PLAYER_NAME = trimmed;
-    localStorage.setItem('playerName', PLAYER_NAME);
-    document.getElementById('playerNameDisplay').textContent = PLAYER_NAME;
-    // Обновляем имя в БД
-    if (useServer && db && ROOM_CODE && currentPlayerKey) {
-      try { db.set(db.ref(db.database, `rooms/${ROOM_CODE}/players/${currentPlayerKey}/name`), PLAYER_NAME); } catch(e) {}
-    }
-    toast(`✅ Ник изменён на «${PLAYER_NAME}»`);
-  });
-
-  // Сброс аккаунта
-  document.getElementById('resetAccBtn').addEventListener('click', () => {
-    if (!confirm('🔄 СБРОС АККАУНТА\n\nБудут УДАЛЕНЫ:\n• Все деньги\n• Все игры\n• Все отзывы\n• Прогресс скачивания\n\nПродолжить?')) return;
-    localStorage.removeItem('steamClickerRoom_' + ROOM_CODE);
-    localStorage.removeItem('steamClickerLocal');
-    toast('🔄 Аккаунт сброшен. Перезагрузка...');
-    setTimeout(() => location.reload(), 800);
-  });
-
-  // Регистрируемся в комнате (если Firebase)
-  if (useServer && db) {
-    roomRef = db.ref(db.database, 'rooms/' + code);
-    playersRef = db.ref(db.database, `rooms/${code}/players`);
-    gamesRef = db.ref(db.database, `rooms/${code}/games`);
-    reviewsRef = db.ref(db.database, `rooms/${code}/reviews`);
-
-    // Регистрируем себя
-    const meRef = db.push(playersRef);
-    currentPlayerKey = meRef.key;
-    db.set(meRef, { name: PLAYER_NAME, lastSeen: Date.now() });
-    // Удаляем себя при выходе
-    try {
-      db.onDisconnect(meRef).remove();
-    } catch(e) {}
-
-    // Слушаем игроков
-    db.onValue(playersRef, (snap) => {
-      players = snap.val() || {};
-      renderPlayers();
-    });
-
-    // Слушаем игры комнаты
-    db.onValue(gamesRef, (snap) => {
-      const remoteGames = Object.values(snap.val() || {});
-      const myIds = new Set(state.myGames.map(g => g.id));
-      state.shopGames = [
-        ...state.shopGames.filter(g => g.author === 'Valve' || myIds.has(g.id)),
-        ...remoteGames.filter(g => !myIds.has(g.id) && g.author !== 'Valve')
-      ];
-      renderAll();
-    });
-
-    // Слушаем отзывы комнаты
-    db.onValue(reviewsRef, (snap) => {
-      const remote = snap.val() || {};
-      const merged = { ...(state.allReviews || {}) };
-      for (const k in remote) if (!merged[k]) merged[k] = remote[k];
-      state.allReviews = merged;
-      renderAll();
-    });
-
-    // Heartbeat — обновляем lastSeen
-    setInterval(() => {
-      if (currentPlayerKey) {
-        try { db.set(db.ref(db.database, `rooms/${code}/players/${currentPlayerKey}/lastSeen`), Date.now()); } catch(e) {}
-      }
-    }, 30000);
-  } else {
-    // Локальный режим — просто фейковые "игроки"
-    players = { 'local': { name: PLAYER_NAME } };
-    renderPlayers();
-  }
-
-  // Запускаем рендер и ботов
-  renderStudio();
-  renderProps();
-  renderAll();
-  updateStudioLock();
-  scheduleBotTick();
-  toast(`👋 Привет, ${PLAYER_NAME}! Комната: ${code}`);
-}
-
-boot();
-
-function renderAll() {
-  if (!ROOM_CODE) return;
-  updateMoney();
-  document.getElementById('perClick').textContent = state.perClick;
-  document.getElementById('totalClicks').textContent = state.totalClicks;
-  renderShop(); renderLibrary(); renderMyStore();
-  updatePublishHint();
-  updateStudioLock();
-  renderPlayers();
-}
+const savedMode = localStorage.getItem('steamClickerMode');
+if (savedMode) { MODE = savedMode; startGame(); }
 </script>
 </body>
 </html>
