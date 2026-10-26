@@ -2,977 +2,1498 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Стим-Кликер — Мультирежим</title>
-<script type="module">
-  window.FIREBASE_CONFIG = null;
-  // window.FIREBASE_CONFIG = {
-  //   apiKey: "AIza...",
-  //   authDomain: "xxx.firebaseapp.com",
-  //   databaseURL: "https://xxx-default-rtdb.firebaseio.com",
-  //   projectId: "xxx",
-  // };
-</script>
-<!-- QR-генератор (локально, без интернета после загрузки) -->
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-<!-- QR-сканер -->
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<title>Симулятор Разработчика Игр v6.3</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%); color: #c7d5e0; min-height: 100vh; padding: 20px; -webkit-text-size-adjust: 100%; }
-  h1 { text-align: center; color: #66c0f4; margin-bottom: 20px; text-shadow: 0 0 10px #66c0f4; }
-  .container { max-width: 1100px; margin: 0 auto; }
-
-  /* ===== СТАРТОВЫЙ ЭКРАН ===== */
-  .start-screen { max-width: 560px; margin: 40px auto; background: #171a21; border-radius: 14px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.7); }
-  .start-screen h2 { color: #66c0f4; text-align: center; margin-bottom: 6px; font-size: 22px; }
-  .start-screen p.sub { text-align: center; color: #8f98a0; font-size: 14px; margin-bottom: 25px; }
-  .mode-card { background: #1b2838; border: 2px solid #2a475e; border-radius: 10px; padding: 18px; margin-bottom: 12px; cursor: pointer; transition: 0.2s; }
-  .mode-card:hover { border-color: #66c0f4; transform: translateY(-2px); }
-  .mode-card.active { border-color: #a4d007; background: #1a2a1a; }
-  .mode-card h3 { color: #66c0f4; font-size: 16px; margin-bottom: 6px; }
-  .mode-card p { color: #8f98a0; font-size: 13px; line-height: 1.4; }
-  .mode-card .tag { display: inline-block; background: #2a475e; color: #a4d007; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-top: 6px; font-weight: bold; }
-  .mode-card .tag.no-net { background: #2a4a2a; color: #a4d007; }
-  .mode-card .tag.net { background: #4a2a2a; color: #c23b3b; }
-
-  .start-btn { width: 100%; padding: 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; transition: 0.2s; }
-  .start-btn:hover { transform: translateY(-1px); }
-  .start-btn.green { background: #a4d007; color: #171a21; }
-  .start-btn.blue { background: #66c0f4; color: #171a21; }
-  .start-btn.purple { background: #8b5cf6; color: white; }
-  .start-btn.gray { background: #2a475e; color: #c7d5e0; }
-
-  /* ===== ОСНОВНОЙ ИНТЕРФЕЙС ===== */
-  .topbar { background: #171a21; border-radius: 10px; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); flex-wrap: wrap; gap: 12px; }
-  .topbar-left { display: flex; flex-direction: column; gap: 6px; }
-  .money-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .money { font-size: 28px; color: #a4d007; font-weight: bold; }
-  .mode-badge { display: inline-flex; align-items: center; gap: 6px; background: #2a475e; border: 2px solid #66c0f4; padding: 4px 10px; border-radius: 12px; font-size: 12px; color: #66c0f4; font-weight: bold; cursor: pointer; }
-  .mode-badge:hover { background: #66c0f4; color: #171a21; }
-  .status { font-size: 12px; padding: 4px 10px; border-radius: 12px; display: inline-block; }
-  .status.online { background: #1a4a1a; color: #6f6; }
-  .status.offline { background: #4a2a1a; color: #fa6; }
-  .player-info { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #8f98a0; flex-wrap: wrap; }
-  .player-info b { color: #66c0f4; }
-  .nick-btn, .reset-btn { background: #2a475e; color: #c7d5e0; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
-  .nick-btn:hover { background: #66c0f4; color: #171a21; }
-  .reset-btn { background: #6b2a2a; border: 2px solid #c23b3b; color: #fff; }
-  .reset-btn:hover { background: #c23b3b; }
-
-  .nav { display: flex; gap: 6px; flex-wrap: wrap; }
-  .nav button { background: #2a475e; color: #c7d5e0; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; transition: 0.2s; font-weight: 500; }
-  .nav button:hover { background: #66c0f4; color: #171a21; }
-  .nav button.active { background: #66c0f4; color: #171a21; font-weight: bold; }
-
-  .page { display: none; }
-  .page.active { display: block; animation: fade 0.25s; }
-  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-
-  .clicker-area { text-align: center; padding: 30px 0; }
-  #clickBtn { width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, #66c0f4, #1b2838); border: 5px solid #66c0f4; color: white; font-size: 22px; cursor: pointer; font-weight: bold; box-shadow: 0 0 30px rgba(102,192,244,0.6); transition: transform 0.05s; touch-action: manipulation; }
-  #clickBtn:active { transform: scale(0.92); }
-  .click-info { margin-top: 20px; font-size: 18px; line-height: 1.6; }
-  .click-info b { color: #a4d007; }
-
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; }
-  .card { background: #1b2838; border: 1px solid #2a475e; border-radius: 10px; padding: 15px; transition: 0.2s; display: flex; flex-direction: column; }
-  .card:hover { border-color: #66c0f4; transform: translateY(-2px); }
-  .card h3 { color: #66c0f4; margin-bottom: 8px; font-size: 16px; word-break: break-word; }
-  .card p { font-size: 13px; color: #8f98a0; margin-bottom: 10px; min-height: 36px; word-break: break-word; }
-  .card .price { color: #a4d007; font-weight: bold; font-size: 18px; margin-bottom: 10px; }
-  .card .author { font-size: 11px; color: #66c0f4; margin-bottom: 6px; word-break: break-word; }
-  .card .rating { font-size: 13px; color: #f5c542; margin-bottom: 8px; }
-  .card .rating small { color: #8f98a0; }
-  .card button { width: 100%; padding: 10px; background: #a4d007; color: #171a21; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 6px; font-size: 14px; transition: 0.15s; touch-action: manipulation; }
-  .card button:hover { background: #b8e010; }
-  .card button:active { transform: scale(0.97); }
-  .card button:disabled { background: #4a5a2a; color: #8f98a0; cursor: not-allowed; }
-  .card .del-btn { background: #c23b3b; color: white; }
-  .card .del-btn:hover { background: #e04a4a; }
-  .card .review-btn { background: #66c0f4; color: #171a21; }
-  .card .review-btn:hover { background: #8fd0ff; }
-  .card .download-btn { background: #ff9e00; color: #171a21; }
-  .card .download-btn:hover { background: #ffb833; }
-  .card .view-btn { background: #8b5cf6; color: white; }
-  .card .view-btn:hover { background: #a78bfa; }
-
-  .card-progress { margin: 8px 0; }
-  .card-progress .bar { height: 10px; background: #0e1419; border-radius: 5px; overflow: hidden; border: 1px solid #2a475e; }
-  .card-progress .fill { height: 100%; background: linear-gradient(90deg, #66c0f4, #a4d007); transition: width 0.3s; }
-  .card-progress .info { display: flex; justify-content: space-between; font-size: 11px; color: #8f98a0; margin-top: 4px; }
-  .card-progress .info b { color: #a4d007; }
-
-  /* Студия */
-  .studio { display: grid; grid-template-columns: 220px 1fr 280px; gap: 12px; background: #171a21; border-radius: 10px; padding: 12px; min-height: 560px; position: relative; }
-  .studio.locked > *:not(.studio-locked-overlay) { pointer-events: none; filter: blur(2px); opacity: 0.5; }
-  .studio-locked-overlay { position: absolute; inset: 0; background: rgba(14,20,25,0.94); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; border-radius: 10px; text-align: center; padding: 20px; }
-  .studio-locked-overlay .lock-icon { font-size: 56px; margin-bottom: 12px; }
-  .studio-locked-overlay h3 { color: #c23b3b; margin-bottom: 10px; }
-  .studio-locked-overlay p { color: #8f98a0; max-width: 320px; line-height: 1.5; }
-  .studio-locked-overlay b { color: #a4d007; }
-  .studio-panel { background: #1b2838; border-radius: 8px; padding: 12px; overflow-y: auto; max-height: 72vh; }
-  .studio-panel h3 { color: #66c0f4; font-size: 13px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-  .tool-btn { display: flex; align-items: center; gap: 8px; width: 100%; background: #2a475e; color: #c7d5e0; border: none; padding: 10px; border-radius: 6px; cursor: pointer; margin-bottom: 5px; font-size: 13px; text-align: left; transition: 0.15s; }
-  .tool-btn:hover { background: #66c0f4; color: #171a21; }
-  #studioCanvas { background: #0e1419; border: 2px dashed #2a475e; border-radius: 10px; position: relative; overflow: hidden; min-height: 540px; background-image: linear-gradient(rgba(42,71,94,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(42,71,94,0.3) 1px, transparent 1px); background-size: 20px 20px; }
-  .studio-obj { position: absolute; cursor: move; user-select: none; display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 6px; font-size: 14px; font-weight: bold; border: 2px solid transparent; overflow: hidden; text-align: center; touch-action: none; }
-  .studio-obj.selected { border-color: #a4d007; box-shadow: 0 0 15px #a4d007; }
-  .canvas-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #4a5a6a; font-size: 16px; pointer-events: none; text-align: center; padding: 20px; }
-  .prop-group { margin-bottom: 10px; }
-  .prop-group label { display: block; font-size: 12px; color: #8f98a0; margin-bottom: 4px; }
-  .prop-group input, .prop-group select { width: 100%; padding: 8px; background: #171a21; border: 1px solid #2a475e; border-radius: 5px; color: #c7d5e0; font-size: 14px; }
-  .prop-group input[type="color"] { padding: 2px; height: 36px; cursor: pointer; }
-  .prop-group input[type="range"] { padding: 0; height: 30px; }
-  .delete-btn { width: 100%; padding: 10px; background: #c23b3b; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 5px; }
-  .studio-actions { display: flex; gap: 8px; margin-top: 12px; }
-  .studio-actions button { flex: 1; padding: 11px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; }
-  .btn-test { background: #66c0f4; color: #171a21; }
-  .btn-publish { background: #a4d007; color: #171a21; }
-  .btn-clear { background: #2a475e; color: #c7d5e0; }
-  .btn-publish:disabled { background: #4a5a2a; color: #8f98a0; cursor: not-allowed; }
-  .publish-hint { text-align: center; font-size: 12px; color: #8f98a0; margin-top: 6px; }
-  .publish-hint.ok { color: #a4d007; }
-  .publish-hint.no { color: #c23b3b; }
-  .studio-meta { margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
-  .studio-meta input { flex: 1; min-width: 160px; padding: 10px; background: #171a21; border: 1px solid #2a475e; border-radius: 6px; color: #c7d5e0; font-size: 14px; }
-
-  /* Модалка */
-  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
-  .modal.active { display: flex; }
-  .modal-content { background: #1b2838; padding: 22px; border-radius: 12px; max-width: 600px; width: 100%; border: 2px solid #66c0f4; text-align: center; max-height: 92vh; overflow-y: auto; }
-  .modal-content h2 { color: #66c0f4; margin-bottom: 15px; word-break: break-word; }
-  .modal-content .close { margin-top: 20px; padding: 12px 25px; background: #a4d007; color: #171a21; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; width: 100%; }
-  #playScene { position: relative; background: #0e1419; border-radius: 8px; min-height: 380px; overflow: hidden; margin: 10px 0; background-image: linear-gradient(rgba(42,71,94,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(42,71,94,0.2) 1px, transparent 1px); background-size: 20px 20px; }
-  .play-obj { position: absolute; display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 6px; font-size: 14px; font-weight: bold; overflow: hidden; text-align: center; }
-  .play-obj.clickable { cursor: pointer; transition: transform 0.05s; touch-action: manipulation; }
-  .play-obj.clickable:active { transform: scale(0.95); }
-  .msg { margin-top: 12px; font-size: 15px; min-height: 22px; color: #a4d007; }
-
-  /* Просмотр */
-  .view-screen { padding: 25px 15px; text-align: center; }
-  .view-screen h3 { color: #8b5cf6; margin-bottom: 20px; font-size: 18px; }
-  .view-screen .big-progress { height: 30px; background: #0e1419; border-radius: 15px; overflow: hidden; margin-bottom: 15px; border: 2px solid #2a475e; position: relative; }
-  .view-screen .big-progress-fill { height: 100%; background: linear-gradient(90deg, #66c0f4, #a4d007); transition: width 0.3s; }
-  .view-screen .big-progress-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; text-shadow: 0 0 4px black; font-size: 14px; }
-  .view-screen .stats { font-size: 14px; color: #8f98a0; margin-bottom: 15px; }
-  .view-screen .stats b { color: #a4d007; }
-  .view-screen .status-msg { padding: 12px; background: #171a21; border-radius: 6px; color: #a4d007; font-weight: bold; }
-
-  /* Отзывы */
-  .reviews-list { max-height: 340px; overflow-y: auto; text-align: left; margin-top: 15px; background: #171a21; border-radius: 6px; padding: 10px; }
-  .review-item { padding: 10px; border-bottom: 1px solid #2a475e; }
-  .review-item:last-child { border-bottom: none; }
-  .review-head { display: flex; justify-content: space-between; margin-bottom: 5px; align-items: center; gap: 8px; }
-  .review-author { color: #66c0f4; font-size: 13px; font-weight: bold; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .review-stars { color: #f5c542; font-size: 13px; flex-shrink: 0; }
-  .review-del { background: #c23b3b; color: white; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; flex-shrink: 0; }
-  .review-text { color: #c7d5e0; font-size: 13px; line-height: 1.4; word-break: break-word; }
-  .review-time { color: #8f98a0; font-size: 11px; margin-top: 3px; }
-  .review-form { margin-top: 15px; padding: 12px; background: #171a21; border-radius: 6px; text-align: left; }
-  .review-form h4 { color: #66c0f4; font-size: 14px; margin-bottom: 10px; }
-  .review-form textarea { width: 100%; min-height: 70px; padding: 10px; background: #1b2838; border: 1px solid #2a475e; border-radius: 5px; color: #c7d5e0; font-size: 14px; resize: vertical; margin-bottom: 8px; font-family: inherit; }
-  .review-form .stars-select { display: flex; gap: 5px; margin-bottom: 8px; }
-  .review-form .star-btn { background: none; border: none; font-size: 28px; cursor: pointer; color: #4a5a6a; padding: 0; line-height: 1; }
-  .review-form .star-btn.active { color: #f5c542; }
-  .review-form button[type="submit"] { width: 100%; padding: 10px; background: #a4d007; color: #171a21; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; }
-
-  #notifArea { position: fixed; top: 15px; right: 15px; z-index: 300; display: flex; flex-direction: column; gap: 10px; pointer-events: none; max-width: 360px; width: calc(100% - 30px); }
-  .sale-notif { background: linear-gradient(135deg, #1b2838, #2a475e); border: 2px solid #a4d007; border-left: 6px solid #a4d007; border-radius: 8px; padding: 14px 16px; box-shadow: 0 6px 25px rgba(0,0,0,0.7); animation: slideIn 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2); pointer-events: auto; word-break: break-word; }
-  .sale-notif .n-title { color: #a4d007; font-weight: bold; font-size: 15px; margin-bottom: 6px; }
-  .sale-notif .n-text { color: #c7d5e0; font-size: 13px; line-height: 1.5; }
-  .sale-notif.fade-out { animation: slideOut 0.4s forwards; }
-  @keyframes slideIn { from { transform: translateX(450px); opacity: 0; } to { transform: none; opacity: 1; } }
-  @keyframes slideOut { to { transform: translateX(470px); opacity: 0; } }
-
-  .empty { text-align: center; padding: 40px 20px; color: #8f98a0; }
-
-  /* QR-модалка */
-  .qr-box { background: #fff; padding: 15px; border-radius: 8px; display: inline-block; margin: 15px 0; }
-  .qr-box canvas, .qr-box img { display: block; }
-  #qrVideo { width: 100%; max-width: 400px; border-radius: 8px; margin: 10px 0; background: #000; }
-
-  @media (max-width: 900px) {
-    .studio { grid-template-columns: 1fr; min-height: auto; }
-    .studio-panel { max-height: 250px; }
-    #studioCanvas { min-height: 400px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+    color: #eee; min-height: 100vh; padding: 15px;
   }
-  @media (max-width: 640px) {
-    body { padding: 12px; }
-    h1 { font-size: 20px; }
-    .topbar { padding: 12px 14px; }
-    .money { font-size: 22px; }
-    .nav { gap: 5px; width: 100%; }
-    .nav button { flex: 1 1 calc(50% - 5px); padding: 9px 8px; font-size: 12px; text-align: center; }
-    .grid { grid-template-columns: 1fr; gap: 12px; }
-    #clickBtn { width: 180px; height: 180px; font-size: 18px; }
-    .click-info { font-size: 15px; }
-    .studio { padding: 8px; gap: 8px; }
-    #studioCanvas { min-height: 350px; }
-    .studio-meta input { min-width: 0; flex: 1 1 100%; }
-    .modal-content { padding: 16px; }
-    .start-screen { padding: 20px; margin: 20px auto; }
+  h1 { text-align: center; color: #e94560; margin-bottom: 10px; text-shadow: 0 0 10px #e94560; }
+  .topbar {
+    display: flex; justify-content: center; gap: 18px;
+    background: rgba(0,0,0,0.4); padding: 12px; border-radius: 10px;
+    margin-bottom: 15px; flex-wrap: wrap; align-items: center;
   }
+  .topbar div { font-size: 16px; font-weight: bold; }
+  .money { color: #4ecca3; }
+  .prime-badge {
+    background: linear-gradient(90deg, #ffd700, #ffed4e);
+    color: #111; padding: 4px 12px; border-radius: 15px; font-weight: bold;
+    font-size: 13px; box-shadow: 0 0 15px rgba(255,215,0,0.6);
+    animation: glow 2s infinite alternate;
+  }
+  @keyframes glow { from { box-shadow: 0 0 10px rgba(255,215,0,0.4); } to { box-shadow: 0 0 25px rgba(255,215,0,0.9); } }
+  .prime-badge.inactive { background: #444; color: #888; box-shadow: none; animation: none; }
+  .prime-timer {
+    background: rgba(255,215,0,0.2); border: 1px solid #ffd700; color: #ffd700;
+    padding: 3px 10px; border-radius: 12px; font-size: 13px; font-weight: bold;
+  }
+
+  .btn {
+    background: #e94560; color: white; border: none; padding: 10px 18px;
+    border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold;
+    transition: 0.2s; margin: 3px;
+  }
+  .btn:hover { background: #ff6b8a; transform: scale(1.05); }
+  .btn:disabled { background: #555; cursor: not-allowed; transform: none; opacity: 0.6; }
+  .btn-green { background: #4ecca3; color: #111; }
+  .btn-green:hover { background: #6ee7b7; }
+  .btn-green:disabled:hover { background: #555; transform: none; }
+  .btn-blue { background: #3a86ff; }
+  .btn-blue:hover { background: #5fa3ff; }
+  .btn-orange { background: #ff9f1c; color: #111; }
+  .btn-orange:hover { background: #ffb347; }
+  .btn-red { background: #c82333; }
+  .btn-red:hover { background: #e04b5a; }
+  .btn-prime {
+    background: linear-gradient(90deg, #ffd700, #ffed4e);
+    color: #111; text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+    box-shadow: 0 0 20px rgba(255,215,0,0.5);
+  }
+  .btn-prime:hover { background: linear-gradient(90deg, #ffed4e, #fff59d); transform: scale(1.05); }
+  .btn-small { padding: 6px 12px; font-size: 13px; }
+  .btn-reset {
+    background: linear-gradient(135deg, #7f1d1d, #dc2626);
+    color: white; border: 2px solid #ff6b6b;
+    box-shadow: 0 0 10px rgba(220,38,38,0.5);
+  }
+  .btn-reset:hover {
+    background: linear-gradient(135deg, #991b1b, #ef4444);
+    box-shadow: 0 0 20px rgba(239,68,68,0.8);
+  }
+
+  .container { max-width: 1300px; margin: 0 auto; }
+  .panel {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px; padding: 15px; margin-bottom: 15px;
+    position: relative;
+  }
+  .panel h2 { color: #4ecca3; margin-bottom: 10px; font-size: 20px; }
+  .panel.prime-panel {
+    background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,237,78,0.08));
+    border: 2px solid #ffd700; box-shadow: 0 0 25px rgba(255,215,0,0.2);
+  }
+  .panel.prime-panel h2 { color: #ffd700; }
+
+  .panel.locked {
+    border: 2px dashed #e94560;
+    background: repeating-linear-gradient(
+      45deg,
+      rgba(233,69,96,0.05),
+      rgba(233,69,96,0.05) 10px,
+      rgba(233,69,96,0.1) 10px,
+      rgba(233,69,96,0.1) 20px
+    );
+  }
+  .lock-banner {
+    background: rgba(233,69,96,0.2); border: 1px solid #e94560;
+    border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;
+    color: #ffb3c1; font-weight: bold; text-align: center;
+    font-size: 14px;
+  }
+  .lock-banner .icon { font-size: 20px; margin-right: 6px; }
+
+  #clickerArea { text-align: center; padding: 20px; }
+  #bigClicker {
+    width: 150px; height: 150px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ff6b8a, #e94560);
+    border: 5px solid #fff; cursor: pointer; font-size: 50px;
+    transition: 0.1s; user-select: none;
+    box-shadow: 0 0 30px rgba(233,69,96,0.6);
+  }
+  #bigClicker:active { transform: scale(0.92); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+  .card {
+    background: rgba(255,255,255,0.1); border-radius: 10px; padding: 12px;
+    border: 1px solid rgba(255,255,255,0.15); transition: 0.2s;
+  }
+  .card:hover { background: rgba(255,255,255,0.18); }
+  .card .title { font-weight: bold; color: #ffd166; margin-bottom: 5px; }
+  .card .desc { font-size: 12px; color: #bbb; margin-bottom: 8px; min-height: 30px; }
+  .card .price { color: #4ecca3; font-weight: bold; font-size: 16px; margin: 5px 0; }
+
+  .bot-game-card {
+    background: var(--bg);
+    border: 2px solid var(--accent);
+    border-radius: 12px; padding: 14px; position: relative;
+    overflow: hidden; transition: 0.25s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+  .bot-game-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px var(--accent);
+  }
+  .bot-game-card.locked-by-prime {
+    filter: grayscale(0.6) brightness(0.7);
+    border-style: dashed;
+  }
+  .bot-game-card.locked-by-prime::after {
+    content: '🔒 PRIME';
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(0,0,0,0.85); color: #ffd700;
+    padding: 4px 10px; border-radius: 10px;
+    font-size: 11px; font-weight: bold;
+    border: 1px solid #ffd700;
+    box-shadow: 0 0 10px rgba(255,215,0,0.6);
+    z-index: 2;
+  }
+  .bot-game-card::before {
+    content: ''; position: absolute; top: -50%; right: -20%;
+    width: 120px; height: 120px; border-radius: 50%;
+    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    opacity: 0.3; pointer-events: none;
+  }
+  .bot-game-card .card-emoji {
+    font-size: 42px; text-align: center; margin-bottom: 8px;
+    filter: drop-shadow(0 0 10px var(--accent));
+  }
+  .bot-game-card .card-name {
+    font-weight: bold; font-size: 16px; color: #fff;
+    text-align: center; margin-bottom: 4px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  }
+  .bot-game-card .card-genre {
+    font-size: 11px; text-align: center; margin-bottom: 8px;
+    color: var(--accent); font-weight: bold; text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .bot-game-card .card-desc {
+    font-size: 12px; color: #ddd; margin-bottom: 8px; min-height: 32px;
+    text-align: center; font-style: italic;
+  }
+  .bot-game-card .card-rating {
+    text-align: center; font-size: 13px; margin-bottom: 6px;
+  }
+  .bot-game-card .card-price {
+    text-align: center; font-size: 18px; font-weight: bold;
+    color: #ffd166; margin: 8px 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  }
+  .bot-game-card .prime-lock {
+    background: rgba(0,0,0,0.6); border: 1px dashed #ffd700;
+    padding: 8px; border-radius: 8px; text-align: center;
+    font-size: 12px; color: #ffd700; font-weight: bold; margin-top: 6px;
+  }
+
+  .progress { width: 100%; height: 14px; background: #222; border-radius: 7px; overflow: hidden; margin: 6px 0; }
+  .progress > div { height: 100%; background: linear-gradient(90deg, #4ecca3, #3a86ff); width: 0%; transition: width 0.15s linear; }
+
+  .modal-bg {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    z-index: 100; justify-content: center; align-items: center; padding: 15px;
+  }
+  .modal-bg.active { display: flex; }
+  .modal {
+    background: #16213e; border: 2px solid #e94560; border-radius: 15px;
+    padding: 20px; max-width: 1100px; width: 100%; max-height: 92vh; overflow-y: auto;
+  }
+  .modal h3 { color: #e94560; margin-bottom: 12px; }
+
+  .modal.reset-modal {
+    border-color: #dc2626; max-width: 500px;
+    box-shadow: 0 0 40px rgba(220,38,38,0.6);
+    animation: shake 0.5s;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+  .reset-modal h3 { color: #ff6b6b; }
+  .reset-warning {
+    background: rgba(220,38,38,0.2); border: 2px solid #dc2626;
+    border-radius: 10px; padding: 15px; margin-bottom: 15px;
+    color: #ffb3b3; font-size: 14px; line-height: 1.6;
+  }
+  .reset-warning .big-icon {
+    font-size: 48px; text-align: center; display: block; margin-bottom: 10px;
+    animation: pulse 1s infinite alternate;
+  }
+  @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.15); } }
+  .reset-warning b { color: #ff6b6b; font-size: 16px; }
+  .reset-list { list-style: none; margin: 10px 0; padding-left: 0; }
+  .reset-list li { padding: 4px 0; color: #ffb3b3; }
+  .reset-list li::before { content: '❌ '; margin-right: 6px; }
+  .reset-input-wrap { margin: 15px 0; }
+  .reset-input-wrap label { display: block; color: #ff6b6b; font-weight: bold; margin-bottom: 6px; font-size: 14px; }
+  .reset-input-wrap input {
+    width: 100%; padding: 12px; border-radius: 8px;
+    border: 2px solid #555; background: #0f3460; color: #eee;
+    font-size: 16px; font-family: monospace;
+    text-transform: uppercase; letter-spacing: 2px; text-align: center;
+  }
+  .reset-input-wrap input:focus {
+    outline: none; border-color: #dc2626;
+    box-shadow: 0 0 10px rgba(220,38,38,0.5);
+  }
+  .reset-buttons { display: flex; gap: 10px; margin-top: 15px; }
+  .reset-buttons .btn { flex: 1; padding: 12px; font-size: 15px; }
+
+  .studio { display: grid; grid-template-columns: 240px 1fr 260px; gap: 12px; }
+  @media (max-width: 900px) { .studio { grid-template-columns: 1fr; } }
+
+  .studio-panel {
+    background: #0f3460; border-radius: 10px; padding: 12px;
+    border: 1px solid #2a4a7a;
+  }
+  .studio-panel h4 { color: #4ecca3; margin-bottom: 8px; font-size: 14px; }
+
+  .block-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: #1a3a6a; border: 1px solid #2a4a7a; color: #eee;
+    padding: 8px; border-radius: 6px; cursor: pointer; margin-bottom: 5px;
+    width: 100%; text-align: left; font-size: 13px; transition: 0.2s;
+  }
+  .block-btn:hover { background: #2a5a9a; }
+  .block-btn.selected { background: #e94560; border-color: #ff6b8a; }
+  .block-emoji { font-size: 20px; }
+
+  #canvas3d {
+    background: linear-gradient(180deg, #87ceeb 0%, #b0e0e6 40%, #8b7355 60%, #654321 100%);
+    border-radius: 10px; min-height: 400px; position: relative; overflow: hidden;
+    border: 2px solid #2a4a7a; background-size: cover;
+  }
+  #canvas3d.grass { background: linear-gradient(180deg, #87ceeb 0%, #b0e0e6 35%, #4caf50 55%, #2e7d32 100%); }
+  #canvas3d.desert { background: linear-gradient(180deg, #ffb74d 0%, #ffe082 35%, #e6c27a 55%, #c9a961 100%); }
+  #canvas3d.snow { background: linear-gradient(180deg, #b3e5fc 0%, #e1f5fe 35%, #f5f5f5 55%, #cfd8dc 100%); }
+  #canvas3d.space { background: linear-gradient(180deg, #000000 0%, #1a1a3e 40%, #2a2a5e 60%, #1a1a3e 100%); }
+  #canvas3d.castle { background: linear-gradient(180deg, #7e57c2 0%, #9575cd 40%, #5e35b1 60%, #311b92 100%); }
+
+  .placed-block {
+    position: absolute; font-size: 30px; cursor: pointer;
+    user-select: none; transition: transform 0.15s;
+    filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.5));
+  }
+  .placed-block:hover { transform: scale(1.15); }
+
+  .color-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .color-dot {
+    width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: 0.2s;
+  }
+  .color-dot:hover { transform: scale(1.15); }
+  .color-dot.selected { border-color: #fff; box-shadow: 0 0 10px #fff; }
+
+  .stat-line { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; border-bottom: 1px solid #2a4a7a; }
+  .stat-line span:last-child { color: #ffd166; font-weight: bold; }
+
+  .hint { font-size: 12px; color: #999; margin-top: 4px; }
+
+  .game-play-area {
+    text-align: center; padding: 20px; background: #0f3460; border-radius: 10px;
+    margin-top: 15px; min-height: 250px; position: relative; overflow: hidden;
+  }
+  .game-play-area .score { font-size: 28px; color: #ffd166; margin-bottom: 15px; }
+  .click-target {
+    position: absolute; font-size: 40px; cursor: pointer; user-select: none;
+    transition: transform 0.1s; animation: pop 0.3s;
+  }
+  .click-target:active { transform: scale(0.8); }
+  @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+
+  .notif {
+    position: fixed; top: 15px; right: 15px; background: #4ecca3; color: #111;
+    padding: 12px 20px; border-radius: 8px; font-weight: bold; z-index: 200;
+    animation: slideIn 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    max-width: 350px;
+  }
+  @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
+
+  .item-tag {
+    display: inline-block; background: #2a4a7a; padding: 3px 8px; border-radius: 12px;
+    font-size: 12px; margin: 2px; color: #ffd166;
+  }
+
+  .prime-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 15px 0; }
+  .prime-feature {
+    background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3);
+    padding: 12px; border-radius: 10px; text-align: center;
+  }
+  .prime-feature .icon { font-size: 30px; margin-bottom: 6px; }
+  .prime-feature .text { font-size: 13px; color: #ffd700; }
+
+  .price-section {
+    background: linear-gradient(135deg, rgba(78,204,163,0.15), rgba(58,134,255,0.1));
+    border: 2px solid #4ecca3; border-radius: 12px; padding: 15px; margin-top: 15px;
+  }
+  .price-section.invalid { border-color: #e94560; box-shadow: 0 0 20px rgba(233,69,96,0.4); }
+  .price-section h4 { color: #4ecca3; margin-bottom: 10px; }
+  .price-section.invalid h4 { color: #e94560; }
+  .price-slider-wrap { display: flex; align-items: center; gap: 15px; margin: 10px 0; }
+  input[type="range"] {
+    flex: 1; height: 8px; border-radius: 4px; outline: none;
+    background: linear-gradient(90deg, #4ecca3 0%, #ffd166 50%, #e94560 100%);
+    -webkit-appearance: none; appearance: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: #fff; border: 3px solid #4ecca3; cursor: pointer;
+    box-shadow: 0 0 10px rgba(78,204,163,0.8);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: #fff; border: 3px solid #4ecca3; cursor: pointer;
+    box-shadow: 0 0 10px rgba(78,204,163,0.8);
+  }
+  .price-value-big {
+    font-size: 26px; font-weight: bold; color: #4ecca3;
+    min-width: 100px; text-align: right;
+    text-shadow: 0 0 10px rgba(78,204,163,0.5);
+  }
+  .price-value-big.unset { color: #666; font-size: 20px; text-shadow: none; }
+  .price-presets { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .price-preset {
+    background: #1a3a6a; border: 1px solid #2a4a7a; color: #eee;
+    padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 13px;
+    transition: 0.2s; font-weight: bold;
+  }
+  .price-preset:hover { background: #2a5a9a; transform: scale(1.05); }
+  .price-preset.selected { background: #4ecca3; color: #111; border-color: #6ee7b7; }
+  .price-forecast {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;
+  }
+  .forecast-box {
+    background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; text-align: center;
+  }
+  .forecast-box .label { font-size: 11px; color: #999; text-transform: uppercase; }
+  .forecast-box .val { font-size: 18px; font-weight: bold; color: #ffd166; margin-top: 4px; }
+
+  .lock-overlay {
+    background: rgba(0,0,0,0.6); border-radius: 8px; padding: 8px;
+    color: #ffd700; font-size: 12px; text-align: center; font-weight: bold;
+    border: 1px dashed #ffd700;
+  }
+  .save-indicator { font-size: 11px; color: #4ecca3; opacity: 0.7; }
+
+  .card-actions {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;
+  }
+  .card-actions .btn { flex: 1; min-width: 100px; margin: 0; }
+
+  .shop-filters {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .filter-chip {
+    background: #1a3a6a; border: 1px solid #2a4a7a; color: #bbb;
+    padding: 5px 14px; border-radius: 20px; cursor: pointer; font-size: 13px;
+    transition: 0.2s;
+  }
+  .filter-chip:hover { background: #2a5a9a; color: #eee; }
+  .filter-chip.active { background: #e94560; color: white; border-color: #ff6b8a; }
 </style>
 </head>
 <body>
-<div id="notifArea"></div>
 
-<!-- ========== СТАРТОВЫЙ ЭКРАН ========== -->
-<div id="startScreen" class="start-screen">
-  <h2>🎮 СТИМ-КЛИКЕР</h2>
-  <p class="sub">Выбери режим игры</p>
+<div class="container">
+  <h1>🎮 Симулятор Разработчика Игр v6.3</h1>
 
-  <div class="mode-card" data-mode="solo">
-    <h3>👤 Одиночная игра</h3>
-    <p>Классический режим. Играй один, копи деньги, создавай игры.</p>
-    <span class="tag no-net">📴 Без интернета</span>
-  </div>
-
-  <div class="mode-card" data-mode="qr">
-    <h3>📱 Игра по очереди через QR</h3>
-    <p>Ходите по очереди. Один делает ход → QR-код → второй сканирует и продолжает. Работает полностью без интернета.</p>
-    <span class="tag no-net">📴 Без интернета</span>
-  </div>
-
-  <div class="mode-card" data-mode="lan">
-    <h3>🖥️ Локальный сервер (Wi-Fi)</h3>
-    <p>Запусти Node.js на одном устройстве. Другой зайдёт по IP. Настоящая игра вдвоём по Wi-Fi без интернета.</p>
-    <span class="tag no-net">📴 Без интернета</span>
-  </div>
-
-  <div class="mode-card" data-mode="online">
-    <h3>🌐 Онлайн через Firebase</h3>
-    <p>Играй с друзьями через интернет. Комнаты, общий магазин, отзывы.</p>
-    <span class="tag net">🌐 Нужен интернет</span>
-  </div>
-
-  <button class="start-btn green" id="startBtn" style="margin-top: 15px;">▶️ Начать</button>
-</div>
-
-<!-- ========== ОСНОВНОЙ ИНТЕРФЕЙС ========== -->
-<div class="container" id="mainApp" style="display:none;">
-  <h1>🎮 СТИМ-КЛИКЕР</h1>
   <div class="topbar">
-    <div class="topbar-left">
-      <div class="money-row">
-        <span class="money">💰 <span id="money">0</span> ₽</span>
-        <button class="mode-badge" id="modeBadge" title="Сменить режим">🎮 <span id="modeDisplay">Одиночная</span></button>
-      </div>
-      <div class="player-info">
-        👤 <b id="playerNameDisplay">Игрок</b>
-        <button class="nick-btn" id="changeNickBtn">✏️ Ник</button>
-        <button class="reset-btn" id="resetAccBtn">🔄 Сброс</button>
-      </div>
-      <div><span id="serverStatus" class="status offline">Проверка...</span></div>
-    </div>
-    <div class="nav">
-      <button class="active" data-page="clicker">🖱️ Кликер</button>
-      <button data-page="shop">🛒 Магазин</button>
-      <button data-page="library">📚 Библиотека</button>
-      <button data-page="studio">🛠️ Студия</button>
-      <button data-page="mystore">📤 Мои игры</button>
-      <button data-page="sync" id="syncTab">🔄 Синхронизация</button>
-    </div>
+    <div class="money">💰 Деньги: <span id="moneyDisplay">0</span></div>
+    <div>👆 Кликов: <span id="clickCount">0</span></div>
+    <div>🎮 Моих игр: <span id="myGamesCount">0</span></div>
+    <div>⭐ Покупок ботами: <span id="botBuys">0</span></div>
+    <div id="primeBadgeWrap"><span class="prime-badge inactive" id="primeBadge">PRIME: НЕТ</span></div>
+    <div id="primeTimerWrap"></div>
+    <button class="btn btn-small btn-reset" id="resetBtn">🗑️ Сброс аккаунта</button>
+    <div class="save-indicator" id="saveIndicator"></div>
   </div>
 
-  <div class="page active" id="page-clicker">
-    <div class="clicker-area">
-      <button id="clickBtn">КЛИКНИ<br>МЕНЯ</button>
-      <div class="click-info">За клик: <b id="perClick">1</b> ₽<br>Всего кликов: <b id="totalClicks">0</b></div>
+  <div class="panel prime-panel" id="primePanel">
+    <h2>👑 PRIME подписка — на 24 часа</h2>
+    <p style="margin-bottom:8px;">Без PRIME <b style="color:#e94560;">всё заблокировано</b>: создание игр, покупка игр ботов, <b>игра в купленные игры</b> и продажа твоих игр ботам!</p>
+    <div class="prime-features">
+      <div class="prime-feature"><div class="icon">🎨</div><div class="text">Создание своих игр</div></div>
+      <div class="prime-feature"><div class="icon">🤖</div><div class="text">Боты покупают твои игры</div></div>
+      <div class="prime-feature"><div class="icon">🛒</div><div class="text">Покупка игр ботов</div></div>
+      <div class="prime-feature"><div class="icon">🎮</div><div class="text">Игра в купленные игры</div></div>
+      <div class="prime-feature"><div class="icon">⏳</div><div class="text">Действует 24 часа</div></div>
     </div>
+    <div style="text-align:center; margin-top:10px;">
+      <button class="btn btn-prime" id="buyPrimeBtn" style="font-size:17px; padding:14px 30px;">👑 Купить PRIME на 24ч — 1000 💰</button>
+      <button class="btn" id="cancelPrimeBtn" style="display:none; background:#666;">❌ Отменить PRIME</button>
+    </div>
+    <p class="hint" id="primeStatusText" style="text-align:center; margin-top:10px;">Статус: не активна</p>
   </div>
 
-  <div class="page" id="page-shop"><h2 style="color:#66c0f4; margin-bottom:15px;">🛒 Магазин игр</h2><div class="grid" id="shopGrid"></div></div>
-  <div class="page" id="page-library"><h2 style="color:#66c0f4; margin-bottom:15px;">📚 Моя библиотека</h2><div class="grid" id="libraryGrid"></div></div>
-
-  <div class="page" id="page-studio">
-    <h2 style="color:#66c0f4; margin-bottom:15px;">🛠️ Студия разработки</h2>
-    <div class="studio-meta">
-      <input type="text" id="studioName" placeholder="Название игры" maxlength="40">
-      <input type="text" id="studioDesc" placeholder="Описание" maxlength="150">
-      <input type="number" id="studioPrice" placeholder="Цена (₽)" min="10" value="100">
-    </div>
-    <div class="studio" id="studioContainer">
-      <div class="studio-panel">
-        <h3>Кнопки</h3>
-        <button class="tool-btn" id="addBtn">🔘 Кнопка (+1₽)</button>
-        <button class="tool-btn" id="addBigBtn">💎 Золотая (+10₽)</button>
-        <button class="tool-btn" id="addMegaBtn">💥 Мега (+50₽)</button>
-        <button class="tool-btn" id="addBomb">💣 Бомба (-5₽)</button>
-        <button class="tool-btn" id="addWinBtn">🏆 Победная (+100₽)</button>
-        <h3 style="margin-top:10px;">Текст</h3>
-        <button class="tool-btn" id="addText">📝 Текст</button>
-        <button class="tool-btn" id="addTitle">🔠 Заголовок</button>
-        <button class="tool-btn" id="addHint">💡 Подсказка</button>
-        <h3 style="margin-top:10px;">Прочее</h3>
-        <button class="tool-btn" id="addImage">🖼️ Картинка</button>
-        <button class="tool-btn" id="addInput">⌨️ Поле ввода</button>
-        <button class="tool-btn" id="addCounter">🔢 Счётчик</button>
-        <button class="tool-btn" id="addSquare">⬜ Квадрат</button>
-        <button class="tool-btn" id="addCircle">⭕ Круг</button>
-        <h3 style="margin-top:10px;">Действия</h3>
-        <div class="studio-actions" style="flex-direction:column;">
-          <button class="btn-test" id="testBtn">▶️ Тест игры</button>
-          <button class="btn-clear" id="clearBtn">🗑️ Очистить холст</button>
-        </div>
-      </div>
-      <div style="position:relative;">
-        <div id="studioCanvas"><div class="canvas-empty" id="canvasEmpty">Добавь объекты слева 👈</div></div>
-        <div class="studio-actions"><button class="btn-publish" id="publishBtn" style="font-size:15px; padding:12px;">📤 Опубликовать (100 ₽)</button></div>
-        <div class="publish-hint" id="publishHint">Публикация стоит 100 ₽. У тебя 0 ₽</div>
-      </div>
-      <div class="studio-panel">
-        <h3>Свойства</h3>
-        <div id="propsPanel"><div class="empty" style="padding:20px; font-size:13px;">Выбери объект на холсте</div></div>
-      </div>
-    </div>
+  <div class="panel" id="clickerArea">
+    <h2>Кликер — заработай денег</h2>
+    <button id="bigClicker">💻</button>
+    <p class="hint" style="margin-top:10px">+1 💰 за клик</p>
   </div>
 
-  <div class="page" id="page-mystore">
-    <h2 style="color:#66c0f4; margin-bottom:15px;">📤 Мои игры в магазине</h2>
-    <div class="grid" id="myStoreGrid"></div>
+  <div class="panel" id="shopPanel">
+    <h2>🛒 Магазин игр от ботов (20 уникальных игр)</h2>
+    <div id="shopLockBanner"></div>
+    <p class="hint" style="margin-bottom:10px;">
+      Купить → 100 сек скачивания → играть (только с PRIME).
+    </p>
+    <div class="shop-filters" id="shopFilters"></div>
+    <div id="shopGrid" class="grid"></div>
   </div>
 
-  <div class="page" id="page-sync">
-    <h2 style="color:#66c0f4; margin-bottom:15px;">🔄 Синхронизация хода</h2>
-    <div style="background:#171a21; border-radius:10px; padding:20px;">
-      <p style="color:#8f98a0; margin-bottom:15px;">В режиме «по очереди» передавай ход другу через QR-код.</p>
-      <button class="start-btn blue" id="exportQrBtn" style="margin-bottom:10px;">📤 Экспортировать мой ход (QR)</button>
-      <button class="start-btn purple" id="importQrBtn">📥 Импортировать ход друга (камера)</button>
+  <div class="panel" id="myGamesPanel">
+    <h2>📁 Мои игры</h2>
+    <div id="myGamesLockBanner"></div>
+    <button class="btn btn-green" id="createGameBtn">🎨 Открыть Roblox Studio (100 💰)</button>
+    <p class="hint">Создай игру → <b style="color:#e94560;">обязательно выбери цену</b> → выложи в магазин → боты покупают раз в 100 сек</p>
+    <div id="myGamesGrid" class="grid" style="margin-top:12px;"></div>
+  </div>
+</div>
+
+<!-- МОДАЛКА СБРОСА -->
+<div class="modal-bg" id="resetModal">
+  <div class="modal reset-modal">
+    <h3>⚠️ СБРОС АККАУНТА</h3>
+    <div class="reset-warning">
+      <span class="big-icon">💀</span>
+      <b>ВНИМАНИЕ! Это удалит ВСЁ:</b>
+      <ul class="reset-list">
+        <li>Все деньги</li>
+        <li>Все клики</li>
+        <li>Все твои игры</li>
+        <li>PRIME подписку</li>
+        <li>Купленные игры ботов</li>
+        <li>Весь прогресс сохранения</li>
+      </ul>
+      <b style="display:block;text-align:center;margin-top:10px;">Это действие НЕЛЬЗЯ отменить!</b>
+    </div>
+    <div class="reset-input-wrap">
+      <label>Введи слово <b style="color:#fff;">УДАЛИТЬ</b> для подтверждения:</label>
+      <input id="resetConfirmInput" type="text" placeholder="УДАЛИТЬ" autocomplete="off">
+    </div>
+    <div class="reset-buttons">
+      <button class="btn" id="cancelResetBtn" style="background:#555;">❌ Отмена</button>
+      <button class="btn btn-red" id="confirmResetBtn" disabled>💀 Сбросить аккаунт</button>
     </div>
   </div>
 </div>
 
-<!-- ========== МОДАЛКА ========== -->
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <h2 id="modalTitle">Заголовок</h2>
-    <div id="playScene"></div>
-    <div class="msg" id="playMsg"></div>
-    <div id="reviewsSection" style="display:none;">
-      <div id="reviewsList" class="reviews-list"></div>
-      <div class="review-form">
-        <h4>✍️ Оставить отзыв</h4>
-        <div class="stars-select" id="starsSelect">
-          <button class="star-btn" data-v="1">★</button>
-          <button class="star-btn" data-v="2">★</button>
-          <button class="star-btn" data-v="3">★</button>
-          <button class="star-btn" data-v="4">★</button>
-          <button class="star-btn" data-v="5">★</button>
+<!-- ROBLOX STUDIO -->
+<div class="modal-bg" id="studioModal">
+  <div class="modal">
+    <h3>🎨 Roblox Studio — создание игры</h3>
+    <label style="color:#4ecca3;font-weight:bold;display:block;margin-bottom:6px;">Название игры:</label>
+    <input id="gameName" maxlength="30" placeholder="Моя крутая игра"
+      style="width:100%;padding:10px;border-radius:6px;border:1px solid #444;background:#0f3460;color:#eee;font-size:15px;margin-bottom:12px;">
+
+    <div class="studio">
+      <div class="studio-panel">
+        <h4>🧱 Инструменты</h4>
+        <div id="toolList"></div>
+        <h4 style="margin-top:15px;">🎨 Цвет</h4>
+        <div class="color-row" id="colorRow"></div>
+        <h4 style="margin-top:15px;">🌍 Ландшафт</h4>
+        <select id="landscapeSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid #444;background:#1a3a6a;color:#eee;">
+          <option value="grass">🌿 Трава</option>
+          <option value="desert">🏜️ Пустыня</option>
+          <option value="snow">❄️ Снег</option>
+          <option value="space">🌌 Космос</option>
+          <option value="castle">🏰 Замок</option>
+        </select>
+      </div>
+
+      <div>
+        <div id="canvas3d" class="grass">
+          <p id="canvasHint" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(0,0,0,0.4);font-size:16px;text-align:center;pointer-events:none;">
+            Выбери блок слева и кликни сюда, чтобы разместить
+          </p>
         </div>
-        <textarea id="reviewText" placeholder="Что думаешь об игре?" maxlength="200"></textarea>
-        <button id="submitReview" type="submit">Отправить отзыв</button>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-blue" id="clearCanvasBtn">🗑️ Очистить</button>
+          <button class="btn" id="cancelStudioBtn">❌ Отмена</button>
+        </div>
+      </div>
+
+      <div class="studio-panel">
+        <h4>📊 Статистика</h4>
+        <div class="stat-line"><span>Блоков:</span><span id="statBlocks">0</span></div>
+        <div class="stat-line"><span>Разнообразие:</span><span id="statVariety">0</span></div>
+        <div class="stat-line"><span>Цветов:</span><span id="statColors">0</span></div>
+        <div class="stat-line"><span>Сложность:</span><span id="statDifficulty">—</span></div>
+        <div class="stat-line"><span>Оценка:</span><span id="statScore">0</span></div>
+        <h4 style="margin-top:15px;">🎁 Предметы</h4>
+        <div id="itemsPreview" style="max-height:200px;overflow-y:auto;"></div>
       </div>
     </div>
-    <button class="close" id="closeModal">Закрыть</button>
+
+    <div class="price-section invalid" id="priceSection">
+      <h4>💵 Цена твоей игры в магазине <span style="color:#e94560;">*</span></h4>
+      <p class="hint" style="margin-bottom:8px;">Дороже = больше доход. Интервал покупок — <b style="color:#4ecca3;">ровно 100 секунд</b>.</p>
+      <div class="price-slider-wrap">
+        <span style="font-size:20px;">💵</span>
+        <input type="range" id="priceSlider" min="10" max="500" step="10" value="100">
+        <span class="price-value-big unset" id="priceValueWrap"><span id="priceValue">не выбрана</span></span>
+      </div>
+      <div class="price-presets" id="pricePresets">
+        <button class="price-preset" data-price="30">30 💰</button>
+        <button class="price-preset" data-price="100">100 💰</button>
+        <button class="price-preset" data-price="250">250 💰</button>
+        <button class="price-preset" data-price="500">500 💰</button>
+      </div>
+      <div class="price-forecast">
+        <div class="forecast-box">
+          <div class="label">Доход с покупки</div>
+          <div class="val" id="forecastIncome">—</div>
+        </div>
+        <div class="forecast-box">
+          <div class="label">Интервал покупок</div>
+          <div class="val" id="forecastInterval">—</div>
+        </div>
+      </div>
+      <p class="hint" id="priceErrorMsg" style="color:#e94560; margin-top:8px; font-weight:bold; display:none;">⚠️ Выбери цену!</p>
+    </div>
+
+    <div style="margin-top:15px;display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-green" id="confirmCreateBtn" style="font-size:16px;padding:12px 25px;" disabled>✅ Создать игру (100 💰)</button>
+    </div>
   </div>
 </div>
 
-<script type="module">
-const PUBLISH_COST = 100;
-const DOWNLOAD_SECONDS = 100;
+<!-- ИГРА -->
+<div class="modal-bg" id="playModal">
+  <div class="modal" style="max-width:600px;">
+    <h3 id="playTitle">Игра</h3>
+    <p id="playDesc" style="color:#bbb;margin-bottom:10px;"></p>
+    <div class="game-play-area" id="playArea"></div>
+    <button class="btn" id="closePlayBtn" style="margin-top:12px;">Закрыть</button>
+  </div>
+</div>
 
-// ============ РЕЖИМ ============
-let MODE = 'solo'; // solo | qr | lan | online
-let ROOM_CODE = null;
-let PLAYER_NAME = localStorage.getItem('playerName') || 'Игрок' + Math.floor(Math.random()*999);
+<script>
+// ==================== КОНСТАНТЫ ====================
+const SAVE_KEY = 'gameDevSim_v5_save';
+const BUY_INTERVAL_SEC = 100;
+const PRIME_DURATION_MS = 24 * 60 * 60 * 1000;
+const RESET_CONFIRM_WORD = 'УДАЛИТЬ';
 
-const STARTER_GAMES = [
-  { id: 'g1', name: 'Космический Рейс', desc: 'Кликай кнопки!', price: 50, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 60, y: 80, w: 160, h: 60, color: '#66c0f4', text: 'ЖМИ!', reward: 1 },
-      { id: 'o2', type: 'text', x: 60, y: 20, w: 200, h: 40, color: '#a4d007', text: 'Космос 🚀' } ] },
-  { id: 'g2', name: 'Быстрая Реакция', desc: 'Нажимай!', price: 80, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 40, y: 60, w: 100, h: 80, color: '#a4d007', text: 'СТАРТ', reward: 2 },
-      { id: 'o2', type: 'btn', x: 170, y: 60, w: 100, h: 80, color: '#c23b3b', text: 'ФИНИШ', reward: 5 } ] },
-  { id: 'g3', name: 'Золотая Кнопка', desc: 'Много денег!', price: 120, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 120, y: 100, w: 140, h: 100, color: '#f5c542', text: '💰 ЗОЛОТО', reward: 10 } ] },
-  { id: 'g4', name: 'Мега Клик', desc: 'Жми!', price: 200, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 100, y: 100, w: 200, h: 120, color: '#ff6b00', text: '💥 МЕГА', reward: 50 } ] },
-  { id: 'g5', name: 'Бомба-Игра', desc: 'Есть бомба!', price: 90, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 40, y: 60, w: 100, h: 80, color: '#a4d007', text: '+5', reward: 5 },
-      { id: 'o2', type: 'btn', x: 170, y: 60, w: 100, h: 80, color: '#c23b3b', text: '-5', reward: -5 } ] },
-  { id: 'g6', name: 'Текстовый Квест', desc: 'Читай!', price: 60, author: 'Valve', objects: [
-      { id: 'o1', type: 'text', x: 40, y: 20, w: 300, h: 60, color: '#66c0f4', text: 'Ты в комнате...' },
-      { id: 'o2', type: 'btn', x: 40, y: 100, w: 130, h: 60, color: '#a4d007', text: 'Свет', reward: 10 } ] },
-  { id: 'g7', name: 'Кнопочный Ад', desc: 'Много кнопок!', price: 300, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 20, y: 20, w: 80, h: 60, color: '#66c0f4', text: '+3', reward: 3 },
-      { id: 'o2', type: 'btn', x: 120, y: 20, w: 80, h: 60, color: '#a4d007', text: '+3', reward: 3 },
-      { id: 'o3', type: 'btn', x: 220, y: 20, w: 80, h: 60, color: '#f5c542', text: '+3', reward: 3 } ] },
-  { id: 'g8', name: 'Круг Удачи', desc: 'Крути!', price: 150, author: 'Valve', objects: [
-      { id: 'o1', type: 'circle', x: 100, y: 80, w: 180, h: 180, color: '#a4d007', text: '🎯', reward: 15 } ] },
-  { id: 'g9', name: 'Победный Клик', desc: 'Победа!', price: 500, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 100, y: 100, w: 220, h: 130, color: '#f5c542', text: '🏆 +100', reward: 100 } ] },
-  { id: 'g10', name: 'Мульти-Кнопки', desc: 'Выбирай!', price: 180, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 30, y: 80, w: 110, h: 80, color: '#66c0f4', text: '+2', reward: 2 },
-      { id: 'o2', type: 'btn', x: 150, y: 80, w: 110, h: 80, color: '#a4d007', text: '+7', reward: 7 },
-      { id: 'o3', type: 'btn', x: 270, y: 80, w: 110, h: 80, color: '#f5c542', text: '+15', reward: 15 } ] }
+// ==================== СОСТОЯНИЕ ====================
+const state = {
+  money: 0, clicks: 0, botBuys: 0, myGames: [], prime: false, primeExpiresAt: null,
+};
+
+const BLOCKS = [
+  { id: 'grass', emoji: '🟩', name: 'Трава', cat: 'Природа' },
+  { id: 'tree', emoji: '🌳', name: 'Дерево', cat: 'Природа' },
+  { id: 'flower', emoji: '🌸', name: 'Цветок', cat: 'Природа' },
+  { id: 'rock', emoji: '🪨', name: 'Камень', cat: 'Природа' },
+  { id: 'water', emoji: '💧', name: 'Вода', cat: 'Природа' },
+  { id: 'fire', emoji: '🔥', name: 'Огонь', cat: 'Природа' },
+  { id: 'house', emoji: '🏠', name: 'Дом', cat: 'Строения' },
+  { id: 'castle', emoji: '🏰', name: 'Замок', cat: 'Строения' },
+  { id: 'tower', emoji: '🗼', name: 'Башня', cat: 'Строения' },
+  { id: 'bridge', emoji: '🌉', name: 'Мост', cat: 'Строения' },
+  { id: 'door', emoji: '🚪', name: 'Дверь', cat: 'Строения' },
+  { id: 'sword', emoji: '⚔️', name: 'Меч', cat: 'Предметы' },
+  { id: 'shield', emoji: '🛡️', name: 'Щит', cat: 'Предметы' },
+  { id: 'potion', emoji: '🧪', name: 'Зелье', cat: 'Предметы' },
+  { id: 'key', emoji: '🔑', name: 'Ключ', cat: 'Предметы' },
+  { id: 'gem', emoji: '💎', name: 'Кристалл', cat: 'Предметы' },
+  { id: 'coin', emoji: '🪙', name: 'Монета', cat: 'Предметы' },
+  { id: 'chest', emoji: '📦', name: 'Сундук', cat: 'Предметы' },
+  { id: 'car', emoji: '🚗', name: 'Машина', cat: 'Транспорт' },
+  { id: 'rocket', emoji: '🚀', name: 'Ракета', cat: 'Транспорт' },
+  { id: 'ufo', emoji: '🛸', name: 'НЛО', cat: 'Транспорт' },
+  { id: 'boat', emoji: '⛵', name: 'Лодка', cat: 'Транспорт' },
+  { id: 'monster', emoji: '👾', name: 'Монстр', cat: 'Персонажи' },
+  { id: 'robot', emoji: '🤖', name: 'Робот', cat: 'Персонажи' },
+  { id: 'ninja', emoji: '🥷', name: 'Ниндзя', cat: 'Персонажи' },
+  { id: 'dragon', emoji: '🐉', name: 'Дракон', cat: 'Персонажи' },
+  { id: 'star', emoji: '⭐', name: 'Звезда', cat: 'Декор' },
+  { id: 'rainbow', emoji: '🌈', name: 'Радуга', cat: 'Декор' },
+  { id: 'flag', emoji: '🚩', name: 'Флаг', cat: 'Декор' },
+  { id: 'lantern', emoji: '🏮', name: 'Фонарь', cat: 'Декор' },
 ];
 
-// ============ СОСТОЯНИЕ ============
-const DEFAULT_STATE = { money: 0, perClick: 1, totalClicks: 0, ownedGames: [], myGames: [], shopGames: [], allReviews: {}, downloadedGames: {} };
-let state = loadState();
+const COLORS = ['#e94560','#ff9f1c','#ffd166','#4ecca3','#3a86ff','#8338ec','#ff006e','#00b4d8','#95d5b2','#ffffff'];
 
-function loadState() {
+const botGamesData = [
+  { name: "Космический Рейд", genre: "Экшен", desc: "Летай и стреляй по астероидам", emoji: '🚀', price: 50, items: ["Бластер", "Щит", "Ускоритель", "Бомба", "Аптечка"], bg: 'linear-gradient(135deg, #0f2027, #203a43, #2c5364)', accent: '#00b4d8', rating: 4.5 },
+  { name: "Драконьи Земли", genre: "RPG", desc: "Сражайся с драконами", emoji: '🐉', price: 80, items: ["Меч", "Зелье", "Броня", "Лук", "Свиток"], bg: 'linear-gradient(135deg, #3a0d0d, #7b1a1a, #c0392b)', accent: '#ff6b6b', rating: 4.8 },
+  { name: "Империя", genre: "Стратегия", desc: "Строй великую империю", emoji: '🏰', price: 100, items: ["Ферма", "Казарма", "Башня", "Шахта", "Стены"], bg: 'linear-gradient(135deg, #2c1810, #5d4037, #8d6e63)', accent: '#ffb347', rating: 4.3 },
+  { name: "Прыг-Скок", genre: "Платформер", desc: "Прыгай по платформам", emoji: '🦘', price: 30, items: ["Пружина", "Крылья", "Бонус", "Монета", "Звезда"], bg: 'linear-gradient(135deg, #ffeaa7, #fdcb6e, #e17055)', accent: '#ffd166', rating: 4.1 },
+  { name: "Тёмный Дом", genre: "Хоррор", desc: "Выживи в проклятом доме", emoji: '👻', price: 70, items: ["Фонарь", "Ключ", "Дверь", "Записка", "Свеча"], bg: 'linear-gradient(135deg, #1a1a1a, #2d1b3d, #4a1942)', accent: '#a29bfe', rating: 4.7 },
+  { name: "Ферма Жизни", genre: "Симулятор", desc: "Выращивай урожай", emoji: '🚜', price: 40, items: ["Семена", "Лейка", "Трактор", "Курица", "Забор"], bg: 'linear-gradient(135deg, #a8e063, #56ab2f, #3a7d1c)', accent: '#95d5b2', rating: 4.0 },
+  { name: "Гонки Турбо", genre: "Экшен", desc: "Мчись быстрее всех", emoji: '🏎️', price: 60, items: ["Турбо", "Шины", "Нитро", "Ключ", "Бензин"], bg: 'linear-gradient(135deg, #ff416c, #ff4b2b, #c0392b)', accent: '#ff9f1c', rating: 4.4 },
+  { name: "Магическая Башня", genre: "RPG", desc: "Поднимайся по башне магов", emoji: '🗼', price: 90, items: ["Посох", "Мантия", "Зелье", "Руна", "Амулет"], bg: 'linear-gradient(135deg, #4a148c, #7b1fa2, #ba68c8)', accent: '#e1bee7', rating: 4.6 },
+  { name: "Война Кланов", genre: "Стратегия", desc: "Захвати мир", emoji: '⚔️', price: 110, items: ["Воин", "Лучник", "Маг", "Требушет", "Знамя"], bg: 'linear-gradient(135deg, #2b2d42, #8d99ae, #ef233c)', accent: '#ef233c', rating: 4.5 },
+  { name: "Пузырьки", genre: "Платформер", desc: "Лопай пузыри", emoji: '🫧', price: 25, items: ["Игла", "Бонус", "Молот", "Сеть", "Кристалл"], bg: 'linear-gradient(135deg, #89f7fe, #66a6ff, #4a90e2)', accent: '#89f7fe', rating: 3.9 },
+  { name: "Зомби Апокалипсис", genre: "Хоррор", desc: "Выживи среди зомби", emoji: '🧟', price: 85, items: ["Пистолет", "Дробовик", "Аптечка", "Баррикада", "Фонарь"], bg: 'linear-gradient(135deg, #1a1a1a, #3d0c0c, #6b1e1e)', accent: '#a8e063', rating: 4.9 },
+  { name: "Город Мечты", genre: "Симулятор", desc: "Построй идеальный город", emoji: '🏙️', price: 75, items: ["Дом", "Завод", "Парк", "Школа", "Больница"], bg: 'linear-gradient(135deg, #667eea, #764ba2, #5b3a8e)', accent: '#c4b5fd', rating: 4.2 },
+  { name: "Ниндзя Код", genre: "Экшен", desc: "Скрывайся в тенях", emoji: '🥷', price: 65, items: ["Катана", "Сюрикен", "Дымовая бомба", "Крюк", "Маска"], bg: 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)', accent: '#f093fb', rating: 4.6 },
+  { name: "Подземелье", genre: "RPG", desc: "Исследуй древнее подземелье", emoji: '🕳️', price: 55, items: ["Факел", "Меч", "Щит", "Золото", "Ловушка"], bg: 'linear-gradient(135deg, #232526, #414345, #6b6b6b)', accent: '#ffd166', rating: 4.3 },
+  { name: "Космостратегия", genre: "Стратегия", desc: "Захвати галактику", emoji: '🌌', price: 120, items: ["Крейсер", "Лазер", "Щит", "Дрон", "Планета"], bg: 'linear-gradient(135deg, #000000, #1a1a3e, #3d1a6e)', accent: '#c4b5fd', rating: 4.8 },
+  { name: "Птичий Полёт", genre: "Платформер", desc: "Летай между труб", emoji: '🐦', price: 20, items: ["Перо", "Ветер", "Облако", "Гнездо", "Черв"], bg: 'linear-gradient(135deg, #56ccf2, #2f80ed, #1e5bb8)', accent: '#ffeb3b', rating: 3.8 },
+  { name: "Проклятый Лес", genre: "Хоррор", desc: "Найди выход из леса", emoji: '🌲', price: 90, items: ["Компас", "Спички", "Карта", "Топор", "Амулет"], bg: 'linear-gradient(135deg, #1a2a1a, #2d4a2d, #0f1f0f)', accent: '#a8e063', rating: 4.7 },
+  { name: "Ресторан", genre: "Симулятор", desc: "Управляй рестораном мечты", emoji: '🍔', price: 45, items: ["Плита", "Стол", "Повар", "Меню", "Касса"], bg: 'linear-gradient(135deg, #f2994a, #f2c94c, #d35400)', accent: '#ffeb3b', rating: 4.1 },
+  { name: "Кибер Панк", genre: "Экшен", desc: "Беги по неоновым улицам", emoji: '🌃', price: 95, items: ["Имплант", "Пистолет", "Дрон", "Взлом", "Чип"], bg: 'linear-gradient(135deg, #0a0a1a, #1a0a2e, #2d1b4e)', accent: '#ff006e', rating: 4.9 },
+  { name: "Легенды Меча", genre: "RPG", desc: "Стань легендой", emoji: '🗡️', price: 130, items: ["Клинок", "Броня", "Эликсир", "Артефакт", "Свиток"], bg: 'linear-gradient(135deg, #1e3c72, #2a5298, #1e3c72)', accent: '#ffd700', rating: 4.9 }
+];
+
+let shopGames = [];
+let studio = { selectedBlock: null, selectedColor: COLORS[3], blocks: [], landscape: 'grass', price: null };
+let currentShopFilter = 'Все';
+
+const $ = id => document.getElementById(id);
+
+// ==================== PRIME ====================
+function isPrimeActive() {
+  return state.prime && state.primeExpiresAt && Date.now() < state.primeExpiresAt;
+}
+
+function checkPrimeExpiry() {
+  if (state.prime && state.primeExpiresAt && Date.now() >= state.primeExpiresAt) {
+    state.prime = false;
+    state.primeExpiresAt = null;
+    state.myGames.forEach(g => { if (g.status === 'shop') g.buyReadyAt = null; });
+    notify('⏳ PRIME истекла! Всё заблокировано, включая купленные игры.', '#e94560');
+    updateUI();
+    saveGame();
+    return true;
+  }
+  return false;
+}
+
+// ==================== СОХРАНЕНИЕ ====================
+function saveGame() {
   try {
-    const saved = localStorage.getItem('steamClicker_' + MODE);
-    if (saved) {
-      const s = JSON.parse(saved);
-      if (!s.shopGames || s.shopGames.filter(g => g.author === 'Valve').length < 10) {
-        const my = (s.shopGames || []).filter(g => g.author !== 'Valve');
-        s.shopGames = [...JSON.parse(JSON.stringify(STARTER_GAMES)), ...my];
-      }
-      if (!s.downloadedGames) s.downloadedGames = {};
-      return { ...DEFAULT_STATE, ...s };
-    }
-  } catch(e) {}
-  return { ...DEFAULT_STATE, shopGames: JSON.parse(JSON.stringify(STARTER_GAMES)) };
-}
-function saveState() { localStorage.setItem('steamClicker_' + MODE, JSON.stringify(state)); }
-function updateMoney() { document.getElementById('money').textContent = Math.floor(state.money); updatePublishHint(); updateStudioLock(); }
-
-function getReviewStats(gameId) {
-  const all = state.allReviews || {};
-  const list = Object.values(all).filter(r => r.gameId === gameId);
-  if (list.length === 0) return { avg: 0, count: 0 };
-  const sum = list.reduce((a, r) => a + r.stars, 0);
-  return { avg: (sum / list.length).toFixed(1), count: list.length };
+    const data = {
+      money: state.money, clicks: state.clicks, botBuys: state.botBuys,
+      prime: state.prime, primeExpiresAt: state.primeExpiresAt,
+      myGames: state.myGames,
+      shopGames: shopGames.map(g => ({
+        id: g.id, purchased: g.purchased, downloading: g.downloading,
+        downloadProgress: g.downloadProgress,
+        downloadStart: g.downloadStart, downloadEnd: g.downloadEnd,
+      })),
+      savedAt: Date.now(),
+    };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    const ind = $('saveIndicator');
+    if (ind) { ind.textContent = '💾 Сохранено'; setTimeout(() => { ind.textContent = ''; }, 1500); }
+  } catch (e) { console.warn('Save failed', e); }
 }
 
-function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-// ============ УВЕДОМЛЕНИЯ ============
-function toast(msg) {
-  const el = document.createElement('div'); el.className = 'sale-notif';
-  el.innerHTML = `<div class="n-text" style="font-size:14px;">${msg}</div>`;
-  document.getElementById('notifArea').appendChild(el);
-  setTimeout(() => { el.classList.add('fade-out'); setTimeout(() => el.remove(), 400); }, 2500);
-}
-function showSaleNotification(bot, game, price) {
-  const el = document.createElement('div'); el.className = 'sale-notif';
-  el.innerHTML = `<div class="n-title">🎉 Игрок купил твою игру!</div>
-    <div class="n-text"><b style="color:#66c0f4;">${bot}</b> купил «${game}»<br>+${price} ₽</div>`;
-  document.getElementById('notifArea').appendChild(el);
-  setTimeout(() => { el.classList.add('fade-out'); setTimeout(() => el.remove(), 400); }, 5000);
-}
-
-// ============ СТАРТ ============
-let selectedMode = 'solo';
-document.querySelectorAll('.mode-card').forEach(card => {
-  card.addEventListener('click', () => {
-    document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
-    card.classList.add('active');
-    selectedMode = card.dataset.mode;
-  });
-});
-
-document.getElementById('startBtn').addEventListener('click', () => {
-  MODE = selectedMode;
-  if (MODE === 'online' && !window.FIREBASE_CONFIG) {
-    if (!confirm('Firebase не настроен. Онлайн не будет работать.\nПродолжить в локальном режиме?')) return;
-  }
-  localStorage.setItem('steamClickerMode', MODE);
-  startGame();
-});
-
-function startGame() {
-  document.getElementById('startScreen').style.display = 'none';
-  document.getElementById('mainApp').style.display = 'block';
-  document.getElementById('modeDisplay').textContent = {solo:'Одиночная', qr:'QR-очередь', lan:'Wi-Fi', online:'Онлайн'}[MODE];
-  document.getElementById('playerNameDisplay').textContent = PLAYER_NAME;
-  document.getElementById('perClick').textContent = state.perClick;
-  document.getElementById('totalClicks').textContent = state.totalClicks;
-
-  if (MODE !== 'qr') document.getElementById('syncTab').style.display = 'none';
-
-  bindAll();
-  renderAll();
-  if (MODE === 'online') initFirebase();
-  if (MODE === 'solo' || MODE === 'qr') scheduleBotTick();
-}
-
-function bindAll() {
-  document.querySelectorAll('.nav button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('page-' + btn.dataset.page).classList.add('active');
-      renderAll();
-    });
-  });
-  document.getElementById('clickBtn').addEventListener('click', () => {
-    state.money += state.perClick; state.totalClicks++;
-    document.getElementById('totalClicks').textContent = state.totalClicks;
-    updateMoney(); saveState();
-  });
-  document.getElementById('modeBadge').addEventListener('click', () => {
-    if (confirm('Вернуться к выбору режима? Прогресс сохранится.')) {
-      localStorage.removeItem('steamClickerMode');
-      location.reload();
-    }
-  });
-  document.getElementById('changeNickBtn').addEventListener('click', () => {
-    const n = prompt('Новый ник:', PLAYER_NAME);
-    if (!n || !n.trim()) return;
-    PLAYER_NAME = n.trim().slice(0, 20);
-    localStorage.setItem('playerName', PLAYER_NAME);
-    document.getElementById('playerNameDisplay').textContent = PLAYER_NAME;
-    toast('✅ Ник изменён');
-  });
-  document.getElementById('resetAccBtn').addEventListener('click', () => {
-    if (!confirm('Сбросить весь прогресс?')) return;
-    localStorage.removeItem('steamClicker_' + MODE);
-    location.reload();
-  });
-}
-
-function renderAll() {
-  updateMoney();
-  document.getElementById('perClick').textContent = state.perClick;
-  document.getElementById('totalClicks').textContent = state.totalClicks;
-  renderShop(); renderLibrary(); renderMyStore();
-}
-
-// ============ МАГАЗИН ============
-function renderShop() {
-  const grid = document.getElementById('shopGrid'); grid.innerHTML = '';
-  state.shopGames.forEach(g => {
-    const owned = state.ownedGames.includes(g.id) || state.myGames.some(m => m.id === g.id);
-    const isMine = state.myGames.some(m => m.id === g.id);
-    const stats = getReviewStats(g.id);
-    const rating = stats.count > 0 ? `⭐ ${stats.avg} <small>(${stats.count})</small>` : '<small>Нет отзывов</small>';
-    const card = document.createElement('div'); card.className = 'card';
-    card.innerHTML = `<h3>${g.name}</h3><div class="author">👤 ${g.author}</div><p>${g.desc}</p>
-      <div class="rating">${rating}</div>
-      <div class="price">${g.price} ₽</div>
-      <button class="buy-btn" ${owned || state.money < g.price ? 'disabled' : ''}>${owned ? '✅ Куплено' : (state.money < g.price ? 'Не хватает' : 'Купить')}</button>
-      <button class="review-btn">📝 Отзывы</button>
-      ${isMine ? '<button class="del-btn">🗑️ Удалить</button>' : ''}`;
-    if (!owned) card.querySelector('.buy-btn').addEventListener('click', () => buyGame(g));
-    card.querySelector('.review-btn').addEventListener('click', () => openReviews(g));
-    if (isMine) card.querySelector('.del-btn').addEventListener('click', () => deleteMyGame(g.id));
-    grid.appendChild(card);
-  });
-}
-function buyGame(g) {
-  if (state.money < g.price) return toast('❌ Не хватает денег!');
-  state.money -= g.price; state.ownedGames.push(g.id);
-  updateMoney(); saveState(); renderAll(); toast(`✅ Куплено: ${g.name}`);
-}
-
-// ============ БИБЛИОТЕКА ============
-const downloadingGames = {};
-function getDownloadProgress(id) {
-  const dl = downloadingGames[id];
-  if (!dl) return 0;
-  return Math.min(100, ((Date.now() - dl.startTime) / (DOWNLOAD_SECONDS*1000)) * 100);
-}
-function getDownloadTimeLeft(id) {
-  const dl = downloadingGames[id];
-  if (!dl) return DOWNLOAD_SECONDS;
-  return Math.max(0, Math.ceil((DOWNLOAD_SECONDS*1000 - (Date.now() - dl.startTime)) / 1000));
-}
-function startDownload(g) {
-  if (downloadingGames[g.id]) return;
-  if (state.downloadedGames[g.id]) return;
-  downloadingGames[g.id] = { startTime: Date.now() };
-  renderAll();
-  const iv = setInterval(() => {
-    if (getDownloadProgress(g.id) >= 100) {
-      clearInterval(iv);
-      delete downloadingGames[g.id];
-      state.downloadedGames[g.id] = Date.now();
-      saveState(); renderAll();
-      toast(`✅ «${g.name}» скачана!`);
-    } else {
-      const card = document.querySelector(`[data-game-id="${g.id}"]`);
-      if (card) {
-        const fill = card.querySelector('.card-progress .fill');
-        const pct = card.querySelector('.card-progress .pct');
-        const left = card.querySelector('.card-progress .left');
-        if (fill) fill.style.width = getDownloadProgress(g.id) + '%';
-        if (pct) pct.textContent = Math.floor(getDownloadProgress(g.id)) + '%';
-        if (left) left.textContent = getDownloadTimeLeft(g.id) + ' сек';
-      }
-    }
-  }, 250);
-}
-function renderLibrary() {
-  const grid = document.getElementById('libraryGrid'); grid.innerHTML = '';
-  const all = [...state.shopGames, ...state.myGames];
-  const seen = new Set();
-  const owned = all.filter(g => { if (seen.has(g.id)) return false; seen.add(g.id); return state.ownedGames.includes(g.id) || state.myGames.some(m => m.id === g.id); });
-  if (owned.length === 0) { grid.innerHTML = '<div class="empty">Нет игр. Купи в Магазине!</div>'; return; }
-  owned.forEach(g => {
-    const downloaded = !!state.downloadedGames[g.id];
-    const isDl = !!downloadingGames[g.id];
-    const isMine = state.myGames.some(m => m.id === g.id);
-    const card = document.createElement('div'); card.className = 'card'; card.dataset.gameId = g.id;
-    let progressBlock = '';
-    if (isDl) {
-      progressBlock = `<div class="card-progress"><div class="bar"><div class="fill" style="width:${getDownloadProgress(g.id)}%"></div></div>
-        <div class="info"><span class="pct"><b>${Math.floor(getDownloadProgress(g.id))}%</b></span><span class="left">${getDownloadTimeLeft(g.id)} сек</span></div></div>`;
-    }
-    let mainBtn = downloaded ? `<button class="play-btn">▶️ Играть</button>` :
-                  isDl ? `<button class="download-btn" disabled>📥 Скачивается...</button>` :
-                  `<button class="download-btn">📥 Скачать (${DOWNLOAD_SECONDS} сек)</button>`;
-    card.innerHTML = `<h3>${g.name}</h3><div class="author">👤 ${g.author}</div><p>${g.desc}</p>
-      ${progressBlock}${mainBtn}
-      <button class="review-btn">📝 Отзывы</button>
-      ${!isMine ? '<button class="del-btn">🗑️ Удалить</button>' : ''}`;
-    if (downloaded) card.querySelector('.play-btn').addEventListener('click', () => playGame(g));
-    else if (!isDl) card.querySelector('.download-btn').addEventListener('click', () => startDownload(g));
-    card.querySelector('.review-btn').addEventListener('click', () => openReviews(g));
-    if (!isMine) card.querySelector('.del-btn').addEventListener('click', () => {
-      if (confirm('Удалить из библиотеки?')) {
-        state.ownedGames = state.ownedGames.filter(x => x !== g.id);
-        delete state.downloadedGames[g.id];
-        saveState(); renderAll();
+function loadGame() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (typeof data.money === 'number') state.money = data.money;
+    if (typeof data.clicks === 'number') state.clicks = data.clicks;
+    if (typeof data.botBuys === 'number') state.botBuys = data.botBuys;
+    state.prime = !!data.prime;
+    state.primeExpiresAt = data.primeExpiresAt || null;
+    state.myGames = Array.isArray(data.myGames) ? data.myGames : [];
+    shopGames.forEach((g) => {
+      const saved = (data.shopGames || []).find(x => x.id === g.id);
+      if (saved) {
+        g.purchased = !!saved.purchased;
+        g.downloading = !!saved.downloading;
+        g.downloadProgress = saved.downloadProgress || 0;
+        g.downloadStart = saved.downloadStart || null;
+        g.downloadEnd = saved.downloadEnd || null;
       }
     });
-    grid.appendChild(card);
-  });
+    checkPrimeExpiry();
+    return true;
+  } catch (e) { console.warn('Load failed', e); return false; }
 }
 
-// ============ МОИ ИГРЫ ============
-function renderMyStore() {
-  const grid = document.getElementById('myStoreGrid'); grid.innerHTML = '';
-  if (state.myGames.length === 0) { grid.innerHTML = '<div class="empty">Создай игру в Студии!</div>'; return; }
-  state.myGames.forEach(g => {
-    const stats = getReviewStats(g.id);
-    const rating = stats.count > 0 ? `⭐ ${stats.avg} (${stats.count})` : 'Нет отзывов';
-    const card = document.createElement('div'); card.className = 'card';
-    card.innerHTML = `<h3>${g.name}</h3><p>${g.desc}</p>
-      <div class="rating">${rating}</div>
-      <div class="price">${g.price} ₽</div>
-      <div style="font-size:13px; color:#a4d007; margin-bottom:8px;">🤖 ${g.botBuys||0} продаж<br>💰 ${g.earnings||0} ₽</div>
-      <button class="play-btn">▶️ Тест</button>
-      <button class="review-btn">📝 Отзывы</button>
-      <button class="del-btn">🗑️ Удалить</button>`;
-    card.querySelector('.play-btn').addEventListener('click', () => playGame(g));
-    card.querySelector('.review-btn').addEventListener('click', () => openReviews(g));
-    card.querySelector('.del-btn').addEventListener('click', () => {
-      if (!confirm('Удалить игру?')) return;
-      state.myGames = state.myGames.filter(x => x.id !== g.id);
-      state.shopGames = state.shopGames.filter(x => x.id !== g.id);
-      state.ownedGames = state.ownedGames.filter(x => x !== g.id);
-      delete state.downloadedGames[g.id];
-      saveState(); renderAll();
-    });
-    grid.appendChild(card);
-  });
-}
-function deleteMyGame(id) {
-  if (!confirm('Удалить игру отовсюду?')) return;
-  state.myGames = state.myGames.filter(x => x.id !== id);
-  state.shopGames = state.shopGames.filter(x => x.id !== id);
-  state.ownedGames = state.ownedGames.filter(x => x !== id);
-  delete state.downloadedGames[id];
-  saveState(); renderAll();
+setInterval(saveGame, 3000);
+window.addEventListener('beforeunload', saveGame);
+
+// ==================== UI ====================
+function formatTimeLeft(ms) {
+  if (ms <= 0) return '0:00';
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  if (h > 0) return `${h}ч ${m}м`;
+  return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-// ============ ОТЗЫВЫ ============
-let currentReviewGame = null, selectedStars = 5;
-const modal = document.getElementById('modal');
-const modalTitle = document.getElementById('modalTitle');
-const playScene = document.getElementById('playScene');
-const playMsg = document.getElementById('playMsg');
+function updateUI() {
+  $('moneyDisplay').textContent = state.money;
+  $('clickCount').textContent = state.clicks;
+  $('myGamesCount').textContent = state.myGames.filter(g => g.status === 'shop' || g.status === 'uploading').length;
+  $('botBuys').textContent = state.botBuys;
 
-function openReviews(g) {
-  currentReviewGame = g; selectedStars = 5;
-  modal.classList.add('active');
-  modalTitle.textContent = '📝 Отзывы: ' + g.name;
-  playScene.style.display = 'none';
-  playMsg.textContent = '';
-  document.getElementById('reviewsSection').style.display = 'block';
-  renderReviewsList(g.id);
-  renderStarsSelect();
-  document.getElementById('reviewText').value = '';
-}
-function renderStarsSelect() {
-  document.querySelectorAll('#starsSelect .star-btn').forEach(b => b.classList.toggle('active', +b.dataset.v <= selectedStars));
-}
-document.querySelectorAll('#starsSelect .star-btn').forEach(b => b.addEventListener('click', () => { selectedStars = +b.dataset.v; renderStarsSelect(); }));
-function renderReviewsList(gameId) {
-  const list = document.getElementById('reviewsList');
-  const reviews = Object.entries(state.allReviews || {}).filter(([k, r]) => r.gameId === gameId).sort((a, b) => b[1].time - a[1].time);
-  if (reviews.length === 0) { list.innerHTML = '<div class="empty" style="padding:20px;">Нет отзывов</div>'; return; }
-  list.innerHTML = reviews.map(([key, r]) => {
-    const mine = r.author === PLAYER_NAME && r.authorType === 'player';
-    return `<div class="review-item"><div class="review-head">
-      <span class="review-author">${escapeHtml(r.author)}</span>
-      <span class="review-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</span>
-      ${mine ? `<button class="review-del" data-key="${key}">🗑️</button>` : ''}</div>
-      <div class="review-text">${escapeHtml(r.text)}</div>
-      <div class="review-time">${new Date(r.time).toLocaleString('ru-RU')}</div></div>`;
-  }).join('');
-  list.querySelectorAll('.review-del').forEach(b => b.addEventListener('click', () => {
-    if (!confirm('Удалить отзыв?')) return;
-    delete state.allReviews[b.dataset.key];
-    saveState(); renderReviewsList(gameId); renderAll();
-  }));
-}
-document.getElementById('submitReview').addEventListener('click', () => {
-  if (!currentReviewGame) return;
-  const text = document.getElementById('reviewText').value.trim();
-  if (!text) return toast('❌ Напиши отзыв!');
-  const key = 'rev_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-  state.allReviews[key] = { gameId: currentReviewGame.id, gameName: currentReviewGame.name, author: PLAYER_NAME, authorType: 'player', stars: selectedStars, text, time: Date.now() };
-  saveState();
-  document.getElementById('reviewText').value = '';
-  renderReviewsList(currentReviewGame.id); renderAll();
-  toast('✅ Отзыв добавлен');
-});
-document.getElementById('closeModal').addEventListener('click', () => {
-  modal.classList.remove('active');
-  playScene.innerHTML = ''; playScene.style.display = 'block';
-  document.getElementById('reviewsSection').style.display = 'none';
-});
+  const primeActive = isPrimeActive();
+  const badge = $('primeBadge');
+  badge.className = primeActive ? 'prime-badge' : 'prime-badge inactive';
+  badge.textContent = primeActive ? '👑 PRIME: АКТИВНА' : 'PRIME: НЕТ';
 
-// ============ ПЛЕЕР ============
-function playGame(g) {
-  modal.classList.add('active');
-  modalTitle.textContent = '🎮 ' + g.name;
-  playMsg.textContent = ''; playScene.innerHTML = '';
-  playScene.style.display = 'block';
-  document.getElementById('reviewsSection').style.display = 'none';
-  if (!g.objects) return;
-  g.objects.forEach(obj => {
-    const el = document.createElement('div'); el.className = 'play-obj';
-    Object.assign(el.style, { left: obj.x+'px', top: obj.y+'px', width: obj.w+'px', height: obj.h+'px',
-      background: obj.isImage ? 'transparent' : obj.color,
-      color: (obj.type==='text'||obj.isImage) ? obj.color : '#171a21' });
-    if (obj.type === 'circle') el.style.borderRadius = '50%';
-    el.textContent = obj.text;
-    if (obj.type === 'btn' || obj.type === 'circle') {
-      el.classList.add('clickable');
-      el.addEventListener('click', () => {
-        const r = obj.reward || 1;
-        state.money = Math.max(0, state.money + r);
-        updateMoney(); saveState();
-        playMsg.textContent = r >= 0 ? `+${r} ₽` : `${r} ₽`;
-      });
-    }
-    playScene.appendChild(el);
-  });
-}
-
-// ============ СТУДИЯ ============
-let studioObjects = [], selectedId = null, nextObjId = 1;
-const canvas = document.getElementById('studioCanvas');
-const canvasEmpty = document.getElementById('canvasEmpty');
-const propsPanel = document.getElementById('propsPanel');
-const studioContainer = document.getElementById('studioContainer');
-
-function updateStudioLock() {
-  const locked = state.money < PUBLISH_COST;
-  const existing = studioContainer.querySelector('.studio-locked-overlay');
-  if (locked && !existing) {
-    studioContainer.classList.add('locked');
-    const ov = document.createElement('div'); ov.className = 'studio-locked-overlay';
-    ov.innerHTML = `<div class="lock-icon">🔒</div><h3>Студия заблокирована</h3>
-      <p>Нужно минимум <b>${PUBLISH_COST} ₽</b>.<br>У тебя: <b>${Math.floor(state.money)} ₽</b></p>`;
-    studioContainer.appendChild(ov);
-  } else if (!locked && existing) {
-    existing.remove(); studioContainer.classList.remove('locked');
-  }
-}
-function updatePublishHint() {
-  const hint = document.getElementById('publishHint'), btn = document.getElementById('publishBtn');
-  if (!hint || !btn) return;
-  if (state.money >= PUBLISH_COST) {
-    hint.textContent = `✅ Спишется ${PUBLISH_COST} ₽`; hint.className = 'publish-hint ok';
-    btn.disabled = false; btn.textContent = `📤 Опубликовать (${PUBLISH_COST} ₽)`;
+  const timerWrap = $('primeTimerWrap');
+  if (primeActive) {
+    const left = state.primeExpiresAt - Date.now();
+    timerWrap.innerHTML = `<span class="prime-timer">⏳ ${formatTimeLeft(left)}</span>`;
   } else {
-    hint.textContent = `❌ Нужно ${PUBLISH_COST} ₽`; hint.className = 'publish-hint no';
-    btn.disabled = true; btn.textContent = `📤 Нужно ${PUBLISH_COST} ₽`;
+    timerWrap.innerHTML = '';
   }
+
+  const buyBtn = $('buyPrimeBtn'), cancelBtn = $('cancelPrimeBtn'), statusText = $('primeStatusText');
+  if (primeActive) {
+    buyBtn.style.display = 'none';
+    cancelBtn.style.display = 'inline-block';
+    const left = state.primeExpiresAt - Date.now();
+    statusText.innerHTML = `<b style="color:#ffd700;">👑 PRIME активна!</b> Осталось: ${formatTimeLeft(left)}`;
+  } else {
+    buyBtn.style.display = 'inline-block';
+    cancelBtn.style.display = 'none';
+    if (state.prime && state.primeExpiresAt) {
+      statusText.innerHTML = 'Статус: <b style="color:#e94560;">истекла</b> — купи снова за 1000 💰 (купленные игры разблокируются!)';
+    } else {
+      statusText.innerHTML = 'Статус: <b style="color:#e94560;">не активна</b> — купи на 24 часа за 1000 💰';
+    }
+  }
+
+  const myGamesPanel = $('myGamesPanel');
+  const myGamesBanner = $('myGamesLockBanner');
+  const createBtn = $('createGameBtn');
+  if (!primeActive) {
+    myGamesPanel.classList.add('locked');
+    myGamesBanner.innerHTML = `<div class="lock-banner"><span class="icon">🔒</span>Без PRIME нельзя создавать и выкладывать игры!</div>`;
+    createBtn.disabled = true;
+    createBtn.textContent = '🔒 Нужна PRIME (1000 💰)';
+  } else {
+    myGamesPanel.classList.remove('locked');
+    myGamesBanner.innerHTML = '';
+    createBtn.disabled = false;
+    createBtn.textContent = '🎨 Открыть Roblox Studio (100 💰)';
+  }
+
+  const shopPanel = $('shopPanel');
+  const shopBanner = $('shopLockBanner');
+  if (!primeActive) {
+    shopPanel.classList.add('locked');
+    shopBanner.innerHTML = `<div class="lock-banner"><span class="icon">🔒</span>Без PRIME нельзя покупать игры ботов и играть в купленные!</div>`;
+  } else {
+    shopPanel.classList.remove('locked');
+    shopBanner.innerHTML = '';
+  }
+
+  renderShop();
+  renderMyGames();
 }
-function newObj(type) {
-  const base = { id: 'obj_' + (nextObjId++), type: 'btn', x: 50, y: 50, w: 140, h: 50 };
-  const cfg = {
-    btn: { color:'#66c0f4', text:'Кнопка', reward:1 },
-    bigbtn: { color:'#f5c542', text:'БОЛЬШАЯ', reward:10, w:180, h:80 },
-    mega: { color:'#ff6b00', text:'💥 МЕГА', reward:50, w:200, h:100 },
-    bomb: { color:'#c23b3b', text:'💣 БОМБА', reward:-5, w:120, h:70 },
-    winbtn: { color:'#f5c542', text:'🏆 ПОБЕДА', reward:100, w:200, h:100 },
-    text: { type:'text', color:'#a4d007', text:'Текст', w:200, h:40 },
-    title: { type:'text', color:'#66c0f4', text:'ЗАГОЛОВОК', w:300, h:50 },
-    hint: { type:'text', color:'#8f98a0', text:'Подсказка', w:200, h:30 },
-    image: { type:'image', color:'#66c0f4', text:'🖼️', w:100, h:100, isImage:true },
-    input: { type:'input', color:'#2a475e', text:'', w:200, h:40 },
-    counter: { type:'counter', color:'#a4d007', text:'0', w:150, h:40 },
-    square: { type:'square', color:'#66c0f4', text:'', w:80, h:80 },
-    circle: { type:'circle', color:'#a4d007', text:'⭕', reward:5, w:100, h:100 }
+
+function notify(msg, color = '#4ecca3') {
+  const n = document.createElement('div');
+  n.className = 'notif'; n.style.background = color; n.textContent = msg;
+  document.body.appendChild(n);
+  setTimeout(() => n.remove(), 2800);
+}
+
+// ==================== СБРОС ====================
+$('resetBtn').addEventListener('click', () => {
+  $('resetConfirmInput').value = '';
+  $('confirmResetBtn').disabled = true;
+  $('confirmResetBtn').style.opacity = '0.5';
+  $('resetModal').classList.add('active');
+  setTimeout(() => $('resetConfirmInput').focus(), 100);
+});
+
+$('cancelResetBtn').addEventListener('click', () => {
+  $('resetModal').classList.remove('active');
+});
+
+$('resetConfirmInput').addEventListener('input', (e) => {
+  const val = e.target.value.trim().toUpperCase();
+  const ok = val === RESET_CONFIRM_WORD;
+  const btn = $('confirmResetBtn');
+  btn.disabled = !ok;
+  btn.style.opacity = ok ? '1' : '0.5';
+});
+
+$('confirmResetBtn').addEventListener('click', () => {
+  const val = $('resetConfirmInput').value.trim().toUpperCase();
+  if (val !== RESET_CONFIRM_WORD) {
+    notify('❌ Введи слово правильно!', '#e94560');
+    return;
+  }
+  localStorage.removeItem(SAVE_KEY);
+  state.money = 0;
+  state.clicks = 0;
+  state.botBuys = 0;
+  state.myGames = [];
+  state.prime = false;
+  state.primeExpiresAt = null;
+  shopGames.forEach(g => {
+    g.purchased = false;
+    g.downloading = false;
+    g.downloadProgress = 0;
+    g.downloadStart = null;
+    g.downloadEnd = null;
+  });
+  $('resetModal').classList.remove('active');
+  $('studioModal').classList.remove('active');
+  $('playModal').classList.remove('active');
+  studio = { selectedBlock: null, selectedColor: COLORS[3], blocks: [], landscape: 'grass', price: null };
+  updateUI();
+  notify('💀 Аккаунт полностью сброшен! Начинаем с нуля...', '#dc2626');
+  setTimeout(() => { location.reload(); }, 1200);
+});
+
+// ==================== PRIME ====================
+$('buyPrimeBtn').addEventListener('click', () => {
+  if (isPrimeActive()) { notify('👑 PRIME уже активна!', '#ffd700'); return; }
+  if (state.money < 1000) { notify(`❌ Нужно 1000 💰 для PRIME! У тебя: ${state.money} 💰`, '#e94560'); return; }
+  state.money -= 1000;
+  state.prime = true;
+  state.primeExpiresAt = Date.now() + PRIME_DURATION_MS;
+  state.myGames.forEach(g => {
+    if (g.status === 'shop' && !g.buyReadyAt) {
+      g.buyReadyAt = Date.now() + BUY_INTERVAL_SEC * 1000;
+    }
+  });
+
+  // Считаем сколько купленных игр разблокировалось
+  const unlockedCount = shopGames.filter(g => g.purchased).length;
+  if (unlockedCount > 0) {
+    notify(`👑 PRIME активирована! Разблокировано купленных игр: ${unlockedCount} 🎮`, '#ffd700');
+  } else {
+    notify('👑 PRIME активирована на 24 часа! Всё разблокировано!', '#ffd700');
+  }
+  updateUI(); saveGame();
+});
+
+$('cancelPrimeBtn').addEventListener('click', () => {
+  if (!state.prime) return;
+  if (!confirm('Отменить PRIME? Деньги НЕ вернутся! Всё заблокируется, включая купленные игры.')) return;
+  state.prime = false;
+  state.primeExpiresAt = null;
+  state.myGames.forEach(g => { if (g.status === 'shop') g.buyReadyAt = null; });
+  notify('❌ PRIME отменена. Всё заблокировано.', '#e94560');
+  updateUI(); saveGame();
+});
+
+// ==================== КЛИКЕР ====================
+$('bigClicker').addEventListener('click', () => {
+  state.money += 1; state.clicks++; updateUI();
+});
+
+// ==================== ФИЛЬТРЫ ====================
+function renderFilters() {
+  const filters = ['Все', 'Экшен', 'RPG', 'Стратегия', 'Платформер', 'Хоррор', 'Симулятор'];
+  const wrap = $('shopFilters');
+  wrap.innerHTML = '';
+  filters.forEach(f => {
+    const chip = document.createElement('button');
+    chip.className = 'filter-chip' + (f === currentShopFilter ? ' active' : '');
+    chip.textContent = f;
+    chip.addEventListener('click', () => {
+      currentShopFilter = f;
+      renderFilters();
+      renderShop();
+    });
+    wrap.appendChild(chip);
+  });
+}
+
+// ==================== МАГАЗИН ====================
+function renderShop() {
+  const grid = $('shopGrid');
+  grid.innerHTML = '';
+  const primeActive = isPrimeActive();
+  const filtered = currentShopFilter === 'Все'
+    ? shopGames
+    : shopGames.filter(g => g.genre === currentShopFilter);
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<p class="hint">Нет игр в этой категории.</p>';
+    return;
+  }
+
+  filtered.forEach(g => {
+    const card = document.createElement('div');
+    card.className = 'bot-game-card';
+    card.style.setProperty('--bg', g.bg);
+    card.style.setProperty('--accent', g.accent);
+
+    // 🆕 Если игра куплена, но PRIME нет — визуальная блокировка
+    if (g.purchased && !primeActive) {
+      card.classList.add('locked-by-prime');
+    }
+
+    const fullStars = Math.floor(g.rating);
+    const halfStar = g.rating % 1 >= 0.5;
+    const stars = '★'.repeat(fullStars) + (halfStar ? '⯨' : '') + '☆'.repeat(5 - fullStars - (halfStar ? 1 : 0));
+
+    let html = `
+      <div class="card-emoji">${g.emoji}</div>
+      <div class="card-name">${g.name}</div>
+      <div class="card-genre">${g.genre}</div>
+      <div class="card-desc">${g.desc}</div>
+      <div class="card-rating" style="color:${g.accent};">${stars} ${g.rating}</div>
+      <div class="card-price">💵 ${g.price} 💰</div>
+    `;
+
+    if (!g.purchased) {
+      // Не куплена
+      if (!primeActive) {
+        html += `<div class="prime-lock">🔒 Нужна PRIME<br><small>купи в панели выше</small></div>`;
+      } else if (!g.downloading) {
+        html += `<button class="btn btn-orange" data-buy="${g.id}" style="width:100%;">💰 Купить</button>`;
+      } else {
+        const pct = g.downloadProgress;
+        html += `<div class="hint" style="color:#fff;text-align:center;">Скачивание: ${Math.floor(pct)}%</div>
+          <div class="progress"><div style="width:${pct}%"></div></div>`;
+      }
+    } else {
+      // ✅ Куплена
+      if (!primeActive) {
+        // 🆕 Куплена, но PRIME закончилась — блокируем игру
+        html += `<div class="prime-lock">🔒 Куплена, но нужна PRIME<br><small>купи PRIME чтобы играть</small></div>`;
+      } else {
+        // Куплена + PRIME активна — можно играть
+        html += `<button class="btn btn-green" data-play="${g.id}" style="width:100%;">▶️ Играть</button>`;
+      }
+    }
+    card.innerHTML = html;
+    grid.appendChild(card);
+  });
+
+  grid.querySelectorAll('[data-buy]').forEach(b => {
+    b.addEventListener('click', () => {
+      if (!isPrimeActive()) { notify('🔒 Нужна PRIME!', '#e94560'); return; }
+      const g = shopGames.find(x => x.id === b.dataset.buy);
+      if (!g) return;
+      if (state.money < g.price) { notify(`❌ Нужно ${g.price} 💰!`, '#e94560'); return; }
+      state.money -= g.price;
+      g.downloading = true;
+      g.downloadStart = Date.now();
+      g.downloadEnd = Date.now() + 100000;
+      g.downloadProgress = 0;
+      notify(`💰 Куплено "${g.name}"! Скачивается 100 сек...`, '#ff9f1c');
+      updateUI(); saveGame();
+    });
+  });
+
+  grid.querySelectorAll('[data-play]').forEach(b => {
+    b.addEventListener('click', () => {
+      if (!isPrimeActive()) { notify('🔒 Нужна PRIME чтобы играть!', '#e94560'); return; }
+      const g = shopGames.find(x => x.id === b.dataset.play);
+      if (g && g.purchased) openPlayModal(g);
+    });
+  });
+}
+
+// ==================== МОИ ИГРЫ ====================
+function renderMyGames() {
+  const grid = $('myGamesGrid');
+  grid.innerHTML = '';
+  if (state.myGames.length === 0) {
+    grid.innerHTML = '<p class="hint">У тебя пока нет игр. Открой Roblox Studio и создай первую!</p>';
+    return;
+  }
+  const primeActive = isPrimeActive();
+  state.myGames.forEach(g => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const preview = (g.blocks || []).slice(0, 8).map(b => b.emoji).join('');
+    let html = `<div class="title">🎮 ${g.name}</div>
+      <div class="desc">${g.genre} | ${(g.blocks||[]).length} блоков | ${(g.items||[]).length} предметов</div>
+      <div style="font-size:22px;margin:5px 0;letter-spacing:2px;">${preview}${(g.blocks||[]).length > 8 ? '...' : ''}</div>
+      <div class="price">💵 Цена: ${g.price} 💰</div>`;
+
+    if (g.status === 'draft') {
+      if (!primeActive) {
+        html += `<div class="lock-overlay" style="margin-top:6px;">🔒 Без PRIME нельзя выложить</div>
+          <div class="card-actions">
+            <button class="btn btn-red" data-delete="${g.id}">🗑️ Удалить</button>
+          </div>`;
+      } else {
+        html += `<div class="card-actions">
+          <button class="btn btn-blue" data-upload="${g.id}">📤 Выложить</button>
+          <button class="btn btn-red" data-delete="${g.id}">🗑️ Удалить</button>
+        </div>`;
+      }
+    } else if (g.status === 'uploading') {
+      const pct = g.uploadProgress;
+      html += `<div class="hint">Загрузка: ${Math.floor(pct)}%</div>
+        <div class="progress"><div style="width:${pct}%"></div></div>
+        <div class="card-actions">
+          <button class="btn btn-red" data-delete="${g.id}" style="width:100%;">🗑️ Отменить и удалить</button>
+        </div>`;
+    } else if (g.status === 'shop') {
+      const now = Date.now();
+      html += `<div class="hint">✅ В магазине | Продано: ${g.timesSold || 0}</div>`;
+      if (!primeActive) {
+        html += `<div class="lock-overlay" style="margin-top:6px;">🔒 Без PRIME боты не покупают</div>`;
+      } else if (g.buyReadyAt && g.buyReadyAt > now) {
+        const sec = Math.ceil((g.buyReadyAt - now) / 1000);
+        html += `<div class="hint">Следующий покупатель через ${sec} сек</div>`;
+      } else {
+        html += `<div class="hint">Ждём покупателя...</div>`;
+      }
+      const priceBtn = primeActive
+        ? `<button class="btn btn-blue" data-editprice="${g.id}">✏️ Цена</button>`
+        : '';
+      html += `<div class="card-actions">
+        ${priceBtn}
+        <button class="btn btn-red" data-delete="${g.id}">🗑️ Удалить</button>
+      </div>`;
+    }
+    card.innerHTML = html;
+    grid.appendChild(card);
+  });
+
+  grid.querySelectorAll('[data-upload]').forEach(b => {
+    b.addEventListener('click', () => {
+      if (!isPrimeActive()) { notify('🔒 Нужна PRIME для выкладывания игр!', '#e94560'); return; }
+      const g = state.myGames.find(x => x.id === b.dataset.upload);
+      if (g && g.status === 'draft') {
+        g.status = 'uploading';
+        g.uploadStart = Date.now();
+        g.uploadEnd = Date.now() + 100000;
+        g.uploadProgress = 0;
+        notify(`📤 Загружаем "${g.name}" в магазин...`);
+        updateUI(); saveGame();
+      }
+    });
+  });
+
+  grid.querySelectorAll('[data-editprice]').forEach(b => {
+    b.addEventListener('click', () => {
+      if (!isPrimeActive()) { notify('🔒 Нужна PRIME для изменения цены!', '#e94560'); return; }
+      const g = state.myGames.find(x => x.id === b.dataset.editprice);
+      if (!g) return;
+      const val = prompt(`Новая цена для "${g.name}" (10-500 💰):`, g.price);
+      if (val === null) return;
+      const p = parseInt(val);
+      if (isNaN(p) || p < 10 || p > 500) { notify('❌ Цена от 10 до 500 💰', '#e94560'); return; }
+      g.price = p;
+      const f = getPriceForecast(p);
+      g.minIncome = f.minIncome;
+      g.maxIncome = f.maxIncome;
+      notify(`✅ Цена изменена на ${p} 💰`);
+      updateUI(); saveGame();
+    });
+  });
+
+  grid.querySelectorAll('[data-delete]').forEach(b => {
+    b.addEventListener('click', () => {
+      const g = state.myGames.find(x => x.id === b.dataset.delete);
+      if (!g) return;
+      let msg = `🗑️ Удалить игру "${g.name}"?`;
+      if (g.status === 'shop') {
+        msg += `\n\n⚠️ Она уже в магазине (продано ${g.timesSold || 0} раз).`;
+      } else if (g.status === 'uploading') {
+        msg += `\n\n⚠️ Игра ещё загружается — загрузка будет отменена.`;
+      }
+      msg += `\n\nДействие нельзя отменить.`;
+      if (!confirm(msg)) return;
+      const idx = state.myGames.indexOf(g);
+      if (idx !== -1) state.myGames.splice(idx, 1);
+      notify(`🗑️ Игра "${g.name}" удалена.`, '#ff9f1c');
+      updateUI(); saveGame();
+    });
+  });
+}
+
+// ==================== ПРОГНОЗ ЦЕНЫ ====================
+function getPriceForecast(price) {
+  return {
+    minIncome: Math.round(price * 0.85),
+    maxIncome: Math.round(price * 1.15),
+    intervalMin: BUY_INTERVAL_SEC,
+    intervalMax: BUY_INTERVAL_SEC,
   };
-  return { ...base, ...cfg[type] };
 }
-function renderStudio() {
-  canvas.querySelectorAll('.studio-obj').forEach(e => e.remove());
-  canvasEmpty.style.display = studioObjects.length === 0 ? 'flex' : 'none';
-  studioObjects.forEach(obj => {
+
+function updatePriceUI() {
+  const price = studio.price;
+  const priceWrap = $('priceValueWrap');
+  const priceVal = $('priceValue');
+  const priceSection = $('priceSection');
+  const confirmBtn = $('confirmCreateBtn');
+  const errMsg = $('priceErrorMsg');
+
+  if (price === null || price === undefined) {
+    priceWrap.classList.add('unset');
+    priceVal.textContent = 'не выбрана';
+    priceSection.classList.add('invalid');
+    errMsg.style.display = 'block';
+    $('forecastIncome').textContent = '—';
+    $('forecastInterval').textContent = '—';
+    confirmBtn.disabled = true;
+    confirmBtn.style.opacity = '0.5';
+    confirmBtn.textContent = '⚠️ Сначала выбери цену';
+  } else {
+    priceWrap.classList.remove('unset');
+    priceVal.textContent = price + ' 💰';
+    priceSection.classList.remove('invalid');
+    errMsg.style.display = 'none';
+    const f = getPriceForecast(price);
+    $('forecastIncome').textContent = `${f.minIncome}-${f.maxIncome} 💰`;
+    $('forecastInterval').textContent = `ровно ${BUY_INTERVAL_SEC} сек`;
+    confirmBtn.disabled = false;
+    confirmBtn.style.opacity = '1';
+    confirmBtn.textContent = '✅ Создать игру (100 💰)';
+  }
+
+  document.querySelectorAll('.price-preset').forEach(p => {
+    p.classList.toggle('selected', parseInt(p.dataset.price) === price);
+  });
+}
+
+// ==================== ROBLOX STUDIO ====================
+function initStudio() {
+  const toolList = $('toolList');
+  toolList.innerHTML = '';
+  const cats = {};
+  BLOCKS.forEach(b => { if (!cats[b.cat]) cats[b.cat] = []; cats[b.cat].push(b); });
+  Object.keys(cats).forEach(cat => {
+    const h = document.createElement('div');
+    h.style.cssText = 'font-size:11px;color:#888;margin:8px 0 4px;text-transform:uppercase;';
+    h.textContent = cat;
+    toolList.appendChild(h);
+    cats[cat].forEach(b => {
+      const btn = document.createElement('button');
+      btn.className = 'block-btn';
+      btn.dataset.blockId = b.id;
+      btn.innerHTML = `<span class="block-emoji">${b.emoji}</span> ${b.name}`;
+      btn.addEventListener('click', () => {
+        studio.selectedBlock = b;
+        document.querySelectorAll('.block-btn').forEach(x => x.classList.remove('selected'));
+        btn.classList.add('selected');
+      });
+      toolList.appendChild(btn);
+    });
+  });
+
+  const colorRow = $('colorRow');
+  colorRow.innerHTML = '';
+  COLORS.forEach(c => {
+    const d = document.createElement('div');
+    d.className = 'color-dot' + (c === studio.selectedColor ? ' selected' : '');
+    d.style.background = c;
+    d.addEventListener('click', () => {
+      studio.selectedColor = c;
+      document.querySelectorAll('.color-dot').forEach(x => x.classList.remove('selected'));
+      d.classList.add('selected');
+    });
+    colorRow.appendChild(d);
+  });
+
+  $('landscapeSelect').addEventListener('change', e => {
+    studio.landscape = e.target.value;
+    $('canvas3d').className = studio.landscape;
+  });
+
+  const canvas = $('canvas3d');
+  canvas.addEventListener('click', e => {
+    if (e.target.classList.contains('placed-block')) return;
+    if (!studio.selectedBlock) { notify('⚠️ Сначала выбери блок слева!', '#ff9f1c'); return; }
+    const rect = canvas.getBoundingClientRect();
+    placeBlock(e.clientX - rect.left, e.clientY - rect.top);
+  });
+
+  $('priceSlider').addEventListener('input', e => {
+    studio.price = parseInt(e.target.value);
+    updatePriceUI();
+  });
+  document.querySelectorAll('.price-preset').forEach(p => {
+    p.addEventListener('click', () => {
+      studio.price = parseInt(p.dataset.price);
+      $('priceSlider').value = studio.price;
+      updatePriceUI();
+    });
+  });
+}
+
+function placeBlock(x, y) {
+  studio.blocks.push({
+    blockId: studio.selectedBlock.id,
+    emoji: studio.selectedBlock.emoji,
+    name: studio.selectedBlock.name,
+    color: studio.selectedColor,
+    x, y,
+  });
+  renderCanvasBlocks();
+  updateStudioStats();
+}
+
+function renderCanvasBlocks() {
+  const canvas = $('canvas3d');
+  canvas.querySelectorAll('.placed-block').forEach(el => el.remove());
+  $('canvasHint').style.display = studio.blocks.length > 0 ? 'none' : 'block';
+  studio.blocks.forEach((b, idx) => {
     const el = document.createElement('div');
-    el.className = 'studio-obj' + (obj.id === selectedId ? ' selected' : '');
-    Object.assign(el.style, { left: obj.x+'px', top: obj.y+'px', width: obj.w+'px', height: obj.h+'px',
-      background: obj.isImage ? 'transparent' : obj.color,
-      color: (obj.type==='text'||obj.isImage) ? obj.color : '#171a21',
-      border: obj.isImage ? '2px dashed #66c0f4' : 'none' });
-    if (obj.type === 'circle') el.style.borderRadius = '50%';
-    el.textContent = obj.text; el.dataset.id = obj.id;
-    el.addEventListener('mousedown', (e) => {
-      e.stopPropagation(); selectedId = obj.id;
-      canvas.querySelectorAll('.studio-obj').forEach(x => x.classList.remove('selected'));
-      el.classList.add('selected'); renderProps();
-      const sx = e.clientX, sy = e.clientY, ox = obj.x, oy = obj.y;
-      const mv = (e) => {
-        obj.x = Math.max(0, Math.min(canvas.clientWidth - obj.w, ox + e.clientX - sx));
-        obj.y = Math.max(0, Math.min(canvas.clientHeight - obj.h, oy + e.clientY - sy));
-        el.style.left = obj.x+'px'; el.style.top = obj.y+'px';
-      };
-      const up = () => { document.removeEventListener('mousemove', mv); document.removeEventListener('mouseup', up); };
-      document.addEventListener('mousemove', mv); document.addEventListener('mouseup', up);
+    el.className = 'placed-block';
+    el.textContent = b.emoji;
+    el.style.left = (b.x - 20) + 'px';
+    el.style.top = (b.y - 20) + 'px';
+    el.style.color = b.color;
+    el.title = b.name + ' (клик — удалить)';
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      studio.blocks.splice(idx, 1);
+      renderCanvasBlocks();
+      updateStudioStats();
     });
     canvas.appendChild(el);
   });
 }
-function renderProps() {
-  const obj = studioObjects.find(o => o.id === selectedId);
-  if (!obj) { propsPanel.innerHTML = '<div class="empty" style="padding:20px; font-size:13px;">Выбери объект</div>'; return; }
-  propsPanel.innerHTML = `
-    <div class="prop-group"><label>Текст</label><input type="text" id="pText" value="${escapeHtml(obj.text||'')}" maxlength="40"></div>
-    <div class="prop-group"><label>Цвет</label><input type="color" id="pColor" value="${obj.isImage ? '#66c0f4' : obj.color}"></div>
-    <div class="prop-group"><label>X: ${obj.x}</label><input type="range" id="pX" min="0" max="650" value="${obj.x}"></div>
-    <div class="prop-group"><label>Y: ${obj.y}</label><input type="range" id="pY" min="0" max="500" value="${obj.y}"></div>
-    <div class="prop-group"><label>Ширина: ${obj.w}</label><input type="range" id="pW" min="40" max="400" value="${obj.w}"></div>
-    <div class="prop-group"><label>Высота: ${obj.h}</label><input type="range" id="pH" min="30" max="300" value="${obj.h}"></div>
-    ${(obj.type==='btn'||obj.type==='circle') ? `<div class="prop-group"><label>Награда: ${obj.reward}</label><input type="range" id="pR" min="-50" max="200" value="${obj.reward}"></div>` : ''}
-    <button class="delete-btn" id="pDelete">🗑️ Удалить объект</button>`;
-  const el = canvas.querySelector(`[data-id="${obj.id}"]`);
-  document.getElementById('pText').addEventListener('input', e => { obj.text = e.target.value; if (el) el.textContent = obj.text; });
-  document.getElementById('pColor').addEventListener('input', e => { obj.color = e.target.value; if (el) el.style.background = obj.isImage ? 'transparent' : obj.color; });
-  document.getElementById('pX').addEventListener('input', e => { obj.x = +e.target.value; if (el) el.style.left = obj.x+'px'; });
-  document.getElementById('pY').addEventListener('input', e => { obj.y = +e.target.value; if (el) el.style.top = obj.y+'px'; });
-  document.getElementById('pW').addEventListener('input', e => { obj.w = +e.target.value; if (el) el.style.width = obj.w+'px'; });
-  document.getElementById('pH').addEventListener('input', e => { obj.h = +e.target.value; if (el) el.style.height = obj.h+'px'; });
-  if (obj.type==='btn'||obj.type==='circle') document.getElementById('pR').addEventListener('input', e => { obj.reward = +e.target.value; });
-  document.getElementById('pDelete').addEventListener('click', () => {
-    studioObjects = studioObjects.filter(o => o.id !== obj.id);
-    selectedId = null; renderStudio(); renderProps();
-  });
-}
-function addObj(type) {
-  if (state.money < PUBLISH_COST) return toast(`🔒 Нужно ${PUBLISH_COST} ₽`);
-  studioObjects.push(newObj(type)); selectedId = studioObjects[studioObjects.length-1].id;
-  renderStudio(); renderProps();
-}
-['addBtn|btn','addBigBtn|bigbtn','addMegaBtn|mega','addBomb|bomb','addWinBtn|winbtn','addText|text','addTitle|title','addHint|hint','addImage|image','addInput|input','addCounter|counter','addSquare|square','addCircle|circle'].forEach(s => {
-  const [id, type] = s.split('|');
-  document.getElementById(id).addEventListener('click', () => addObj(type));
-});
-document.getElementById('clearBtn').addEventListener('click', () => {
-  if (studioObjects.length === 0) return;
-  if (confirm('Очистить холст?')) { studioObjects = []; renderStudio(); renderProps(); }
-});
-document.getElementById('testBtn').addEventListener('click', () => {
-  if (studioObjects.length === 0) return toast('❌ Добавь объекты');
-  playGame({ name: 'Тест', objects: studioObjects });
-});
-document.getElementById('publishBtn').addEventListener('click', () => {
-  if (state.money < PUBLISH_COST) return;
-  const name = document.getElementById('studioName').value.trim();
-  if (!name) return toast('❌ Введи название!');
-  state.money -= PUBLISH_COST;
-  const game = { id: 'my_' + Date.now(), name, desc: document.getElementById('studioDesc').value.trim() || 'Без описания',
-    price: parseInt(document.getElementById('studioPrice').value) || 100, author: PLAYER_NAME,
-    objects: JSON.parse(JSON.stringify(studioObjects)), botBuys: 0, earnings: 0 };
-  state.myGames.push(game); state.shopGames.push(game);
-  saveState(); renderAll();
-  toast(`🎉 Опубликовано: ${name}`);
-  document.getElementById('studioName').value = '';
-  document.getElementById('studioDesc').value = '';
-});
 
-// ============ БОТЫ ============
-function scheduleBotTick() {
-  setTimeout(() => {
-    if (state.myGames.length > 0 && Math.random() < 0.5) {
-      const g = state.myGames[Math.floor(Math.random() * state.myGames.length)];
-      g.botBuys = (g.botBuys || 0) + 1;
-      g.earnings = (g.earnings || 0) + g.price;
-      state.money += g.price;
-      showSaleNotification('Бот_' + Math.floor(Math.random()*999), g.name, g.price);
-      updateMoney(); saveState(); renderMyStore(); renderAll();
-    }
-    if (state.shopGames.length > 0 && Math.random() < 0.3) {
-      const g = state.shopGames[Math.floor(Math.random() * state.shopGames.length)];
-      const stars = Math.random() < 0.65 ? 4 + Math.floor(Math.random()*2) : 1 + Math.floor(Math.random()*3);
-      const key = 'bot_' + Date.now();
-      state.allReviews[key] = { gameId: g.id, author: 'Бот_' + Math.floor(Math.random()*999), authorType: 'bot',
-        stars, text: stars >= 4 ? 'Отлично!' : 'Скучно...', time: Date.now() };
-      saveState(); renderAll();
-    }
-    scheduleBotTick();
-  }, 30000 + Math.random() * 70000);
+function getStudioStats() {
+  const blocks = studio.blocks;
+  const variety = new Set(blocks.map(b => b.blockId)).size;
+  const colors = new Set(blocks.map(b => b.color)).size;
+  let difficulty = '—';
+  if (blocks.length >= 5) difficulty = 'Легко';
+  if (blocks.length >= 10) difficulty = 'Средне';
+  if (blocks.length >= 20) difficulty = 'Сложно';
+  if (blocks.length >= 30) difficulty = 'Хардкор';
+  const score = Math.min(100, variety * 8 + colors * 5 + Math.min(blocks.length, 20) * 2);
+  return { variety, colors, difficulty, score };
 }
 
-// ============ QR-СИНХРОНИЗАЦИЯ ============
-document.getElementById('exportQrBtn').addEventListener('click', () => {
-  const data = JSON.stringify({ money: state.money, myGames: state.myGames, shopGames: state.shopGames, from: PLAYER_NAME });
-  const encoded = btoa(unescape(encodeURIComponent(data)));
-  modal.classList.add('active');
-  modalTitle.textContent = '📤 Твой ход (покажи другу)';
-  playScene.style.display = 'block';
-  document.getElementById('reviewsSection').style.display = 'none';
-  playScene.innerHTML = '<div style="padding:20px; text-align:center;"><p style="color:#8f98a0; margin-bottom:15px;">Друг сканирует этот код:</p><div class="qr-box" id="qrBox"></div><p style="color:#8f98a0; font-size:12px; margin-top:10px;">Код: ' + encoded.length + ' байт</p></div>';
-  try {
-    QRCode.toCanvas(document.createElement('canvas'), encoded.slice(0, 2000), (err, c) => {
-      if (!err) document.getElementById('qrBox').appendChild(c);
+function updateStudioStats() {
+  const s = getStudioStats();
+  $('statBlocks').textContent = studio.blocks.length;
+  $('statVariety').textContent = s.variety;
+  $('statColors').textContent = s.colors;
+  $('statDifficulty').textContent = s.difficulty;
+  $('statScore').textContent = s.score;
+
+  const preview = $('itemsPreview');
+  preview.innerHTML = '';
+  const unique = [...new Set(studio.blocks.map(b => b.name))];
+  if (unique.length === 0) {
+    preview.innerHTML = '<span class="hint">Размести блоки на сцене</span>';
+  } else {
+    unique.forEach(n => {
+      const tag = document.createElement('span');
+      tag.className = 'item-tag'; tag.textContent = n;
+      preview.appendChild(tag);
     });
-  } catch(e) { toast('❌ Слишком много данных для QR'); }
+  }
+}
+
+$('clearCanvasBtn').addEventListener('click', () => {
+  studio.blocks = [];
+  renderCanvasBlocks();
+  updateStudioStats();
 });
 
-document.getElementById('importQrBtn').addEventListener('click', async () => {
-  modal.classList.add('active');
-  modalTitle.textContent = '📥 Сканирование';
-  playScene.style.display = 'block';
-  document.getElementById('reviewsSection').style.display = 'none';
-  playScene.innerHTML = '<div style="padding:10px; text-align:center;"><video id="qrVideo" autoplay muted playsinline></video><p style="color:#8f98a0;">Наведи камеру на QR-код</p></div>';
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-    const video = document.getElementById('qrVideo');
-    video.srcObject = stream;
-    const c = document.createElement('canvas');
-    const ctx = c.getContext('2d');
-    const scan = () => {
-      if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        c.width = video.videoWidth; c.height = video.videoHeight;
-        ctx.drawImage(video, 0, 0);
-        const img = ctx.getImageData(0, 0, c.width, c.height);
-        const code = window.jsQR ? jsQR(img.data, img.width, img.height) : null;
-        if (code) {
-          stream.getTracks().forEach(t => t.stop());
-          try {
-            const data = JSON.parse(decodeURIComponent(escape(atob(code.data))));
-            state.money = data.money;
-            state.myGames = data.myGames;
-            state.shopGames = data.shopGames;
-            saveState(); renderAll();
-            modal.classList.remove('active');
-            toast('✅ Ход импортирован от ' + data.from);
-            return;
-          } catch(e) { toast('❌ Ошибка чтения'); }
-        }
+$('cancelStudioBtn').addEventListener('click', () => {
+  $('studioModal').classList.remove('active');
+});
+
+$('createGameBtn').addEventListener('click', () => {
+  if (!isPrimeActive()) { notify('🔒 Для создания игры нужна PRIME подписка!', '#e94560'); return; }
+  if (state.money < 100) { notify('❌ Нужно 100 💰 для создания игры!', '#e94560'); return; }
+  studio = { selectedBlock: null, selectedColor: COLORS[3], blocks: [], landscape: 'grass', price: null };
+  $('gameName').value = '';
+  $('canvas3d').className = 'grass';
+  $('landscapeSelect').value = 'grass';
+  $('priceSlider').value = 100;
+  renderCanvasBlocks();
+  updateStudioStats();
+  updatePriceUI();
+  document.querySelectorAll('.color-dot').forEach((d, i) => {
+    d.classList.toggle('selected', COLORS[i] === COLORS[3]);
+  });
+  document.querySelectorAll('.block-btn').forEach(b => b.classList.remove('selected'));
+  $('studioModal').classList.add('active');
+});
+
+$('confirmCreateBtn').addEventListener('click', () => {
+  if (!isPrimeActive()) { notify('🔒 Нужна PRIME для создания игры!', '#e94560'); $('studioModal').classList.remove('active'); return; }
+  const name = $('gameName').value.trim();
+  if (!name) { notify('❌ Введи название игры!', '#e94560'); return; }
+  if (studio.blocks.length < 3) { notify('❌ Размести минимум 3 блока!', '#e94560'); return; }
+  if (studio.price === null || studio.price === undefined) {
+    notify('❌ Сначала выбери цену игры!', '#e94560');
+    $('priceSection').classList.add('invalid');
+    $('priceErrorMsg').style.display = 'block';
+    return;
+  }
+  if (state.money < 100) { notify('❌ Не хватает денег!', '#e94560'); return; }
+
+  const s = getStudioStats();
+  const f = getPriceForecast(studio.price);
+  const uniqueItems = [...new Set(studio.blocks.map(b => b.name))];
+
+  state.money -= 100;
+  state.myGames.push({
+    id: 'my_' + Date.now(),
+    name, genre: 'Собственная',
+    blocks: [...studio.blocks], items: uniqueItems,
+    price: studio.price,
+    minIncome: f.minIncome, maxIncome: f.maxIncome,
+    intervalMin: BUY_INTERVAL_SEC, intervalMax: BUY_INTERVAL_SEC,
+    score: s.score, status: 'draft',
+    uploadEnd: null, uploadProgress: 0,
+    buyReadyAt: null, timesSold: 0,
+  });
+  $('studioModal').classList.remove('active');
+  notify(`🎉 Игра "${name}" создана за ${studio.price} 💰!`);
+  updateUI(); saveGame();
+});
+
+// ==================== ИГРА ====================
+let playState = null;
+
+function openPlayModal(g) {
+  if (!isPrimeActive()) { notify('🔒 Нужна PRIME чтобы играть!', '#e94560'); return; }
+  $('playTitle').textContent = `${g.emoji || '🎮'} ${g.name}`;
+  $('playDesc').textContent = `${g.genre} — ${g.desc}`;
+  $('playArea').innerHTML = `<div class="score">Счёт: <span id="playScore">0</span> | Время: <span id="playTime">20</span>с</div>`;
+  playState = { score: 0, timeLeft: 20, game: g, timer: null, spawnTimer: null };
+  $('playModal').classList.add('active');
+  playState.timer = setInterval(() => {
+    playState.timeLeft--;
+    const t = document.getElementById('playTime');
+    if (t) t.textContent = playState.timeLeft;
+    if (playState.timeLeft <= 0) endGame();
+  }, 1000);
+  playState.spawnTimer = setInterval(() => spawnTarget(g), 600);
+  spawnTarget(g);
+}
+
+function spawnTarget(g) {
+  if (!playState || playState.timeLeft <= 0) return;
+  const area = $('playArea'); if (!area) return;
+  const target = document.createElement('div');
+  target.className = 'click-target';
+  const emojis = g.items.map(() => '🎯').concat([g.emoji || '🎯', '⭐', '💎', '🪙']);
+  target.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+  const rect = area.getBoundingClientRect();
+  target.style.left = (Math.random() * (rect.width - 60) + 10) + 'px';
+  target.style.top = (Math.random() * (rect.height - 80) + 50) + 'px';
+  target.addEventListener('click', e => {
+    e.stopPropagation();
+    playState.score += Math.floor(Math.random() * 10) + 5;
+    const s = document.getElementById('playScore');
+    if (s) s.textContent = playState.score;
+    target.remove();
+  });
+  area.appendChild(target);
+  setTimeout(() => { if (target.parentNode) target.remove(); }, 1500);
+}
+
+function endGame() {
+  if (!playState) return;
+  clearInterval(playState.timer);
+  clearInterval(playState.spawnTimer);
+  const score = playState.score;
+  const reward = Math.floor(score / 10);
+  if (reward > 0) {
+    state.money += reward;
+    notify(`🎮 Игра окончена! Счёт: ${score}. Награда: +${reward} 💰`, '#ffd166');
+  } else {
+    notify(`🎮 Игра окончена! Счёт: ${score}`, '#ffd166');
+  }
+  playState = null;
+  $('playArea').innerHTML = `<div class="score">Игра окончена! Молодец!</div>`;
+  updateUI(); saveGame();
+}
+
+$('closePlayBtn').addEventListener('click', () => {
+  if (playState) {
+    clearInterval(playState.timer);
+    clearInterval(playState.spawnTimer);
+    playState = null;
+  }
+  $('playModal').classList.remove('active');
+});
+
+// ==================== ИГРОВОЙ ЦИКЛ ====================
+setInterval(() => {
+  const now = Date.now();
+  let changed = false;
+
+  // Если PRIME истекла прямо сейчас — принудительно закрываем открытую игру
+  if (checkPrimeExpiry()) {
+    if (playState) {
+      clearInterval(playState.timer);
+      clearInterval(playState.spawnTimer);
+      playState = null;
+      $('playModal').classList.remove('active');
+      notify('⏳ PRIME закончилась — игра закрыта!', '#e94560');
+    }
+    return;
+  }
+
+  if (isPrimeActive()) {
+    const left = state.primeExpiresAt - Date.now();
+    const timerWrap = $('primeTimerWrap');
+    if (timerWrap) timerWrap.innerHTML = `<span class="prime-timer">⏳ ${formatTimeLeft(left)}</span>`;
+    const st = $('primeStatusText');
+    if (st) st.innerHTML = `<b style="color:#ffd700;">👑 PRIME активна!</b> Осталось: ${formatTimeLeft(left)}`;
+  }
+
+  shopGames.forEach(g => {
+    if (g.downloading && !g.purchased) {
+      const elapsed = now - g.downloadStart;
+      g.downloadProgress = Math.min(100, (elapsed / 100000) * 100);
+      if (now >= g.downloadEnd) {
+        g.purchased = true; g.downloading = false; g.downloadProgress = 100;
+        notify(`✅ "${g.name}" скачана! Можно играть.`);
       }
-      requestAnimationFrame(scan);
-    };
-    scan();
-  } catch(e) { toast('❌ Нет доступа к камере'); }
-});
+      changed = true;
+    }
+  });
 
-// ============ СТАРТ ============
-const savedMode = localStorage.getItem('steamClickerMode');
-if (savedMode) { MODE = savedMode; startGame(); }
+  state.myGames.forEach(g => {
+    if (g.status === 'uploading') {
+      const elapsed = now - g.uploadStart;
+      g.uploadProgress = Math.min(100, (elapsed / 100000) * 100);
+      if (now >= g.uploadEnd) {
+        g.status = 'shop';
+        g.uploadProgress = 100;
+        if (isPrimeActive()) {
+          g.buyReadyAt = now + BUY_INTERVAL_SEC * 1000;
+        }
+        notify(`📤 "${g.name}" выложена в магазин!`);
+      }
+      changed = true;
+    }
+  });
+
+  if (isPrimeActive()) {
+    state.myGames.forEach(g => {
+      if (g.status === 'shop' && g.buyReadyAt && now >= g.buyReadyAt) {
+        const income = g.minIncome + Math.floor(Math.random() * (g.maxIncome - g.minIncome + 1));
+        state.money += income;
+        state.botBuys++;
+        g.timesSold = (g.timesSold || 0) + 1;
+        g.buyReadyAt = now + BUY_INTERVAL_SEC * 1000;
+        notify(`💰 Бот купил "${g.name}" за ${g.price} 💰! +${income} 💰`);
+        changed = true;
+      }
+    });
+  }
+
+  if (changed) updateUI();
+  else if (state.myGames.some(g => g.status === 'shop')) renderMyGames();
+}, 1000);
+
+// ==================== СТАРТ ====================
+function init() {
+  shopGames = botGamesData.map((g, i) => ({
+    ...g, id: 'bot_' + i,
+    purchased: false, downloading: false,
+    downloadProgress: 0, downloadStart: null, downloadEnd: null,
+  }));
+
+  const loaded = loadGame();
+  initStudio();
+  updatePriceUI();
+  renderFilters();
+  updateUI();
+
+  if (loaded) notify('💾 Прогресс загружен!', '#4ecca3');
+  else notify('👋 Купи PRIME чтобы разблокировать всё!');
+}
+
+init();
 </script>
 </body>
-</html>
+</html> 
