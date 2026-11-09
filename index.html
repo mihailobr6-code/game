@@ -2,977 +2,315 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Стим-Кликер — Мультирежим</title>
-<script type="module">
-  window.FIREBASE_CONFIG = null;
-  // window.FIREBASE_CONFIG = {
-  //   apiKey: "AIza...",
-  //   authDomain: "xxx.firebaseapp.com",
-  //   databaseURL: "https://xxx-default-rtdb.firebaseio.com",
-  //   projectId: "xxx",
-  // };
-</script>
-<!-- QR-генератор (локально, без интернета после загрузки) -->
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-<!-- QR-сканер -->
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<title>P2P игра-чат (без сервера)</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%); color: #c7d5e0; min-height: 100vh; padding: 20px; -webkit-text-size-adjust: 100%; }
-  h1 { text-align: center; color: #66c0f4; margin-bottom: 20px; text-shadow: 0 0 10px #66c0f4; }
-  .container { max-width: 1100px; margin: 0 auto; }
-
-  /* ===== СТАРТОВЫЙ ЭКРАН ===== */
-  .start-screen { max-width: 560px; margin: 40px auto; background: #171a21; border-radius: 14px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.7); }
-  .start-screen h2 { color: #66c0f4; text-align: center; margin-bottom: 6px; font-size: 22px; }
-  .start-screen p.sub { text-align: center; color: #8f98a0; font-size: 14px; margin-bottom: 25px; }
-  .mode-card { background: #1b2838; border: 2px solid #2a475e; border-radius: 10px; padding: 18px; margin-bottom: 12px; cursor: pointer; transition: 0.2s; }
-  .mode-card:hover { border-color: #66c0f4; transform: translateY(-2px); }
-  .mode-card.active { border-color: #a4d007; background: #1a2a1a; }
-  .mode-card h3 { color: #66c0f4; font-size: 16px; margin-bottom: 6px; }
-  .mode-card p { color: #8f98a0; font-size: 13px; line-height: 1.4; }
-  .mode-card .tag { display: inline-block; background: #2a475e; color: #a4d007; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-top: 6px; font-weight: bold; }
-  .mode-card .tag.no-net { background: #2a4a2a; color: #a4d007; }
-  .mode-card .tag.net { background: #4a2a2a; color: #c23b3b; }
-
-  .start-btn { width: 100%; padding: 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; transition: 0.2s; }
-  .start-btn:hover { transform: translateY(-1px); }
-  .start-btn.green { background: #a4d007; color: #171a21; }
-  .start-btn.blue { background: #66c0f4; color: #171a21; }
-  .start-btn.purple { background: #8b5cf6; color: white; }
-  .start-btn.gray { background: #2a475e; color: #c7d5e0; }
-
-  /* ===== ОСНОВНОЙ ИНТЕРФЕЙС ===== */
-  .topbar { background: #171a21; border-radius: 10px; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); flex-wrap: wrap; gap: 12px; }
-  .topbar-left { display: flex; flex-direction: column; gap: 6px; }
-  .money-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .money { font-size: 28px; color: #a4d007; font-weight: bold; }
-  .mode-badge { display: inline-flex; align-items: center; gap: 6px; background: #2a475e; border: 2px solid #66c0f4; padding: 4px 10px; border-radius: 12px; font-size: 12px; color: #66c0f4; font-weight: bold; cursor: pointer; }
-  .mode-badge:hover { background: #66c0f4; color: #171a21; }
-  .status { font-size: 12px; padding: 4px 10px; border-radius: 12px; display: inline-block; }
-  .status.online { background: #1a4a1a; color: #6f6; }
-  .status.offline { background: #4a2a1a; color: #fa6; }
-  .player-info { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #8f98a0; flex-wrap: wrap; }
-  .player-info b { color: #66c0f4; }
-  .nick-btn, .reset-btn { background: #2a475e; color: #c7d5e0; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
-  .nick-btn:hover { background: #66c0f4; color: #171a21; }
-  .reset-btn { background: #6b2a2a; border: 2px solid #c23b3b; color: #fff; }
-  .reset-btn:hover { background: #c23b3b; }
-
-  .nav { display: flex; gap: 6px; flex-wrap: wrap; }
-  .nav button { background: #2a475e; color: #c7d5e0; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; transition: 0.2s; font-weight: 500; }
-  .nav button:hover { background: #66c0f4; color: #171a21; }
-  .nav button.active { background: #66c0f4; color: #171a21; font-weight: bold; }
-
-  .page { display: none; }
-  .page.active { display: block; animation: fade 0.25s; }
-  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-
-  .clicker-area { text-align: center; padding: 30px 0; }
-  #clickBtn { width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, #66c0f4, #1b2838); border: 5px solid #66c0f4; color: white; font-size: 22px; cursor: pointer; font-weight: bold; box-shadow: 0 0 30px rgba(102,192,244,0.6); transition: transform 0.05s; touch-action: manipulation; }
-  #clickBtn:active { transform: scale(0.92); }
-  .click-info { margin-top: 20px; font-size: 18px; line-height: 1.6; }
-  .click-info b { color: #a4d007; }
-
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; }
-  .card { background: #1b2838; border: 1px solid #2a475e; border-radius: 10px; padding: 15px; transition: 0.2s; display: flex; flex-direction: column; }
-  .card:hover { border-color: #66c0f4; transform: translateY(-2px); }
-  .card h3 { color: #66c0f4; margin-bottom: 8px; font-size: 16px; word-break: break-word; }
-  .card p { font-size: 13px; color: #8f98a0; margin-bottom: 10px; min-height: 36px; word-break: break-word; }
-  .card .price { color: #a4d007; font-weight: bold; font-size: 18px; margin-bottom: 10px; }
-  .card .author { font-size: 11px; color: #66c0f4; margin-bottom: 6px; word-break: break-word; }
-  .card .rating { font-size: 13px; color: #f5c542; margin-bottom: 8px; }
-  .card .rating small { color: #8f98a0; }
-  .card button { width: 100%; padding: 10px; background: #a4d007; color: #171a21; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 6px; font-size: 14px; transition: 0.15s; touch-action: manipulation; }
-  .card button:hover { background: #b8e010; }
-  .card button:active { transform: scale(0.97); }
-  .card button:disabled { background: #4a5a2a; color: #8f98a0; cursor: not-allowed; }
-  .card .del-btn { background: #c23b3b; color: white; }
-  .card .del-btn:hover { background: #e04a4a; }
-  .card .review-btn { background: #66c0f4; color: #171a21; }
-  .card .review-btn:hover { background: #8fd0ff; }
-  .card .download-btn { background: #ff9e00; color: #171a21; }
-  .card .download-btn:hover { background: #ffb833; }
-  .card .view-btn { background: #8b5cf6; color: white; }
-  .card .view-btn:hover { background: #a78bfa; }
-
-  .card-progress { margin: 8px 0; }
-  .card-progress .bar { height: 10px; background: #0e1419; border-radius: 5px; overflow: hidden; border: 1px solid #2a475e; }
-  .card-progress .fill { height: 100%; background: linear-gradient(90deg, #66c0f4, #a4d007); transition: width 0.3s; }
-  .card-progress .info { display: flex; justify-content: space-between; font-size: 11px; color: #8f98a0; margin-top: 4px; }
-  .card-progress .info b { color: #a4d007; }
-
-  /* Студия */
-  .studio { display: grid; grid-template-columns: 220px 1fr 280px; gap: 12px; background: #171a21; border-radius: 10px; padding: 12px; min-height: 560px; position: relative; }
-  .studio.locked > *:not(.studio-locked-overlay) { pointer-events: none; filter: blur(2px); opacity: 0.5; }
-  .studio-locked-overlay { position: absolute; inset: 0; background: rgba(14,20,25,0.94); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; border-radius: 10px; text-align: center; padding: 20px; }
-  .studio-locked-overlay .lock-icon { font-size: 56px; margin-bottom: 12px; }
-  .studio-locked-overlay h3 { color: #c23b3b; margin-bottom: 10px; }
-  .studio-locked-overlay p { color: #8f98a0; max-width: 320px; line-height: 1.5; }
-  .studio-locked-overlay b { color: #a4d007; }
-  .studio-panel { background: #1b2838; border-radius: 8px; padding: 12px; overflow-y: auto; max-height: 72vh; }
-  .studio-panel h3 { color: #66c0f4; font-size: 13px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-  .tool-btn { display: flex; align-items: center; gap: 8px; width: 100%; background: #2a475e; color: #c7d5e0; border: none; padding: 10px; border-radius: 6px; cursor: pointer; margin-bottom: 5px; font-size: 13px; text-align: left; transition: 0.15s; }
-  .tool-btn:hover { background: #66c0f4; color: #171a21; }
-  #studioCanvas { background: #0e1419; border: 2px dashed #2a475e; border-radius: 10px; position: relative; overflow: hidden; min-height: 540px; background-image: linear-gradient(rgba(42,71,94,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(42,71,94,0.3) 1px, transparent 1px); background-size: 20px 20px; }
-  .studio-obj { position: absolute; cursor: move; user-select: none; display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 6px; font-size: 14px; font-weight: bold; border: 2px solid transparent; overflow: hidden; text-align: center; touch-action: none; }
-  .studio-obj.selected { border-color: #a4d007; box-shadow: 0 0 15px #a4d007; }
-  .canvas-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #4a5a6a; font-size: 16px; pointer-events: none; text-align: center; padding: 20px; }
-  .prop-group { margin-bottom: 10px; }
-  .prop-group label { display: block; font-size: 12px; color: #8f98a0; margin-bottom: 4px; }
-  .prop-group input, .prop-group select { width: 100%; padding: 8px; background: #171a21; border: 1px solid #2a475e; border-radius: 5px; color: #c7d5e0; font-size: 14px; }
-  .prop-group input[type="color"] { padding: 2px; height: 36px; cursor: pointer; }
-  .prop-group input[type="range"] { padding: 0; height: 30px; }
-  .delete-btn { width: 100%; padding: 10px; background: #c23b3b; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 5px; }
-  .studio-actions { display: flex; gap: 8px; margin-top: 12px; }
-  .studio-actions button { flex: 1; padding: 11px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; }
-  .btn-test { background: #66c0f4; color: #171a21; }
-  .btn-publish { background: #a4d007; color: #171a21; }
-  .btn-clear { background: #2a475e; color: #c7d5e0; }
-  .btn-publish:disabled { background: #4a5a2a; color: #8f98a0; cursor: not-allowed; }
-  .publish-hint { text-align: center; font-size: 12px; color: #8f98a0; margin-top: 6px; }
-  .publish-hint.ok { color: #a4d007; }
-  .publish-hint.no { color: #c23b3b; }
-  .studio-meta { margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
-  .studio-meta input { flex: 1; min-width: 160px; padding: 10px; background: #171a21; border: 1px solid #2a475e; border-radius: 6px; color: #c7d5e0; font-size: 14px; }
-
-  /* Модалка */
-  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
-  .modal.active { display: flex; }
-  .modal-content { background: #1b2838; padding: 22px; border-radius: 12px; max-width: 600px; width: 100%; border: 2px solid #66c0f4; text-align: center; max-height: 92vh; overflow-y: auto; }
-  .modal-content h2 { color: #66c0f4; margin-bottom: 15px; word-break: break-word; }
-  .modal-content .close { margin-top: 20px; padding: 12px 25px; background: #a4d007; color: #171a21; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; width: 100%; }
-  #playScene { position: relative; background: #0e1419; border-radius: 8px; min-height: 380px; overflow: hidden; margin: 10px 0; background-image: linear-gradient(rgba(42,71,94,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(42,71,94,0.2) 1px, transparent 1px); background-size: 20px 20px; }
-  .play-obj { position: absolute; display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 6px; font-size: 14px; font-weight: bold; overflow: hidden; text-align: center; }
-  .play-obj.clickable { cursor: pointer; transition: transform 0.05s; touch-action: manipulation; }
-  .play-obj.clickable:active { transform: scale(0.95); }
-  .msg { margin-top: 12px; font-size: 15px; min-height: 22px; color: #a4d007; }
-
-  /* Просмотр */
-  .view-screen { padding: 25px 15px; text-align: center; }
-  .view-screen h3 { color: #8b5cf6; margin-bottom: 20px; font-size: 18px; }
-  .view-screen .big-progress { height: 30px; background: #0e1419; border-radius: 15px; overflow: hidden; margin-bottom: 15px; border: 2px solid #2a475e; position: relative; }
-  .view-screen .big-progress-fill { height: 100%; background: linear-gradient(90deg, #66c0f4, #a4d007); transition: width 0.3s; }
-  .view-screen .big-progress-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; text-shadow: 0 0 4px black; font-size: 14px; }
-  .view-screen .stats { font-size: 14px; color: #8f98a0; margin-bottom: 15px; }
-  .view-screen .stats b { color: #a4d007; }
-  .view-screen .status-msg { padding: 12px; background: #171a21; border-radius: 6px; color: #a4d007; font-weight: bold; }
-
-  /* Отзывы */
-  .reviews-list { max-height: 340px; overflow-y: auto; text-align: left; margin-top: 15px; background: #171a21; border-radius: 6px; padding: 10px; }
-  .review-item { padding: 10px; border-bottom: 1px solid #2a475e; }
-  .review-item:last-child { border-bottom: none; }
-  .review-head { display: flex; justify-content: space-between; margin-bottom: 5px; align-items: center; gap: 8px; }
-  .review-author { color: #66c0f4; font-size: 13px; font-weight: bold; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .review-stars { color: #f5c542; font-size: 13px; flex-shrink: 0; }
-  .review-del { background: #c23b3b; color: white; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; flex-shrink: 0; }
-  .review-text { color: #c7d5e0; font-size: 13px; line-height: 1.4; word-break: break-word; }
-  .review-time { color: #8f98a0; font-size: 11px; margin-top: 3px; }
-  .review-form { margin-top: 15px; padding: 12px; background: #171a21; border-radius: 6px; text-align: left; }
-  .review-form h4 { color: #66c0f4; font-size: 14px; margin-bottom: 10px; }
-  .review-form textarea { width: 100%; min-height: 70px; padding: 10px; background: #1b2838; border: 1px solid #2a475e; border-radius: 5px; color: #c7d5e0; font-size: 14px; resize: vertical; margin-bottom: 8px; font-family: inherit; }
-  .review-form .stars-select { display: flex; gap: 5px; margin-bottom: 8px; }
-  .review-form .star-btn { background: none; border: none; font-size: 28px; cursor: pointer; color: #4a5a6a; padding: 0; line-height: 1; }
-  .review-form .star-btn.active { color: #f5c542; }
-  .review-form button[type="submit"] { width: 100%; padding: 10px; background: #a4d007; color: #171a21; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; }
-
-  #notifArea { position: fixed; top: 15px; right: 15px; z-index: 300; display: flex; flex-direction: column; gap: 10px; pointer-events: none; max-width: 360px; width: calc(100% - 30px); }
-  .sale-notif { background: linear-gradient(135deg, #1b2838, #2a475e); border: 2px solid #a4d007; border-left: 6px solid #a4d007; border-radius: 8px; padding: 14px 16px; box-shadow: 0 6px 25px rgba(0,0,0,0.7); animation: slideIn 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2); pointer-events: auto; word-break: break-word; }
-  .sale-notif .n-title { color: #a4d007; font-weight: bold; font-size: 15px; margin-bottom: 6px; }
-  .sale-notif .n-text { color: #c7d5e0; font-size: 13px; line-height: 1.5; }
-  .sale-notif.fade-out { animation: slideOut 0.4s forwards; }
-  @keyframes slideIn { from { transform: translateX(450px); opacity: 0; } to { transform: none; opacity: 1; } }
-  @keyframes slideOut { to { transform: translateX(470px); opacity: 0; } }
-
-  .empty { text-align: center; padding: 40px 20px; color: #8f98a0; }
-
-  /* QR-модалка */
-  .qr-box { background: #fff; padding: 15px; border-radius: 8px; display: inline-block; margin: 15px 0; }
-  .qr-box canvas, .qr-box img { display: block; }
-  #qrVideo { width: 100%; max-width: 400px; border-radius: 8px; margin: 10px 0; background: #000; }
-
-  @media (max-width: 900px) {
-    .studio { grid-template-columns: 1fr; min-height: auto; }
-    .studio-panel { max-height: 250px; }
-    #studioCanvas { min-height: 400px; }
-  }
-  @media (max-width: 640px) {
-    body { padding: 12px; }
-    h1 { font-size: 20px; }
-    .topbar { padding: 12px 14px; }
-    .money { font-size: 22px; }
-    .nav { gap: 5px; width: 100%; }
-    .nav button { flex: 1 1 calc(50% - 5px); padding: 9px 8px; font-size: 12px; text-align: center; }
-    .grid { grid-template-columns: 1fr; gap: 12px; }
-    #clickBtn { width: 180px; height: 180px; font-size: 18px; }
-    .click-info { font-size: 15px; }
-    .studio { padding: 8px; gap: 8px; }
-    #studioCanvas { min-height: 350px; }
-    .studio-meta input { min-width: 0; flex: 1 1 100%; }
-    .modal-content { padding: 16px; }
-    .start-screen { padding: 20px; margin: 20px auto; }
-  }
+  body { margin:0; font-family: Arial; background:#111; color:#fff; overflow:hidden; }
+  #game { width:100vw; height:65vh; background:#222; position:relative; border-bottom:2px solid #444; overflow:hidden; }
+  .player { position:absolute; width:44px; height:44px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            font-size:11px; font-weight:bold; transition: all 0.06s linear; }
+  .me { background:#4CAF50; box-shadow:0 0 20px #4CAF50; }
+  .other { background:#2196F3; }
+  #chat { height:35vh; display:flex; flex-direction:column; background:#1a1a1a; }
+  #messages { flex:1; overflow-y:auto; padding:8px 12px; }
+  #messages div { margin:2px 0; }
+  #msgInput { display:flex; border-top:1px solid #333; }
+  #msgInput input { flex:1; padding:12px; border:none; background:#222; color:#fff; font-size:15px; outline:none; }
+  #msgInput button { padding:12px 24px; background:#4CAF50; color:#fff; border:none; cursor:pointer; }
+  #setup { position:fixed; inset:0; background:#000e; display:flex; align-items:center; justify-content:center; z-index:10; overflow:auto; padding:20px; }
+  #setup .box { background:#222; padding:30px; border-radius:14px; max-width:600px; width:100%; }
+  #setup h2 { margin-top:0; }
+  #setup input, #setup textarea { width:100%; box-sizing:border-box; padding:10px; font-size:14px;
+      border-radius:6px; border:1px solid #444; background:#111; color:#fff; margin-bottom:10px; font-family:monospace; }
+  #setup textarea { height:120px; resize:vertical; }
+  #setup button { padding:12px 24px; font-size:15px; background:#4CAF50; color:#fff;
+      border:none; border-radius:6px; cursor:pointer; margin:4px 4px 4px 0; }
+  #setup button.sec { background:#555; }
+  #setup .step { background:#1a1a1a; padding:14px; border-radius:8px; margin:10px 0; border-left:3px solid #4CAF50; }
+  #status { position:absolute; top:10px; left:10px; background:#000a; padding:6px 12px; border-radius:6px; font-size:13px; }
+  #offerOut { color:#4CAF50; word-break:break-all; font-size:11px; }
 </style>
 </head>
 <body>
-<div id="notifArea"></div>
 
-<!-- ========== СТАРТОВЫЙ ЭКРАН ========== -->
-<div id="startScreen" class="start-screen">
-  <h2>🎮 СТИМ-КЛИКЕР</h2>
-  <p class="sub">Выбери режим игры</p>
+<div id="setup">
+  <div class="box">
+    <h2>🎮 P2P Игра-чат (без сервера)</h2>
 
-  <div class="mode-card" data-mode="solo">
-    <h3>👤 Одиночная игра</h3>
-    <p>Классический режим. Играй один, копи деньги, создавай игры.</p>
-    <span class="tag no-net">📴 Без интернета</span>
-  </div>
-
-  <div class="mode-card" data-mode="qr">
-    <h3>📱 Игра по очереди через QR</h3>
-    <p>Ходите по очереди. Один делает ход → QR-код → второй сканирует и продолжает. Работает полностью без интернета.</p>
-    <span class="tag no-net">📴 Без интернета</span>
-  </div>
-
-  <div class="mode-card" data-mode="lan">
-    <h3>🖥️ Локальный сервер (Wi-Fi)</h3>
-    <p>Запусти Node.js на одном устройстве. Другой зайдёт по IP. Настоящая игра вдвоём по Wi-Fi без интернета.</p>
-    <span class="tag no-net">📴 Без интернета</span>
-  </div>
-
-  <div class="mode-card" data-mode="online">
-    <h3>🌐 Онлайн через Firebase</h3>
-    <p>Играй с друзьями через интернет. Комнаты, общий магазин, отзывы.</p>
-    <span class="tag net">🌐 Нужен интернет</span>
-  </div>
-
-  <button class="start-btn green" id="startBtn" style="margin-top: 15px;">▶️ Начать</button>
-</div>
-
-<!-- ========== ОСНОВНОЙ ИНТЕРФЕЙС ========== -->
-<div class="container" id="mainApp" style="display:none;">
-  <h1>🎮 СТИМ-КЛИКЕР</h1>
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="money-row">
-        <span class="money">💰 <span id="money">0</span> ₽</span>
-        <button class="mode-badge" id="modeBadge" title="Сменить режим">🎮 <span id="modeDisplay">Одиночная</span></button>
-      </div>
-      <div class="player-info">
-        👤 <b id="playerNameDisplay">Игрок</b>
-        <button class="nick-btn" id="changeNickBtn">✏️ Ник</button>
-        <button class="reset-btn" id="resetAccBtn">🔄 Сброс</button>
-      </div>
-      <div><span id="serverStatus" class="status offline">Проверка...</span></div>
+    <div class="step">
+      <b>Шаг 1.</b> Введи своё имя:<br><br>
+      <input id="nameInput" placeholder="Ник" maxlength="12">
     </div>
-    <div class="nav">
-      <button class="active" data-page="clicker">🖱️ Кликер</button>
-      <button data-page="shop">🛒 Магазин</button>
-      <button data-page="library">📚 Библиотека</button>
-      <button data-page="studio">🛠️ Студия</button>
-      <button data-page="mystore">📤 Мои игры</button>
-      <button data-page="sync" id="syncTab">🔄 Синхронизация</button>
+
+    <div class="step">
+      <b>Шаг 2.</b> Один игрок — <b>Хост</b>, остальные — <b>Гости</b>.<br><br>
+      <button onclick="startHost()">👑 Я Хост (создать игру)</button>
+      <button class="sec" onclick="startGuest()">👤 Я Гость (подключиться)</button>
     </div>
-  </div>
 
-  <div class="page active" id="page-clicker">
-    <div class="clicker-area">
-      <button id="clickBtn">КЛИКНИ<br>МЕНЯ</button>
-      <div class="click-info">За клик: <b id="perClick">1</b> ₽<br>Всего кликов: <b id="totalClicks">0</b></div>
+    <div id="hostPanel" style="display:none" class="step">
+      <b>Шаг 3 (Хост).</b> Скопируй этот код и отправь Гостю (через мессенджер):<br><br>
+      <textarea id="offerOut" readonly placeholder="Код появится здесь..."></textarea>
+      <button onclick="copyOffer()">📋 Копировать код</button>
+      <br><br>
+      <b>Шаг 4 (Хост).</b> Вставь код-ответ от Гостя сюда и нажми кнопку:<br><br>
+      <textarea id="answerIn" placeholder="Вставь код-ответ от гостя..."></textarea>
+      <button onclick="acceptAnswer()">✅ Подключить гостя</button>
+      <div id="hostStatus" style="color:#888;font-size:13px;margin-top:8px"></div>
     </div>
-  </div>
 
-  <div class="page" id="page-shop"><h2 style="color:#66c0f4; margin-bottom:15px;">🛒 Магазин игр</h2><div class="grid" id="shopGrid"></div></div>
-  <div class="page" id="page-library"><h2 style="color:#66c0f4; margin-bottom:15px;">📚 Моя библиотека</h2><div class="grid" id="libraryGrid"></div></div>
-
-  <div class="page" id="page-studio">
-    <h2 style="color:#66c0f4; margin-bottom:15px;">🛠️ Студия разработки</h2>
-    <div class="studio-meta">
-      <input type="text" id="studioName" placeholder="Название игры" maxlength="40">
-      <input type="text" id="studioDesc" placeholder="Описание" maxlength="150">
-      <input type="number" id="studioPrice" placeholder="Цена (₽)" min="10" value="100">
-    </div>
-    <div class="studio" id="studioContainer">
-      <div class="studio-panel">
-        <h3>Кнопки</h3>
-        <button class="tool-btn" id="addBtn">🔘 Кнопка (+1₽)</button>
-        <button class="tool-btn" id="addBigBtn">💎 Золотая (+10₽)</button>
-        <button class="tool-btn" id="addMegaBtn">💥 Мега (+50₽)</button>
-        <button class="tool-btn" id="addBomb">💣 Бомба (-5₽)</button>
-        <button class="tool-btn" id="addWinBtn">🏆 Победная (+100₽)</button>
-        <h3 style="margin-top:10px;">Текст</h3>
-        <button class="tool-btn" id="addText">📝 Текст</button>
-        <button class="tool-btn" id="addTitle">🔠 Заголовок</button>
-        <button class="tool-btn" id="addHint">💡 Подсказка</button>
-        <h3 style="margin-top:10px;">Прочее</h3>
-        <button class="tool-btn" id="addImage">🖼️ Картинка</button>
-        <button class="tool-btn" id="addInput">⌨️ Поле ввода</button>
-        <button class="tool-btn" id="addCounter">🔢 Счётчик</button>
-        <button class="tool-btn" id="addSquare">⬜ Квадрат</button>
-        <button class="tool-btn" id="addCircle">⭕ Круг</button>
-        <h3 style="margin-top:10px;">Действия</h3>
-        <div class="studio-actions" style="flex-direction:column;">
-          <button class="btn-test" id="testBtn">▶️ Тест игры</button>
-          <button class="btn-clear" id="clearBtn">🗑️ Очистить холст</button>
-        </div>
-      </div>
-      <div style="position:relative;">
-        <div id="studioCanvas"><div class="canvas-empty" id="canvasEmpty">Добавь объекты слева 👈</div></div>
-        <div class="studio-actions"><button class="btn-publish" id="publishBtn" style="font-size:15px; padding:12px;">📤 Опубликовать (100 ₽)</button></div>
-        <div class="publish-hint" id="publishHint">Публикация стоит 100 ₽. У тебя 0 ₽</div>
-      </div>
-      <div class="studio-panel">
-        <h3>Свойства</h3>
-        <div id="propsPanel"><div class="empty" style="padding:20px; font-size:13px;">Выбери объект на холсте</div></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="page" id="page-mystore">
-    <h2 style="color:#66c0f4; margin-bottom:15px;">📤 Мои игры в магазине</h2>
-    <div class="grid" id="myStoreGrid"></div>
-  </div>
-
-  <div class="page" id="page-sync">
-    <h2 style="color:#66c0f4; margin-bottom:15px;">🔄 Синхронизация хода</h2>
-    <div style="background:#171a21; border-radius:10px; padding:20px;">
-      <p style="color:#8f98a0; margin-bottom:15px;">В режиме «по очереди» передавай ход другу через QR-код.</p>
-      <button class="start-btn blue" id="exportQrBtn" style="margin-bottom:10px;">📤 Экспортировать мой ход (QR)</button>
-      <button class="start-btn purple" id="importQrBtn">📥 Импортировать ход друга (камера)</button>
+    <div id="guestPanel" style="display:none" class="step">
+      <b>Шаг 3 (Гость).</b> Вставь код от Хоста сюда:<br><br>
+      <textarea id="offerIn" placeholder="Вставь код от хоста..."></textarea>
+      <button onclick="makeAnswer()">🔗 Сгенерировать ответ</button>
+      <br><br>
+      <b>Шаг 4 (Гость).</b> Скопируй ответ и отправь Хосту:<br><br>
+      <textarea id="answerOut" readonly placeholder="Код-ответ появится здесь..."></textarea>
+      <button onclick="copyAnswer()">📋 Копировать ответ</button>
+      <div id="guestStatus" style="color:#888;font-size:13px;margin-top:8px"></div>
     </div>
   </div>
 </div>
 
-<!-- ========== МОДАЛКА ========== -->
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <h2 id="modalTitle">Заголовок</h2>
-    <div id="playScene"></div>
-    <div class="msg" id="playMsg"></div>
-    <div id="reviewsSection" style="display:none;">
-      <div id="reviewsList" class="reviews-list"></div>
-      <div class="review-form">
-        <h4>✍️ Оставить отзыв</h4>
-        <div class="stars-select" id="starsSelect">
-          <button class="star-btn" data-v="1">★</button>
-          <button class="star-btn" data-v="2">★</button>
-          <button class="star-btn" data-v="3">★</button>
-          <button class="star-btn" data-v="4">★</button>
-          <button class="star-btn" data-v="5">★</button>
-        </div>
-        <textarea id="reviewText" placeholder="Что думаешь об игре?" maxlength="200"></textarea>
-        <button id="submitReview" type="submit">Отправить отзыв</button>
-      </div>
-    </div>
-    <button class="close" id="closeModal">Закрыть</button>
+<div id="game">
+  <div id="status">Ожидание подключения...</div>
+</div>
+
+<div id="chat">
+  <div id="messages"></div>
+  <div id="msgInput">
+    <input id="chatInput" placeholder="Сообщение... (Enter — отправить)" autocomplete="off">
+    <button onclick="sendMsg()">➤</button>
   </div>
 </div>
 
-<script type="module">
-const PUBLISH_COST = 100;
-const DOWNLOAD_SECONDS = 100;
+<script>
+// ============ ПЕРЕМЕННЫЕ ============
+const myId = Math.random().toString(36).slice(2, 10);
+let myName = '';
+let isHost = false;
+let pc = null;                  // RTCPeerConnection
+const peers = {};               // id -> { dc, name, x, y, el }
+const players = {};             // все игроки (включая меня)
+const game = document.getElementById('game');
+const speed = 8;
+const statusEl = document.getElementById('status');
 
-// ============ РЕЖИМ ============
-let MODE = 'solo'; // solo | qr | lan | online
-let ROOM_CODE = null;
-let PLAYER_NAME = localStorage.getItem('playerName') || 'Игрок' + Math.floor(Math.random()*999);
+// ICE-серверы (публичные, без регистрации)
+const ICE = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-const STARTER_GAMES = [
-  { id: 'g1', name: 'Космический Рейс', desc: 'Кликай кнопки!', price: 50, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 60, y: 80, w: 160, h: 60, color: '#66c0f4', text: 'ЖМИ!', reward: 1 },
-      { id: 'o2', type: 'text', x: 60, y: 20, w: 200, h: 40, color: '#a4d007', text: 'Космос 🚀' } ] },
-  { id: 'g2', name: 'Быстрая Реакция', desc: 'Нажимай!', price: 80, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 40, y: 60, w: 100, h: 80, color: '#a4d007', text: 'СТАРТ', reward: 2 },
-      { id: 'o2', type: 'btn', x: 170, y: 60, w: 100, h: 80, color: '#c23b3b', text: 'ФИНИШ', reward: 5 } ] },
-  { id: 'g3', name: 'Золотая Кнопка', desc: 'Много денег!', price: 120, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 120, y: 100, w: 140, h: 100, color: '#f5c542', text: '💰 ЗОЛОТО', reward: 10 } ] },
-  { id: 'g4', name: 'Мега Клик', desc: 'Жми!', price: 200, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 100, y: 100, w: 200, h: 120, color: '#ff6b00', text: '💥 МЕГА', reward: 50 } ] },
-  { id: 'g5', name: 'Бомба-Игра', desc: 'Есть бомба!', price: 90, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 40, y: 60, w: 100, h: 80, color: '#a4d007', text: '+5', reward: 5 },
-      { id: 'o2', type: 'btn', x: 170, y: 60, w: 100, h: 80, color: '#c23b3b', text: '-5', reward: -5 } ] },
-  { id: 'g6', name: 'Текстовый Квест', desc: 'Читай!', price: 60, author: 'Valve', objects: [
-      { id: 'o1', type: 'text', x: 40, y: 20, w: 300, h: 60, color: '#66c0f4', text: 'Ты в комнате...' },
-      { id: 'o2', type: 'btn', x: 40, y: 100, w: 130, h: 60, color: '#a4d007', text: 'Свет', reward: 10 } ] },
-  { id: 'g7', name: 'Кнопочный Ад', desc: 'Много кнопок!', price: 300, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 20, y: 20, w: 80, h: 60, color: '#66c0f4', text: '+3', reward: 3 },
-      { id: 'o2', type: 'btn', x: 120, y: 20, w: 80, h: 60, color: '#a4d007', text: '+3', reward: 3 },
-      { id: 'o3', type: 'btn', x: 220, y: 20, w: 80, h: 60, color: '#f5c542', text: '+3', reward: 3 } ] },
-  { id: 'g8', name: 'Круг Удачи', desc: 'Крути!', price: 150, author: 'Valve', objects: [
-      { id: 'o1', type: 'circle', x: 100, y: 80, w: 180, h: 180, color: '#a4d007', text: '🎯', reward: 15 } ] },
-  { id: 'g9', name: 'Победный Клик', desc: 'Победа!', price: 500, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 100, y: 100, w: 220, h: 130, color: '#f5c542', text: '🏆 +100', reward: 100 } ] },
-  { id: 'g10', name: 'Мульти-Кнопки', desc: 'Выбирай!', price: 180, author: 'Valve', objects: [
-      { id: 'o1', type: 'btn', x: 30, y: 80, w: 110, h: 80, color: '#66c0f4', text: '+2', reward: 2 },
-      { id: 'o2', type: 'btn', x: 150, y: 80, w: 110, h: 80, color: '#a4d007', text: '+7', reward: 7 },
-      { id: 'o3', type: 'btn', x: 270, y: 80, w: 110, h: 80, color: '#f5c542', text: '+15', reward: 15 } ] }
-];
+// ============ УТИЛИТЫ ============
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function copyTo(el) {
+  el.select();
+  document.execCommand('copy');
+  alert('Скопировано!');
+}
+function copyOffer() { copyTo(document.getElementById('offerOut')); }
+function copyAnswer() { copyTo(document.getElementById('answerOut')); }
 
-// ============ СОСТОЯНИЕ ============
-const DEFAULT_STATE = { money: 0, perClick: 1, totalClicks: 0, ownedGames: [], myGames: [], shopGames: [], allReviews: {}, downloadedGames: {} };
-let state = loadState();
+// ============ ИНТЕРФЕЙС ============
+function startHost() {
+  myName = document.getElementById('nameInput').value.trim();
+  if (!myName) { alert('Введи имя!'); return; }
+  isHost = true;
+  document.getElementById('hostPanel').style.display = 'block';
+  document.getElementById('guestPanel').style.display = 'none';
 
-function loadState() {
+  // Создаём игрока-себя
+  createPlayer(myId, myName, 400, 300, true);
+
+  // Создаём оффер
+  pc = new RTCPeerConnection(ICE);
+  setupConnection(pc);
+
+  const dc = pc.createDataChannel('game');
+  setupDataChannel(dc);
+
+  pc.createOffer().then(offer => {
+    pc.setLocalDescription(offer);
+    return waitIce(pc);
+  }).then(() => {
+    const code = btoa(JSON.stringify(pc.localDescription));
+    document.getElementById('offerOut').value = code;
+    document.getElementById('hostStatus').textContent = '✅ Код готов. Отправь его Гостю.';
+  });
+}
+
+async function acceptAnswer() {
+  const code = document.getElementById('answerIn').value.trim();
+  if (!code) return;
   try {
-    const saved = localStorage.getItem('steamClicker_' + MODE);
-    if (saved) {
-      const s = JSON.parse(saved);
-      if (!s.shopGames || s.shopGames.filter(g => g.author === 'Valve').length < 10) {
-        const my = (s.shopGames || []).filter(g => g.author !== 'Valve');
-        s.shopGames = [...JSON.parse(JSON.stringify(STARTER_GAMES)), ...my];
-      }
-      if (!s.downloadedGames) s.downloadedGames = {};
-      return { ...DEFAULT_STATE, ...s };
-    }
-  } catch(e) {}
-  return { ...DEFAULT_STATE, shopGames: JSON.parse(JSON.stringify(STARTER_GAMES)) };
-}
-function saveState() { localStorage.setItem('steamClicker_' + MODE, JSON.stringify(state)); }
-function updateMoney() { document.getElementById('money').textContent = Math.floor(state.money); updatePublishHint(); updateStudioLock(); }
-
-function getReviewStats(gameId) {
-  const all = state.allReviews || {};
-  const list = Object.values(all).filter(r => r.gameId === gameId);
-  if (list.length === 0) return { avg: 0, count: 0 };
-  const sum = list.reduce((a, r) => a + r.stars, 0);
-  return { avg: (sum / list.length).toFixed(1), count: list.length };
-}
-
-function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-// ============ УВЕДОМЛЕНИЯ ============
-function toast(msg) {
-  const el = document.createElement('div'); el.className = 'sale-notif';
-  el.innerHTML = `<div class="n-text" style="font-size:14px;">${msg}</div>`;
-  document.getElementById('notifArea').appendChild(el);
-  setTimeout(() => { el.classList.add('fade-out'); setTimeout(() => el.remove(), 400); }, 2500);
-}
-function showSaleNotification(bot, game, price) {
-  const el = document.createElement('div'); el.className = 'sale-notif';
-  el.innerHTML = `<div class="n-title">🎉 Игрок купил твою игру!</div>
-    <div class="n-text"><b style="color:#66c0f4;">${bot}</b> купил «${game}»<br>+${price} ₽</div>`;
-  document.getElementById('notifArea').appendChild(el);
-  setTimeout(() => { el.classList.add('fade-out'); setTimeout(() => el.remove(), 400); }, 5000);
-}
-
-// ============ СТАРТ ============
-let selectedMode = 'solo';
-document.querySelectorAll('.mode-card').forEach(card => {
-  card.addEventListener('click', () => {
-    document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
-    card.classList.add('active');
-    selectedMode = card.dataset.mode;
-  });
-});
-
-document.getElementById('startBtn').addEventListener('click', () => {
-  MODE = selectedMode;
-  if (MODE === 'online' && !window.FIREBASE_CONFIG) {
-    if (!confirm('Firebase не настроен. Онлайн не будет работать.\nПродолжить в локальном режиме?')) return;
-  }
-  localStorage.setItem('steamClickerMode', MODE);
-  startGame();
-});
-
-function startGame() {
-  document.getElementById('startScreen').style.display = 'none';
-  document.getElementById('mainApp').style.display = 'block';
-  document.getElementById('modeDisplay').textContent = {solo:'Одиночная', qr:'QR-очередь', lan:'Wi-Fi', online:'Онлайн'}[MODE];
-  document.getElementById('playerNameDisplay').textContent = PLAYER_NAME;
-  document.getElementById('perClick').textContent = state.perClick;
-  document.getElementById('totalClicks').textContent = state.totalClicks;
-
-  if (MODE !== 'qr') document.getElementById('syncTab').style.display = 'none';
-
-  bindAll();
-  renderAll();
-  if (MODE === 'online') initFirebase();
-  if (MODE === 'solo' || MODE === 'qr') scheduleBotTick();
-}
-
-function bindAll() {
-  document.querySelectorAll('.nav button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('page-' + btn.dataset.page).classList.add('active');
-      renderAll();
-    });
-  });
-  document.getElementById('clickBtn').addEventListener('click', () => {
-    state.money += state.perClick; state.totalClicks++;
-    document.getElementById('totalClicks').textContent = state.totalClicks;
-    updateMoney(); saveState();
-  });
-  document.getElementById('modeBadge').addEventListener('click', () => {
-    if (confirm('Вернуться к выбору режима? Прогресс сохранится.')) {
-      localStorage.removeItem('steamClickerMode');
-      location.reload();
-    }
-  });
-  document.getElementById('changeNickBtn').addEventListener('click', () => {
-    const n = prompt('Новый ник:', PLAYER_NAME);
-    if (!n || !n.trim()) return;
-    PLAYER_NAME = n.trim().slice(0, 20);
-    localStorage.setItem('playerName', PLAYER_NAME);
-    document.getElementById('playerNameDisplay').textContent = PLAYER_NAME;
-    toast('✅ Ник изменён');
-  });
-  document.getElementById('resetAccBtn').addEventListener('click', () => {
-    if (!confirm('Сбросить весь прогресс?')) return;
-    localStorage.removeItem('steamClicker_' + MODE);
-    location.reload();
-  });
-}
-
-function renderAll() {
-  updateMoney();
-  document.getElementById('perClick').textContent = state.perClick;
-  document.getElementById('totalClicks').textContent = state.totalClicks;
-  renderShop(); renderLibrary(); renderMyStore();
-}
-
-// ============ МАГАЗИН ============
-function renderShop() {
-  const grid = document.getElementById('shopGrid'); grid.innerHTML = '';
-  state.shopGames.forEach(g => {
-    const owned = state.ownedGames.includes(g.id) || state.myGames.some(m => m.id === g.id);
-    const isMine = state.myGames.some(m => m.id === g.id);
-    const stats = getReviewStats(g.id);
-    const rating = stats.count > 0 ? `⭐ ${stats.avg} <small>(${stats.count})</small>` : '<small>Нет отзывов</small>';
-    const card = document.createElement('div'); card.className = 'card';
-    card.innerHTML = `<h3>${g.name}</h3><div class="author">👤 ${g.author}</div><p>${g.desc}</p>
-      <div class="rating">${rating}</div>
-      <div class="price">${g.price} ₽</div>
-      <button class="buy-btn" ${owned || state.money < g.price ? 'disabled' : ''}>${owned ? '✅ Куплено' : (state.money < g.price ? 'Не хватает' : 'Купить')}</button>
-      <button class="review-btn">📝 Отзывы</button>
-      ${isMine ? '<button class="del-btn">🗑️ Удалить</button>' : ''}`;
-    if (!owned) card.querySelector('.buy-btn').addEventListener('click', () => buyGame(g));
-    card.querySelector('.review-btn').addEventListener('click', () => openReviews(g));
-    if (isMine) card.querySelector('.del-btn').addEventListener('click', () => deleteMyGame(g.id));
-    grid.appendChild(card);
-  });
-}
-function buyGame(g) {
-  if (state.money < g.price) return toast('❌ Не хватает денег!');
-  state.money -= g.price; state.ownedGames.push(g.id);
-  updateMoney(); saveState(); renderAll(); toast(`✅ Куплено: ${g.name}`);
-}
-
-// ============ БИБЛИОТЕКА ============
-const downloadingGames = {};
-function getDownloadProgress(id) {
-  const dl = downloadingGames[id];
-  if (!dl) return 0;
-  return Math.min(100, ((Date.now() - dl.startTime) / (DOWNLOAD_SECONDS*1000)) * 100);
-}
-function getDownloadTimeLeft(id) {
-  const dl = downloadingGames[id];
-  if (!dl) return DOWNLOAD_SECONDS;
-  return Math.max(0, Math.ceil((DOWNLOAD_SECONDS*1000 - (Date.now() - dl.startTime)) / 1000));
-}
-function startDownload(g) {
-  if (downloadingGames[g.id]) return;
-  if (state.downloadedGames[g.id]) return;
-  downloadingGames[g.id] = { startTime: Date.now() };
-  renderAll();
-  const iv = setInterval(() => {
-    if (getDownloadProgress(g.id) >= 100) {
-      clearInterval(iv);
-      delete downloadingGames[g.id];
-      state.downloadedGames[g.id] = Date.now();
-      saveState(); renderAll();
-      toast(`✅ «${g.name}» скачана!`);
-    } else {
-      const card = document.querySelector(`[data-game-id="${g.id}"]`);
-      if (card) {
-        const fill = card.querySelector('.card-progress .fill');
-        const pct = card.querySelector('.card-progress .pct');
-        const left = card.querySelector('.card-progress .left');
-        if (fill) fill.style.width = getDownloadProgress(g.id) + '%';
-        if (pct) pct.textContent = Math.floor(getDownloadProgress(g.id)) + '%';
-        if (left) left.textContent = getDownloadTimeLeft(g.id) + ' сек';
-      }
-    }
-  }, 250);
-}
-function renderLibrary() {
-  const grid = document.getElementById('libraryGrid'); grid.innerHTML = '';
-  const all = [...state.shopGames, ...state.myGames];
-  const seen = new Set();
-  const owned = all.filter(g => { if (seen.has(g.id)) return false; seen.add(g.id); return state.ownedGames.includes(g.id) || state.myGames.some(m => m.id === g.id); });
-  if (owned.length === 0) { grid.innerHTML = '<div class="empty">Нет игр. Купи в Магазине!</div>'; return; }
-  owned.forEach(g => {
-    const downloaded = !!state.downloadedGames[g.id];
-    const isDl = !!downloadingGames[g.id];
-    const isMine = state.myGames.some(m => m.id === g.id);
-    const card = document.createElement('div'); card.className = 'card'; card.dataset.gameId = g.id;
-    let progressBlock = '';
-    if (isDl) {
-      progressBlock = `<div class="card-progress"><div class="bar"><div class="fill" style="width:${getDownloadProgress(g.id)}%"></div></div>
-        <div class="info"><span class="pct"><b>${Math.floor(getDownloadProgress(g.id))}%</b></span><span class="left">${getDownloadTimeLeft(g.id)} сек</span></div></div>`;
-    }
-    let mainBtn = downloaded ? `<button class="play-btn">▶️ Играть</button>` :
-                  isDl ? `<button class="download-btn" disabled>📥 Скачивается...</button>` :
-                  `<button class="download-btn">📥 Скачать (${DOWNLOAD_SECONDS} сек)</button>`;
-    card.innerHTML = `<h3>${g.name}</h3><div class="author">👤 ${g.author}</div><p>${g.desc}</p>
-      ${progressBlock}${mainBtn}
-      <button class="review-btn">📝 Отзывы</button>
-      ${!isMine ? '<button class="del-btn">🗑️ Удалить</button>' : ''}`;
-    if (downloaded) card.querySelector('.play-btn').addEventListener('click', () => playGame(g));
-    else if (!isDl) card.querySelector('.download-btn').addEventListener('click', () => startDownload(g));
-    card.querySelector('.review-btn').addEventListener('click', () => openReviews(g));
-    if (!isMine) card.querySelector('.del-btn').addEventListener('click', () => {
-      if (confirm('Удалить из библиотеки?')) {
-        state.ownedGames = state.ownedGames.filter(x => x !== g.id);
-        delete state.downloadedGames[g.id];
-        saveState(); renderAll();
-      }
-    });
-    grid.appendChild(card);
-  });
-}
-
-// ============ МОИ ИГРЫ ============
-function renderMyStore() {
-  const grid = document.getElementById('myStoreGrid'); grid.innerHTML = '';
-  if (state.myGames.length === 0) { grid.innerHTML = '<div class="empty">Создай игру в Студии!</div>'; return; }
-  state.myGames.forEach(g => {
-    const stats = getReviewStats(g.id);
-    const rating = stats.count > 0 ? `⭐ ${stats.avg} (${stats.count})` : 'Нет отзывов';
-    const card = document.createElement('div'); card.className = 'card';
-    card.innerHTML = `<h3>${g.name}</h3><p>${g.desc}</p>
-      <div class="rating">${rating}</div>
-      <div class="price">${g.price} ₽</div>
-      <div style="font-size:13px; color:#a4d007; margin-bottom:8px;">🤖 ${g.botBuys||0} продаж<br>💰 ${g.earnings||0} ₽</div>
-      <button class="play-btn">▶️ Тест</button>
-      <button class="review-btn">📝 Отзывы</button>
-      <button class="del-btn">🗑️ Удалить</button>`;
-    card.querySelector('.play-btn').addEventListener('click', () => playGame(g));
-    card.querySelector('.review-btn').addEventListener('click', () => openReviews(g));
-    card.querySelector('.del-btn').addEventListener('click', () => {
-      if (!confirm('Удалить игру?')) return;
-      state.myGames = state.myGames.filter(x => x.id !== g.id);
-      state.shopGames = state.shopGames.filter(x => x.id !== g.id);
-      state.ownedGames = state.ownedGames.filter(x => x !== g.id);
-      delete state.downloadedGames[g.id];
-      saveState(); renderAll();
-    });
-    grid.appendChild(card);
-  });
-}
-function deleteMyGame(id) {
-  if (!confirm('Удалить игру отовсюду?')) return;
-  state.myGames = state.myGames.filter(x => x.id !== id);
-  state.shopGames = state.shopGames.filter(x => x.id !== id);
-  state.ownedGames = state.ownedGames.filter(x => x !== id);
-  delete state.downloadedGames[id];
-  saveState(); renderAll();
-}
-
-// ============ ОТЗЫВЫ ============
-let currentReviewGame = null, selectedStars = 5;
-const modal = document.getElementById('modal');
-const modalTitle = document.getElementById('modalTitle');
-const playScene = document.getElementById('playScene');
-const playMsg = document.getElementById('playMsg');
-
-function openReviews(g) {
-  currentReviewGame = g; selectedStars = 5;
-  modal.classList.add('active');
-  modalTitle.textContent = '📝 Отзывы: ' + g.name;
-  playScene.style.display = 'none';
-  playMsg.textContent = '';
-  document.getElementById('reviewsSection').style.display = 'block';
-  renderReviewsList(g.id);
-  renderStarsSelect();
-  document.getElementById('reviewText').value = '';
-}
-function renderStarsSelect() {
-  document.querySelectorAll('#starsSelect .star-btn').forEach(b => b.classList.toggle('active', +b.dataset.v <= selectedStars));
-}
-document.querySelectorAll('#starsSelect .star-btn').forEach(b => b.addEventListener('click', () => { selectedStars = +b.dataset.v; renderStarsSelect(); }));
-function renderReviewsList(gameId) {
-  const list = document.getElementById('reviewsList');
-  const reviews = Object.entries(state.allReviews || {}).filter(([k, r]) => r.gameId === gameId).sort((a, b) => b[1].time - a[1].time);
-  if (reviews.length === 0) { list.innerHTML = '<div class="empty" style="padding:20px;">Нет отзывов</div>'; return; }
-  list.innerHTML = reviews.map(([key, r]) => {
-    const mine = r.author === PLAYER_NAME && r.authorType === 'player';
-    return `<div class="review-item"><div class="review-head">
-      <span class="review-author">${escapeHtml(r.author)}</span>
-      <span class="review-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</span>
-      ${mine ? `<button class="review-del" data-key="${key}">🗑️</button>` : ''}</div>
-      <div class="review-text">${escapeHtml(r.text)}</div>
-      <div class="review-time">${new Date(r.time).toLocaleString('ru-RU')}</div></div>`;
-  }).join('');
-  list.querySelectorAll('.review-del').forEach(b => b.addEventListener('click', () => {
-    if (!confirm('Удалить отзыв?')) return;
-    delete state.allReviews[b.dataset.key];
-    saveState(); renderReviewsList(gameId); renderAll();
-  }));
-}
-document.getElementById('submitReview').addEventListener('click', () => {
-  if (!currentReviewGame) return;
-  const text = document.getElementById('reviewText').value.trim();
-  if (!text) return toast('❌ Напиши отзыв!');
-  const key = 'rev_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-  state.allReviews[key] = { gameId: currentReviewGame.id, gameName: currentReviewGame.name, author: PLAYER_NAME, authorType: 'player', stars: selectedStars, text, time: Date.now() };
-  saveState();
-  document.getElementById('reviewText').value = '';
-  renderReviewsList(currentReviewGame.id); renderAll();
-  toast('✅ Отзыв добавлен');
-});
-document.getElementById('closeModal').addEventListener('click', () => {
-  modal.classList.remove('active');
-  playScene.innerHTML = ''; playScene.style.display = 'block';
-  document.getElementById('reviewsSection').style.display = 'none';
-});
-
-// ============ ПЛЕЕР ============
-function playGame(g) {
-  modal.classList.add('active');
-  modalTitle.textContent = '🎮 ' + g.name;
-  playMsg.textContent = ''; playScene.innerHTML = '';
-  playScene.style.display = 'block';
-  document.getElementById('reviewsSection').style.display = 'none';
-  if (!g.objects) return;
-  g.objects.forEach(obj => {
-    const el = document.createElement('div'); el.className = 'play-obj';
-    Object.assign(el.style, { left: obj.x+'px', top: obj.y+'px', width: obj.w+'px', height: obj.h+'px',
-      background: obj.isImage ? 'transparent' : obj.color,
-      color: (obj.type==='text'||obj.isImage) ? obj.color : '#171a21' });
-    if (obj.type === 'circle') el.style.borderRadius = '50%';
-    el.textContent = obj.text;
-    if (obj.type === 'btn' || obj.type === 'circle') {
-      el.classList.add('clickable');
-      el.addEventListener('click', () => {
-        const r = obj.reward || 1;
-        state.money = Math.max(0, state.money + r);
-        updateMoney(); saveState();
-        playMsg.textContent = r >= 0 ? `+${r} ₽` : `${r} ₽`;
-      });
-    }
-    playScene.appendChild(el);
-  });
-}
-
-// ============ СТУДИЯ ============
-let studioObjects = [], selectedId = null, nextObjId = 1;
-const canvas = document.getElementById('studioCanvas');
-const canvasEmpty = document.getElementById('canvasEmpty');
-const propsPanel = document.getElementById('propsPanel');
-const studioContainer = document.getElementById('studioContainer');
-
-function updateStudioLock() {
-  const locked = state.money < PUBLISH_COST;
-  const existing = studioContainer.querySelector('.studio-locked-overlay');
-  if (locked && !existing) {
-    studioContainer.classList.add('locked');
-    const ov = document.createElement('div'); ov.className = 'studio-locked-overlay';
-    ov.innerHTML = `<div class="lock-icon">🔒</div><h3>Студия заблокирована</h3>
-      <p>Нужно минимум <b>${PUBLISH_COST} ₽</b>.<br>У тебя: <b>${Math.floor(state.money)} ₽</b></p>`;
-    studioContainer.appendChild(ov);
-  } else if (!locked && existing) {
-    existing.remove(); studioContainer.classList.remove('locked');
+    const answer = JSON.parse(atob(code));
+    await pc.setRemoteDescription(answer);
+    document.getElementById('hostStatus').textContent = '⏳ Подключаемся...';
+  } catch(e) {
+    alert('Неверный код ответа: ' + e.message);
   }
 }
-function updatePublishHint() {
-  const hint = document.getElementById('publishHint'), btn = document.getElementById('publishBtn');
-  if (!hint || !btn) return;
-  if (state.money >= PUBLISH_COST) {
-    hint.textContent = `✅ Спишется ${PUBLISH_COST} ₽`; hint.className = 'publish-hint ok';
-    btn.disabled = false; btn.textContent = `📤 Опубликовать (${PUBLISH_COST} ₽)`;
-  } else {
-    hint.textContent = `❌ Нужно ${PUBLISH_COST} ₽`; hint.className = 'publish-hint no';
-    btn.disabled = true; btn.textContent = `📤 Нужно ${PUBLISH_COST} ₽`;
+
+async function startGuest() {
+  myName = document.getElementById('nameInput').value.trim();
+  if (!myName) { alert('Введи имя!'); return; }
+  isHost = false;
+  document.getElementById('guestPanel').style.display = 'block';
+  document.getElementById('hostPanel').style.display = 'none';
+
+  createPlayer(myId, myName, 400, 300, true);
+
+  pc = new RTCPeerConnection(ICE);
+  setupConnection(pc);
+
+  pc.ondatachannel = (event) => setupDataChannel(event.channel);
+
+  document.getElementById('guestStatus').textContent = '⏳ Ждём, когда ты вставишь код Хоста...';
+}
+
+async function makeAnswer() {
+  const code = document.getElementById('offerIn').value.trim();
+  if (!code) return;
+  try {
+    const offer = JSON.parse(atob(code));
+    await pc.setRemoteDescription(offer);
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    await waitIce(pc);
+    const out = btoa(JSON.stringify(pc.localDescription));
+    document.getElementById('answerOut').value = out;
+    document.getElementById('guestStatus').textContent = '✅ Отправь этот код Хосту.';
+  } catch(e) {
+    alert('Неверный код: ' + e.message);
   }
 }
-function newObj(type) {
-  const base = { id: 'obj_' + (nextObjId++), type: 'btn', x: 50, y: 50, w: 140, h: 50 };
-  const cfg = {
-    btn: { color:'#66c0f4', text:'Кнопка', reward:1 },
-    bigbtn: { color:'#f5c542', text:'БОЛЬШАЯ', reward:10, w:180, h:80 },
-    mega: { color:'#ff6b00', text:'💥 МЕГА', reward:50, w:200, h:100 },
-    bomb: { color:'#c23b3b', text:'💣 БОМБА', reward:-5, w:120, h:70 },
-    winbtn: { color:'#f5c542', text:'🏆 ПОБЕДА', reward:100, w:200, h:100 },
-    text: { type:'text', color:'#a4d007', text:'Текст', w:200, h:40 },
-    title: { type:'text', color:'#66c0f4', text:'ЗАГОЛОВОК', w:300, h:50 },
-    hint: { type:'text', color:'#8f98a0', text:'Подсказка', w:200, h:30 },
-    image: { type:'image', color:'#66c0f4', text:'🖼️', w:100, h:100, isImage:true },
-    input: { type:'input', color:'#2a475e', text:'', w:200, h:40 },
-    counter: { type:'counter', color:'#a4d007', text:'0', w:150, h:40 },
-    square: { type:'square', color:'#66c0f4', text:'', w:80, h:80 },
-    circle: { type:'circle', color:'#a4d007', text:'⭕', reward:5, w:100, h:100 }
-  };
-  return { ...base, ...cfg[type] };
-}
-function renderStudio() {
-  canvas.querySelectorAll('.studio-obj').forEach(e => e.remove());
-  canvasEmpty.style.display = studioObjects.length === 0 ? 'flex' : 'none';
-  studioObjects.forEach(obj => {
-    const el = document.createElement('div');
-    el.className = 'studio-obj' + (obj.id === selectedId ? ' selected' : '');
-    Object.assign(el.style, { left: obj.x+'px', top: obj.y+'px', width: obj.w+'px', height: obj.h+'px',
-      background: obj.isImage ? 'transparent' : obj.color,
-      color: (obj.type==='text'||obj.isImage) ? obj.color : '#171a21',
-      border: obj.isImage ? '2px dashed #66c0f4' : 'none' });
-    if (obj.type === 'circle') el.style.borderRadius = '50%';
-    el.textContent = obj.text; el.dataset.id = obj.id;
-    el.addEventListener('mousedown', (e) => {
-      e.stopPropagation(); selectedId = obj.id;
-      canvas.querySelectorAll('.studio-obj').forEach(x => x.classList.remove('selected'));
-      el.classList.add('selected'); renderProps();
-      const sx = e.clientX, sy = e.clientY, ox = obj.x, oy = obj.y;
-      const mv = (e) => {
-        obj.x = Math.max(0, Math.min(canvas.clientWidth - obj.w, ox + e.clientX - sx));
-        obj.y = Math.max(0, Math.min(canvas.clientHeight - obj.h, oy + e.clientY - sy));
-        el.style.left = obj.x+'px'; el.style.top = obj.y+'px';
-      };
-      const up = () => { document.removeEventListener('mousemove', mv); document.removeEventListener('mouseup', up); };
-      document.addEventListener('mousemove', mv); document.addEventListener('mouseup', up);
-    });
-    canvas.appendChild(el);
-  });
-}
-function renderProps() {
-  const obj = studioObjects.find(o => o.id === selectedId);
-  if (!obj) { propsPanel.innerHTML = '<div class="empty" style="padding:20px; font-size:13px;">Выбери объект</div>'; return; }
-  propsPanel.innerHTML = `
-    <div class="prop-group"><label>Текст</label><input type="text" id="pText" value="${escapeHtml(obj.text||'')}" maxlength="40"></div>
-    <div class="prop-group"><label>Цвет</label><input type="color" id="pColor" value="${obj.isImage ? '#66c0f4' : obj.color}"></div>
-    <div class="prop-group"><label>X: ${obj.x}</label><input type="range" id="pX" min="0" max="650" value="${obj.x}"></div>
-    <div class="prop-group"><label>Y: ${obj.y}</label><input type="range" id="pY" min="0" max="500" value="${obj.y}"></div>
-    <div class="prop-group"><label>Ширина: ${obj.w}</label><input type="range" id="pW" min="40" max="400" value="${obj.w}"></div>
-    <div class="prop-group"><label>Высота: ${obj.h}</label><input type="range" id="pH" min="30" max="300" value="${obj.h}"></div>
-    ${(obj.type==='btn'||obj.type==='circle') ? `<div class="prop-group"><label>Награда: ${obj.reward}</label><input type="range" id="pR" min="-50" max="200" value="${obj.reward}"></div>` : ''}
-    <button class="delete-btn" id="pDelete">🗑️ Удалить объект</button>`;
-  const el = canvas.querySelector(`[data-id="${obj.id}"]`);
-  document.getElementById('pText').addEventListener('input', e => { obj.text = e.target.value; if (el) el.textContent = obj.text; });
-  document.getElementById('pColor').addEventListener('input', e => { obj.color = e.target.value; if (el) el.style.background = obj.isImage ? 'transparent' : obj.color; });
-  document.getElementById('pX').addEventListener('input', e => { obj.x = +e.target.value; if (el) el.style.left = obj.x+'px'; });
-  document.getElementById('pY').addEventListener('input', e => { obj.y = +e.target.value; if (el) el.style.top = obj.y+'px'; });
-  document.getElementById('pW').addEventListener('input', e => { obj.w = +e.target.value; if (el) el.style.width = obj.w+'px'; });
-  document.getElementById('pH').addEventListener('input', e => { obj.h = +e.target.value; if (el) el.style.height = obj.h+'px'; });
-  if (obj.type==='btn'||obj.type==='circle') document.getElementById('pR').addEventListener('input', e => { obj.reward = +e.target.value; });
-  document.getElementById('pDelete').addEventListener('click', () => {
-    studioObjects = studioObjects.filter(o => o.id !== obj.id);
-    selectedId = null; renderStudio(); renderProps();
-  });
-}
-function addObj(type) {
-  if (state.money < PUBLISH_COST) return toast(`🔒 Нужно ${PUBLISH_COST} ₽`);
-  studioObjects.push(newObj(type)); selectedId = studioObjects[studioObjects.length-1].id;
-  renderStudio(); renderProps();
-}
-['addBtn|btn','addBigBtn|bigbtn','addMegaBtn|mega','addBomb|bomb','addWinBtn|winbtn','addText|text','addTitle|title','addHint|hint','addImage|image','addInput|input','addCounter|counter','addSquare|square','addCircle|circle'].forEach(s => {
-  const [id, type] = s.split('|');
-  document.getElementById(id).addEventListener('click', () => addObj(type));
-});
-document.getElementById('clearBtn').addEventListener('click', () => {
-  if (studioObjects.length === 0) return;
-  if (confirm('Очистить холст?')) { studioObjects = []; renderStudio(); renderProps(); }
-});
-document.getElementById('testBtn').addEventListener('click', () => {
-  if (studioObjects.length === 0) return toast('❌ Добавь объекты');
-  playGame({ name: 'Тест', objects: studioObjects });
-});
-document.getElementById('publishBtn').addEventListener('click', () => {
-  if (state.money < PUBLISH_COST) return;
-  const name = document.getElementById('studioName').value.trim();
-  if (!name) return toast('❌ Введи название!');
-  state.money -= PUBLISH_COST;
-  const game = { id: 'my_' + Date.now(), name, desc: document.getElementById('studioDesc').value.trim() || 'Без описания',
-    price: parseInt(document.getElementById('studioPrice').value) || 100, author: PLAYER_NAME,
-    objects: JSON.parse(JSON.stringify(studioObjects)), botBuys: 0, earnings: 0 };
-  state.myGames.push(game); state.shopGames.push(game);
-  saveState(); renderAll();
-  toast(`🎉 Опубликовано: ${name}`);
-  document.getElementById('studioName').value = '';
-  document.getElementById('studioDesc').value = '';
-});
 
-// ============ БОТЫ ============
-function scheduleBotTick() {
-  setTimeout(() => {
-    if (state.myGames.length > 0 && Math.random() < 0.5) {
-      const g = state.myGames[Math.floor(Math.random() * state.myGames.length)];
-      g.botBuys = (g.botBuys || 0) + 1;
-      g.earnings = (g.earnings || 0) + g.price;
-      state.money += g.price;
-      showSaleNotification('Бот_' + Math.floor(Math.random()*999), g.name, g.price);
-      updateMoney(); saveState(); renderMyStore(); renderAll();
-    }
-    if (state.shopGames.length > 0 && Math.random() < 0.3) {
-      const g = state.shopGames[Math.floor(Math.random() * state.shopGames.length)];
-      const stars = Math.random() < 0.65 ? 4 + Math.floor(Math.random()*2) : 1 + Math.floor(Math.random()*3);
-      const key = 'bot_' + Date.now();
-      state.allReviews[key] = { gameId: g.id, author: 'Бот_' + Math.floor(Math.random()*999), authorType: 'bot',
-        stars, text: stars >= 4 ? 'Отлично!' : 'Скучно...', time: Date.now() };
-      saveState(); renderAll();
-    }
-    scheduleBotTick();
-  }, 30000 + Math.random() * 70000);
-}
-
-// ============ QR-СИНХРОНИЗАЦИЯ ============
-document.getElementById('exportQrBtn').addEventListener('click', () => {
-  const data = JSON.stringify({ money: state.money, myGames: state.myGames, shopGames: state.shopGames, from: PLAYER_NAME });
-  const encoded = btoa(unescape(encodeURIComponent(data)));
-  modal.classList.add('active');
-  modalTitle.textContent = '📤 Твой ход (покажи другу)';
-  playScene.style.display = 'block';
-  document.getElementById('reviewsSection').style.display = 'none';
-  playScene.innerHTML = '<div style="padding:20px; text-align:center;"><p style="color:#8f98a0; margin-bottom:15px;">Друг сканирует этот код:</p><div class="qr-box" id="qrBox"></div><p style="color:#8f98a0; font-size:12px; margin-top:10px;">Код: ' + encoded.length + ' байт</p></div>';
-  try {
-    QRCode.toCanvas(document.createElement('canvas'), encoded.slice(0, 2000), (err, c) => {
-      if (!err) document.getElementById('qrBox').appendChild(c);
-    });
-  } catch(e) { toast('❌ Слишком много данных для QR'); }
-});
-
-document.getElementById('importQrBtn').addEventListener('click', async () => {
-  modal.classList.add('active');
-  modalTitle.textContent = '📥 Сканирование';
-  playScene.style.display = 'block';
-  document.getElementById('reviewsSection').style.display = 'none';
-  playScene.innerHTML = '<div style="padding:10px; text-align:center;"><video id="qrVideo" autoplay muted playsinline></video><p style="color:#8f98a0;">Наведи камеру на QR-код</p></div>';
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-    const video = document.getElementById('qrVideo');
-    video.srcObject = stream;
-    const c = document.createElement('canvas');
-    const ctx = c.getContext('2d');
-    const scan = () => {
-      if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        c.width = video.videoWidth; c.height = video.videoHeight;
-        ctx.drawImage(video, 0, 0);
-        const img = ctx.getImageData(0, 0, c.width, c.height);
-        const code = window.jsQR ? jsQR(img.data, img.width, img.height) : null;
-        if (code) {
-          stream.getTracks().forEach(t => t.stop());
-          try {
-            const data = JSON.parse(decodeURIComponent(escape(atob(code.data))));
-            state.money = data.money;
-            state.myGames = data.myGames;
-            state.shopGames = data.shopGames;
-            saveState(); renderAll();
-            modal.classList.remove('active');
-            toast('✅ Ход импортирован от ' + data.from);
-            return;
-          } catch(e) { toast('❌ Ошибка чтения'); }
-        }
+// ============ WebRTC ============
+function waitIce(pc) {
+  return new Promise(resolve => {
+    if (pc.iceGatheringState === 'complete') return resolve();
+    const check = () => {
+      if (pc.iceGatheringState === 'complete') {
+        pc.removeEventListener('icegatheringstatechange', check);
+        resolve();
       }
-      requestAnimationFrame(scan);
     };
-    scan();
-  } catch(e) { toast('❌ Нет доступа к камере'); }
+    pc.addEventListener('icegatheringstatechange', check);
+    // на всякий случай — таймаут 3 сек
+    setTimeout(resolve, 3000);
+  });
+}
+
+function setupConnection(pc) {
+  pc.onconnectionstatechange = () => {
+    console.log('Состояние:', pc.connectionState);
+    if (pc.connectionState === 'connected') {
+      document.getElementById('setup').style.display = 'none';
+      statusEl.textContent = '🟢 Подключено';
+      // Отправляем всем своё имя
+      broadcast({ type: 'hello', id: myId, name: myName, x: players[myId].x, y: players[myId].y });
+    }
+  };
+}
+
+function setupDataChannel(dc) {
+  dc.onopen = () => {
+    console.log('DataChannel открыт');
+    document.getElementById('setup').style.display = 'none';
+    statusEl.textContent = '🟢 Подключено';
+    broadcast({ type: 'hello', id: myId, name: myName, x: players[myId].x, y: players[myId].y });
+  };
+
+  dc.onmessage = (e) => {
+    let data;
+    try { data = JSON.parse(e.data); } catch(err) { return; }
+    if (data.id === myId) return;
+
+    if (data.type === 'hello') {
+      // запоминаем соединение
+      peers[data.id] = { dc, name: data.name };
+      if (!players[data.id]) createPlayer(data.id, data.name, data.x, data.y, false);
+      // отвечаем своим приветствием
+      dc.send(JSON.stringify({ type: 'hello', id: myId, name: myName,
+        x: players[myId].x, y: players[myId].y }));
+    }
+    if (data.type === 'move' && players[data.id]) {
+      const p = players[data.id];
+      p.x = data.x; p.y = data.y;
+      p.el.style.left = data.x + 'px';
+      p.el.style.top = data.y + 'px';
+    }
+    if (data.type === 'chat') {
+      addMessage(data.name, data.msg);
+    }
+  };
+
+  dc.onclose = () => console.log('DataChannel закрыт');
+}
+
+// ============ ИГРОВАЯ ЛОГИКА ============
+function createPlayer(id, name, x, y, isMe) {
+  if (players[id]) return;
+  const el = document.createElement('div');
+  el.className = 'player ' + (isMe ? 'me' : 'other');
+  el.textContent = name;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  game.appendChild(el);
+  players[id] = { el, x, y, name };
+}
+
+function broadcast(obj) {
+  const json = JSON.stringify(obj);
+  for (const id in peers) {
+    try { peers[id].dc.send(json); } catch(e) {}
+  }
+}
+
+function addMessage(name, msg) {
+  const div = document.createElement('div');
+  div.innerHTML = `<b style="color:#4CAF50">${escapeHtml(name)}:</b> ${escapeHtml(msg)}`;
+  const msgs = document.getElementById('messages');
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+const keys = {};
+document.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
+document.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+
+setInterval(() => {
+  if (!players[myId]) return;
+  let dx = 0, dy = 0;
+  if (keys['w'] || keys['arrowup']) dy -= speed;
+  if (keys['s'] || keys['arrowdown']) dy += speed;
+  if (keys['a'] || keys['arrowleft']) dx -= speed;
+  if (keys['d'] || keys['arrowright']) dx += speed;
+  if (dx || dy) {
+    const p = players[myId];
+    p.x = Math.max(0, Math.min(game.clientWidth - 44, p.x + dx));
+    p.y = Math.max(0, Math.min(game.clientHeight - 44, p.y + dy));
+    p.el.style.left = p.x + 'px';
+    p.el.style.top = p.y + 'px';
+    broadcast({ type: 'move', id: myId, x: p.x, y: p.y });
+  }
+}, 30);
+
+function sendMsg() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  addMessage(myName, msg);
+  broadcast({ type: 'chat', id: myId, name: myName, msg: msg });
+  input.value = '';
+}
+
+document.getElementById('chatInput').addEventListener('keypress', e => {
+  if (e.key === 'Enter') sendMsg();
 });
 
-// ============ СТАРТ ============
-const savedMode = localStorage.getItem('steamClickerMode');
-if (savedMode) { MODE = savedMode; startGame(); }
+// Фокус на ввод
+document.getElementById('nameInput').focus();
 </script>
 </body>
 </html>
