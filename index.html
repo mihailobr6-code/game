@@ -2,1498 +2,410 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Симулятор Разработчика Игр v6.3</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧮 Математический ИИ</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
   body {
     font-family: 'Segoe UI', Arial, sans-serif;
-    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-    color: #eee; min-height: 100vh; padding: 15px;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #6a11cb 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
   }
-  h1 { text-align: center; color: #e94560; margin-bottom: 10px; text-shadow: 0 0 10px #e94560; }
-  .topbar {
-    display: flex; justify-content: center; gap: 18px;
-    background: rgba(0,0,0,0.4); padding: 12px; border-radius: 10px;
-    margin-bottom: 15px; flex-wrap: wrap; align-items: center;
+  
+  .container {
+    width: 100%;
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    backdrop-filter: blur(10px);
   }
-  .topbar div { font-size: 16px; font-weight: bold; }
-  .money { color: #4ecca3; }
-  .prime-badge {
-    background: linear-gradient(90deg, #ffd700, #ffed4e);
-    color: #111; padding: 4px 12px; border-radius: 15px; font-weight: bold;
-    font-size: 13px; box-shadow: 0 0 15px rgba(255,215,0,0.6);
-    animation: glow 2s infinite alternate;
+  
+  .header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 24px;
+    text-align: center;
   }
-  @keyframes glow { from { box-shadow: 0 0 10px rgba(255,215,0,0.4); } to { box-shadow: 0 0 25px rgba(255,215,0,0.9); } }
-  .prime-badge.inactive { background: #444; color: #888; box-shadow: none; animation: none; }
-  .prime-timer {
-    background: rgba(255,215,0,0.2); border: 1px solid #ffd700; color: #ffd700;
-    padding: 3px 10px; border-radius: 12px; font-size: 13px; font-weight: bold;
+  
+  .header h1 { font-size: 26px; margin-bottom: 6px; }
+  .header p { opacity: 0.9; font-size: 14px; }
+  
+  .chat {
+    height: 400px;
+    overflow-y: auto;
+    padding: 20px;
+    background: #f7f9fc;
   }
-
-  .btn {
-    background: #e94560; color: white; border: none; padding: 10px 18px;
-    border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold;
-    transition: 0.2s; margin: 3px;
+  
+  .message {
+    margin-bottom: 14px;
+    display: flex;
+    animation: slideIn 0.3s ease;
   }
-  .btn:hover { background: #ff6b8a; transform: scale(1.05); }
-  .btn:disabled { background: #555; cursor: not-allowed; transform: none; opacity: 0.6; }
-  .btn-green { background: #4ecca3; color: #111; }
-  .btn-green:hover { background: #6ee7b7; }
-  .btn-green:disabled:hover { background: #555; transform: none; }
-  .btn-blue { background: #3a86ff; }
-  .btn-blue:hover { background: #5fa3ff; }
-  .btn-orange { background: #ff9f1c; color: #111; }
-  .btn-orange:hover { background: #ffb347; }
-  .btn-red { background: #c82333; }
-  .btn-red:hover { background: #e04b5a; }
-  .btn-prime {
-    background: linear-gradient(90deg, #ffd700, #ffed4e);
-    color: #111; text-shadow: 0 1px 2px rgba(255,255,255,0.5);
-    box-shadow: 0 0 20px rgba(255,215,0,0.5);
+  
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-  .btn-prime:hover { background: linear-gradient(90deg, #ffed4e, #fff59d); transform: scale(1.05); }
-  .btn-small { padding: 6px 12px; font-size: 13px; }
-  .btn-reset {
-    background: linear-gradient(135deg, #7f1d1d, #dc2626);
-    color: white; border: 2px solid #ff6b6b;
-    box-shadow: 0 0 10px rgba(220,38,38,0.5);
+  
+  .message.user { justify-content: flex-end; }
+  
+  .bubble {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 15px;
+    line-height: 1.5;
+    word-wrap: break-word;
   }
-  .btn-reset:hover {
-    background: linear-gradient(135deg, #991b1b, #ef4444);
-    box-shadow: 0 0 20px rgba(239,68,68,0.8);
+  
+  .user .bubble {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-bottom-right-radius: 4px;
   }
-
-  .container { max-width: 1300px; margin: 0 auto; }
-  .panel {
-    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 12px; padding: 15px; margin-bottom: 15px;
-    position: relative;
+  
+  .bot .bubble {
+    background: white;
+    color: #333;
+    border: 1px solid #e0e6ed;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   }
-  .panel h2 { color: #4ecca3; margin-bottom: 10px; font-size: 20px; }
-  .panel.prime-panel {
-    background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,237,78,0.08));
-    border: 2px solid #ffd700; box-shadow: 0 0 25px rgba(255,215,0,0.2);
+  
+  .bot .bubble.error { border-color: #ff6b6b; color: #d63031; }
+  .bot .bubble.success { border-color: #00b894; }
+  
+  .input-area {
+    display: flex;
+    padding: 16px;
+    background: white;
+    border-top: 1px solid #e0e6ed;
+    gap: 10px;
   }
-  .panel.prime-panel h2 { color: #ffd700; }
-
-  .panel.locked {
-    border: 2px dashed #e94560;
-    background: repeating-linear-gradient(
-      45deg,
-      rgba(233,69,96,0.05),
-      rgba(233,69,96,0.05) 10px,
-      rgba(233,69,96,0.1) 10px,
-      rgba(233,69,96,0.1) 20px
-    );
+  
+  #userInput {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #e0e6ed;
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+    transition: border 0.2s;
   }
-  .lock-banner {
-    background: rgba(233,69,96,0.2); border: 1px solid #e94560;
-    border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;
-    color: #ffb3c1; font-weight: bold; text-align: center;
-    font-size: 14px;
+  
+  #userInput:focus { border-color: #667eea; }
+  
+  #sendBtn {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s;
   }
-  .lock-banner .icon { font-size: 20px; margin-right: 6px; }
-
-  #clickerArea { text-align: center; padding: 20px; }
-  #bigClicker {
-    width: 150px; height: 150px; border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, #ff6b8a, #e94560);
-    border: 5px solid #fff; cursor: pointer; font-size: 50px;
-    transition: 0.1s; user-select: none;
-    box-shadow: 0 0 30px rgba(233,69,96,0.6);
+  
+  #sendBtn:hover { transform: scale(1.05); }
+  #sendBtn:active { transform: scale(0.97); }
+  
+  .hints {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 16px 16px;
+    background: white;
   }
-  #bigClicker:active { transform: scale(0.92); }
-
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
-  .card {
-    background: rgba(255,255,255,0.1); border-radius: 10px; padding: 12px;
-    border: 1px solid rgba(255,255,255,0.15); transition: 0.2s;
+  
+  .hint {
+    padding: 6px 12px;
+    background: #eef2ff;
+    color: #4c51bf;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    border: 1px solid #c7d2fe;
+    transition: all 0.2s;
   }
-  .card:hover { background: rgba(255,255,255,0.18); }
-  .card .title { font-weight: bold; color: #ffd166; margin-bottom: 5px; }
-  .card .desc { font-size: 12px; color: #bbb; margin-bottom: 8px; min-height: 30px; }
-  .card .price { color: #4ecca3; font-weight: bold; font-size: 16px; margin: 5px 0; }
-
-  .bot-game-card {
-    background: var(--bg);
-    border: 2px solid var(--accent);
-    border-radius: 12px; padding: 14px; position: relative;
-    overflow: hidden; transition: 0.25s;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  }
-  .bot-game-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px var(--accent);
-  }
-  .bot-game-card.locked-by-prime {
-    filter: grayscale(0.6) brightness(0.7);
-    border-style: dashed;
-  }
-  .bot-game-card.locked-by-prime::after {
-    content: '🔒 PRIME';
-    position: absolute; top: 8px; right: 8px;
-    background: rgba(0,0,0,0.85); color: #ffd700;
-    padding: 4px 10px; border-radius: 10px;
-    font-size: 11px; font-weight: bold;
-    border: 1px solid #ffd700;
-    box-shadow: 0 0 10px rgba(255,215,0,0.6);
-    z-index: 2;
-  }
-  .bot-game-card::before {
-    content: ''; position: absolute; top: -50%; right: -20%;
-    width: 120px; height: 120px; border-radius: 50%;
-    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
-    opacity: 0.3; pointer-events: none;
-  }
-  .bot-game-card .card-emoji {
-    font-size: 42px; text-align: center; margin-bottom: 8px;
-    filter: drop-shadow(0 0 10px var(--accent));
-  }
-  .bot-game-card .card-name {
-    font-weight: bold; font-size: 16px; color: #fff;
-    text-align: center; margin-bottom: 4px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-  }
-  .bot-game-card .card-genre {
-    font-size: 11px; text-align: center; margin-bottom: 8px;
-    color: var(--accent); font-weight: bold; text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .bot-game-card .card-desc {
-    font-size: 12px; color: #ddd; margin-bottom: 8px; min-height: 32px;
-    text-align: center; font-style: italic;
-  }
-  .bot-game-card .card-rating {
-    text-align: center; font-size: 13px; margin-bottom: 6px;
-  }
-  .bot-game-card .card-price {
-    text-align: center; font-size: 18px; font-weight: bold;
-    color: #ffd166; margin: 8px 0;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-  }
-  .bot-game-card .prime-lock {
-    background: rgba(0,0,0,0.6); border: 1px dashed #ffd700;
-    padding: 8px; border-radius: 8px; text-align: center;
-    font-size: 12px; color: #ffd700; font-weight: bold; margin-top: 6px;
-  }
-
-  .progress { width: 100%; height: 14px; background: #222; border-radius: 7px; overflow: hidden; margin: 6px 0; }
-  .progress > div { height: 100%; background: linear-gradient(90deg, #4ecca3, #3a86ff); width: 0%; transition: width 0.15s linear; }
-
-  .modal-bg {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-    z-index: 100; justify-content: center; align-items: center; padding: 15px;
-  }
-  .modal-bg.active { display: flex; }
-  .modal {
-    background: #16213e; border: 2px solid #e94560; border-radius: 15px;
-    padding: 20px; max-width: 1100px; width: 100%; max-height: 92vh; overflow-y: auto;
-  }
-  .modal h3 { color: #e94560; margin-bottom: 12px; }
-
-  .modal.reset-modal {
-    border-color: #dc2626; max-width: 500px;
-    box-shadow: 0 0 40px rgba(220,38,38,0.6);
-    animation: shake 0.5s;
-  }
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-8px); }
-    75% { transform: translateX(8px); }
-  }
-  .reset-modal h3 { color: #ff6b6b; }
-  .reset-warning {
-    background: rgba(220,38,38,0.2); border: 2px solid #dc2626;
-    border-radius: 10px; padding: 15px; margin-bottom: 15px;
-    color: #ffb3b3; font-size: 14px; line-height: 1.6;
-  }
-  .reset-warning .big-icon {
-    font-size: 48px; text-align: center; display: block; margin-bottom: 10px;
-    animation: pulse 1s infinite alternate;
-  }
-  @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.15); } }
-  .reset-warning b { color: #ff6b6b; font-size: 16px; }
-  .reset-list { list-style: none; margin: 10px 0; padding-left: 0; }
-  .reset-list li { padding: 4px 0; color: #ffb3b3; }
-  .reset-list li::before { content: '❌ '; margin-right: 6px; }
-  .reset-input-wrap { margin: 15px 0; }
-  .reset-input-wrap label { display: block; color: #ff6b6b; font-weight: bold; margin-bottom: 6px; font-size: 14px; }
-  .reset-input-wrap input {
-    width: 100%; padding: 12px; border-radius: 8px;
-    border: 2px solid #555; background: #0f3460; color: #eee;
-    font-size: 16px; font-family: monospace;
-    text-transform: uppercase; letter-spacing: 2px; text-align: center;
-  }
-  .reset-input-wrap input:focus {
-    outline: none; border-color: #dc2626;
-    box-shadow: 0 0 10px rgba(220,38,38,0.5);
-  }
-  .reset-buttons { display: flex; gap: 10px; margin-top: 15px; }
-  .reset-buttons .btn { flex: 1; padding: 12px; font-size: 15px; }
-
-  .studio { display: grid; grid-template-columns: 240px 1fr 260px; gap: 12px; }
-  @media (max-width: 900px) { .studio { grid-template-columns: 1fr; } }
-
-  .studio-panel {
-    background: #0f3460; border-radius: 10px; padding: 12px;
-    border: 1px solid #2a4a7a;
-  }
-  .studio-panel h4 { color: #4ecca3; margin-bottom: 8px; font-size: 14px; }
-
-  .block-btn {
-    display: flex; align-items: center; gap: 8px;
-    background: #1a3a6a; border: 1px solid #2a4a7a; color: #eee;
-    padding: 8px; border-radius: 6px; cursor: pointer; margin-bottom: 5px;
-    width: 100%; text-align: left; font-size: 13px; transition: 0.2s;
-  }
-  .block-btn:hover { background: #2a5a9a; }
-  .block-btn.selected { background: #e94560; border-color: #ff6b8a; }
-  .block-emoji { font-size: 20px; }
-
-  #canvas3d {
-    background: linear-gradient(180deg, #87ceeb 0%, #b0e0e6 40%, #8b7355 60%, #654321 100%);
-    border-radius: 10px; min-height: 400px; position: relative; overflow: hidden;
-    border: 2px solid #2a4a7a; background-size: cover;
-  }
-  #canvas3d.grass { background: linear-gradient(180deg, #87ceeb 0%, #b0e0e6 35%, #4caf50 55%, #2e7d32 100%); }
-  #canvas3d.desert { background: linear-gradient(180deg, #ffb74d 0%, #ffe082 35%, #e6c27a 55%, #c9a961 100%); }
-  #canvas3d.snow { background: linear-gradient(180deg, #b3e5fc 0%, #e1f5fe 35%, #f5f5f5 55%, #cfd8dc 100%); }
-  #canvas3d.space { background: linear-gradient(180deg, #000000 0%, #1a1a3e 40%, #2a2a5e 60%, #1a1a3e 100%); }
-  #canvas3d.castle { background: linear-gradient(180deg, #7e57c2 0%, #9575cd 40%, #5e35b1 60%, #311b92 100%); }
-
-  .placed-block {
-    position: absolute; font-size: 30px; cursor: pointer;
-    user-select: none; transition: transform 0.15s;
-    filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.5));
-  }
-  .placed-block:hover { transform: scale(1.15); }
-
-  .color-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
-  .color-dot {
-    width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
-    border: 2px solid transparent; transition: 0.2s;
-  }
-  .color-dot:hover { transform: scale(1.15); }
-  .color-dot.selected { border-color: #fff; box-shadow: 0 0 10px #fff; }
-
-  .stat-line { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; border-bottom: 1px solid #2a4a7a; }
-  .stat-line span:last-child { color: #ffd166; font-weight: bold; }
-
-  .hint { font-size: 12px; color: #999; margin-top: 4px; }
-
-  .game-play-area {
-    text-align: center; padding: 20px; background: #0f3460; border-radius: 10px;
-    margin-top: 15px; min-height: 250px; position: relative; overflow: hidden;
-  }
-  .game-play-area .score { font-size: 28px; color: #ffd166; margin-bottom: 15px; }
-  .click-target {
-    position: absolute; font-size: 40px; cursor: pointer; user-select: none;
-    transition: transform 0.1s; animation: pop 0.3s;
-  }
-  .click-target:active { transform: scale(0.8); }
-  @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
-
-  .notif {
-    position: fixed; top: 15px; right: 15px; background: #4ecca3; color: #111;
-    padding: 12px 20px; border-radius: 8px; font-weight: bold; z-index: 200;
-    animation: slideIn 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    max-width: 350px;
-  }
-  @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
-
-  .item-tag {
-    display: inline-block; background: #2a4a7a; padding: 3px 8px; border-radius: 12px;
-    font-size: 12px; margin: 2px; color: #ffd166;
-  }
-
-  .prime-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 15px 0; }
-  .prime-feature {
-    background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3);
-    padding: 12px; border-radius: 10px; text-align: center;
-  }
-  .prime-feature .icon { font-size: 30px; margin-bottom: 6px; }
-  .prime-feature .text { font-size: 13px; color: #ffd700; }
-
-  .price-section {
-    background: linear-gradient(135deg, rgba(78,204,163,0.15), rgba(58,134,255,0.1));
-    border: 2px solid #4ecca3; border-radius: 12px; padding: 15px; margin-top: 15px;
-  }
-  .price-section.invalid { border-color: #e94560; box-shadow: 0 0 20px rgba(233,69,96,0.4); }
-  .price-section h4 { color: #4ecca3; margin-bottom: 10px; }
-  .price-section.invalid h4 { color: #e94560; }
-  .price-slider-wrap { display: flex; align-items: center; gap: 15px; margin: 10px 0; }
-  input[type="range"] {
-    flex: 1; height: 8px; border-radius: 4px; outline: none;
-    background: linear-gradient(90deg, #4ecca3 0%, #ffd166 50%, #e94560 100%);
-    -webkit-appearance: none; appearance: none;
-  }
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none; appearance: none;
-    width: 24px; height: 24px; border-radius: 50%;
-    background: #fff; border: 3px solid #4ecca3; cursor: pointer;
-    box-shadow: 0 0 10px rgba(78,204,163,0.8);
-  }
-  input[type="range"]::-moz-range-thumb {
-    width: 24px; height: 24px; border-radius: 50%;
-    background: #fff; border: 3px solid #4ecca3; cursor: pointer;
-    box-shadow: 0 0 10px rgba(78,204,163,0.8);
-  }
-  .price-value-big {
-    font-size: 26px; font-weight: bold; color: #4ecca3;
-    min-width: 100px; text-align: right;
-    text-shadow: 0 0 10px rgba(78,204,163,0.5);
-  }
-  .price-value-big.unset { color: #666; font-size: 20px; text-shadow: none; }
-  .price-presets { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
-  .price-preset {
-    background: #1a3a6a; border: 1px solid #2a4a7a; color: #eee;
-    padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 13px;
-    transition: 0.2s; font-weight: bold;
-  }
-  .price-preset:hover { background: #2a5a9a; transform: scale(1.05); }
-  .price-preset.selected { background: #4ecca3; color: #111; border-color: #6ee7b7; }
-  .price-forecast {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;
-  }
-  .forecast-box {
-    background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; text-align: center;
-  }
-  .forecast-box .label { font-size: 11px; color: #999; text-transform: uppercase; }
-  .forecast-box .val { font-size: 18px; font-weight: bold; color: #ffd166; margin-top: 4px; }
-
-  .lock-overlay {
-    background: rgba(0,0,0,0.6); border-radius: 8px; padding: 8px;
-    color: #ffd700; font-size: 12px; text-align: center; font-weight: bold;
-    border: 1px dashed #ffd700;
-  }
-  .save-indicator { font-size: 11px; color: #4ecca3; opacity: 0.7; }
-
-  .card-actions {
-    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;
-  }
-  .card-actions .btn { flex: 1; min-width: 100px; margin: 0; }
-
-  .shop-filters {
-    display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
-  }
-  .filter-chip {
-    background: #1a3a6a; border: 1px solid #2a4a7a; color: #bbb;
-    padding: 5px 14px; border-radius: 20px; cursor: pointer; font-size: 13px;
-    transition: 0.2s;
-  }
-  .filter-chip:hover { background: #2a5a9a; color: #eee; }
-  .filter-chip.active { background: #e94560; color: white; border-color: #ff6b8a; }
+  
+  .hint:hover { background: #667eea; color: white; }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>🎮 Симулятор Разработчика Игр v6.3</h1>
-
-  <div class="topbar">
-    <div class="money">💰 Деньги: <span id="moneyDisplay">0</span></div>
-    <div>👆 Кликов: <span id="clickCount">0</span></div>
-    <div>🎮 Моих игр: <span id="myGamesCount">0</span></div>
-    <div>⭐ Покупок ботами: <span id="botBuys">0</span></div>
-    <div id="primeBadgeWrap"><span class="prime-badge inactive" id="primeBadge">PRIME: НЕТ</span></div>
-    <div id="primeTimerWrap"></div>
-    <button class="btn btn-small btn-reset" id="resetBtn">🗑️ Сброс аккаунта</button>
-    <div class="save-indicator" id="saveIndicator"></div>
+  <div class="header">
+    <h1>🧮 Математический ИИ</h1>
+    <p>Решаю примеры, уравнения и объясняю шаги</p>
   </div>
-
-  <div class="panel prime-panel" id="primePanel">
-    <h2>👑 PRIME подписка — на 24 часа</h2>
-    <p style="margin-bottom:8px;">Без PRIME <b style="color:#e94560;">всё заблокировано</b>: создание игр, покупка игр ботов, <b>игра в купленные игры</b> и продажа твоих игр ботам!</p>
-    <div class="prime-features">
-      <div class="prime-feature"><div class="icon">🎨</div><div class="text">Создание своих игр</div></div>
-      <div class="prime-feature"><div class="icon">🤖</div><div class="text">Боты покупают твои игры</div></div>
-      <div class="prime-feature"><div class="icon">🛒</div><div class="text">Покупка игр ботов</div></div>
-      <div class="prime-feature"><div class="icon">🎮</div><div class="text">Игра в купленные игры</div></div>
-      <div class="prime-feature"><div class="icon">⏳</div><div class="text">Действует 24 часа</div></div>
-    </div>
-    <div style="text-align:center; margin-top:10px;">
-      <button class="btn btn-prime" id="buyPrimeBtn" style="font-size:17px; padding:14px 30px;">👑 Купить PRIME на 24ч — 1000 💰</button>
-      <button class="btn" id="cancelPrimeBtn" style="display:none; background:#666;">❌ Отменить PRIME</button>
-    </div>
-    <p class="hint" id="primeStatusText" style="text-align:center; margin-top:10px;">Статус: не активна</p>
-  </div>
-
-  <div class="panel" id="clickerArea">
-    <h2>Кликер — заработай денег</h2>
-    <button id="bigClicker">💻</button>
-    <p class="hint" style="margin-top:10px">+1 💰 за клик</p>
-  </div>
-
-  <div class="panel" id="shopPanel">
-    <h2>🛒 Магазин игр от ботов (20 уникальных игр)</h2>
-    <div id="shopLockBanner"></div>
-    <p class="hint" style="margin-bottom:10px;">
-      Купить → 100 сек скачивания → играть (только с PRIME).
-    </p>
-    <div class="shop-filters" id="shopFilters"></div>
-    <div id="shopGrid" class="grid"></div>
-  </div>
-
-  <div class="panel" id="myGamesPanel">
-    <h2>📁 Мои игры</h2>
-    <div id="myGamesLockBanner"></div>
-    <button class="btn btn-green" id="createGameBtn">🎨 Открыть Roblox Studio (100 💰)</button>
-    <p class="hint">Создай игру → <b style="color:#e94560;">обязательно выбери цену</b> → выложи в магазин → боты покупают раз в 100 сек</p>
-    <div id="myGamesGrid" class="grid" style="margin-top:12px;"></div>
-  </div>
-</div>
-
-<!-- МОДАЛКА СБРОСА -->
-<div class="modal-bg" id="resetModal">
-  <div class="modal reset-modal">
-    <h3>⚠️ СБРОС АККАУНТА</h3>
-    <div class="reset-warning">
-      <span class="big-icon">💀</span>
-      <b>ВНИМАНИЕ! Это удалит ВСЁ:</b>
-      <ul class="reset-list">
-        <li>Все деньги</li>
-        <li>Все клики</li>
-        <li>Все твои игры</li>
-        <li>PRIME подписку</li>
-        <li>Купленные игры ботов</li>
-        <li>Весь прогресс сохранения</li>
-      </ul>
-      <b style="display:block;text-align:center;margin-top:10px;">Это действие НЕЛЬЗЯ отменить!</b>
-    </div>
-    <div class="reset-input-wrap">
-      <label>Введи слово <b style="color:#fff;">УДАЛИТЬ</b> для подтверждения:</label>
-      <input id="resetConfirmInput" type="text" placeholder="УДАЛИТЬ" autocomplete="off">
-    </div>
-    <div class="reset-buttons">
-      <button class="btn" id="cancelResetBtn" style="background:#555;">❌ Отмена</button>
-      <button class="btn btn-red" id="confirmResetBtn" disabled>💀 Сбросить аккаунт</button>
-    </div>
-  </div>
-</div>
-
-<!-- ROBLOX STUDIO -->
-<div class="modal-bg" id="studioModal">
-  <div class="modal">
-    <h3>🎨 Roblox Studio — создание игры</h3>
-    <label style="color:#4ecca3;font-weight:bold;display:block;margin-bottom:6px;">Название игры:</label>
-    <input id="gameName" maxlength="30" placeholder="Моя крутая игра"
-      style="width:100%;padding:10px;border-radius:6px;border:1px solid #444;background:#0f3460;color:#eee;font-size:15px;margin-bottom:12px;">
-
-    <div class="studio">
-      <div class="studio-panel">
-        <h4>🧱 Инструменты</h4>
-        <div id="toolList"></div>
-        <h4 style="margin-top:15px;">🎨 Цвет</h4>
-        <div class="color-row" id="colorRow"></div>
-        <h4 style="margin-top:15px;">🌍 Ландшафт</h4>
-        <select id="landscapeSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid #444;background:#1a3a6a;color:#eee;">
-          <option value="grass">🌿 Трава</option>
-          <option value="desert">🏜️ Пустыня</option>
-          <option value="snow">❄️ Снег</option>
-          <option value="space">🌌 Космос</option>
-          <option value="castle">🏰 Замок</option>
-        </select>
-      </div>
-
-      <div>
-        <div id="canvas3d" class="grass">
-          <p id="canvasHint" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(0,0,0,0.4);font-size:16px;text-align:center;pointer-events:none;">
-            Выбери блок слева и кликни сюда, чтобы разместить
-          </p>
-        </div>
-        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn btn-blue" id="clearCanvasBtn">🗑️ Очистить</button>
-          <button class="btn" id="cancelStudioBtn">❌ Отмена</button>
-        </div>
-      </div>
-
-      <div class="studio-panel">
-        <h4>📊 Статистика</h4>
-        <div class="stat-line"><span>Блоков:</span><span id="statBlocks">0</span></div>
-        <div class="stat-line"><span>Разнообразие:</span><span id="statVariety">0</span></div>
-        <div class="stat-line"><span>Цветов:</span><span id="statColors">0</span></div>
-        <div class="stat-line"><span>Сложность:</span><span id="statDifficulty">—</span></div>
-        <div class="stat-line"><span>Оценка:</span><span id="statScore">0</span></div>
-        <h4 style="margin-top:15px;">🎁 Предметы</h4>
-        <div id="itemsPreview" style="max-height:200px;overflow-y:auto;"></div>
+  
+  <div class="chat" id="chat">
+    <div class="message bot">
+      <div class="bubble">
+        Привет! Я математический ИИ 🤖<br>
+        Могу: считать выражения, решать уравнения, объяснять шаги.<br>
+        Попробуй: <b>2+2</b>, <b>sqrt(16)</b>, <b>x^2-5*x+6=0</b>
       </div>
     </div>
-
-    <div class="price-section invalid" id="priceSection">
-      <h4>💵 Цена твоей игры в магазине <span style="color:#e94560;">*</span></h4>
-      <p class="hint" style="margin-bottom:8px;">Дороже = больше доход. Интервал покупок — <b style="color:#4ecca3;">ровно 100 секунд</b>.</p>
-      <div class="price-slider-wrap">
-        <span style="font-size:20px;">💵</span>
-        <input type="range" id="priceSlider" min="10" max="500" step="10" value="100">
-        <span class="price-value-big unset" id="priceValueWrap"><span id="priceValue">не выбрана</span></span>
-      </div>
-      <div class="price-presets" id="pricePresets">
-        <button class="price-preset" data-price="30">30 💰</button>
-        <button class="price-preset" data-price="100">100 💰</button>
-        <button class="price-preset" data-price="250">250 💰</button>
-        <button class="price-preset" data-price="500">500 💰</button>
-      </div>
-      <div class="price-forecast">
-        <div class="forecast-box">
-          <div class="label">Доход с покупки</div>
-          <div class="val" id="forecastIncome">—</div>
-        </div>
-        <div class="forecast-box">
-          <div class="label">Интервал покупок</div>
-          <div class="val" id="forecastInterval">—</div>
-        </div>
-      </div>
-      <p class="hint" id="priceErrorMsg" style="color:#e94560; margin-top:8px; font-weight:bold; display:none;">⚠️ Выбери цену!</p>
-    </div>
-
-    <div style="margin-top:15px;display:flex;gap:10px;justify-content:flex-end;">
-      <button class="btn btn-green" id="confirmCreateBtn" style="font-size:16px;padding:12px 25px;" disabled>✅ Создать игру (100 💰)</button>
-    </div>
   </div>
-</div>
-
-<!-- ИГРА -->
-<div class="modal-bg" id="playModal">
-  <div class="modal" style="max-width:600px;">
-    <h3 id="playTitle">Игра</h3>
-    <p id="playDesc" style="color:#bbb;margin-bottom:10px;"></p>
-    <div class="game-play-area" id="playArea"></div>
-    <button class="btn" id="closePlayBtn" style="margin-top:12px;">Закрыть</button>
+  
+  <div class="hints">
+    <span class="hint" onclick="quick('2+2*3')">2+2*3</span>
+    <span class="hint" onclick="quick('sqrt(144)')">sqrt(144)</span>
+    <span class="hint" onclick="quick('2^10')">2^10</span>
+    <span class="hint" onclick="quick('sin(pi/2)')">sin(pi/2)</span>
+    <span class="hint" onclick="quick('5!')">5!</span>
+    <span class="hint" onclick="quick('x^2-5*x+6=0')">уравнение</span>
+  </div>
+  
+  <div class="input-area">
+    <input type="text" id="userInput" placeholder="Введи пример..." autocomplete="off">
+    <button id="sendBtn" onclick="sendMessage()">➤</button>
   </div>
 </div>
 
 <script>
-// ==================== КОНСТАНТЫ ====================
-const SAVE_KEY = 'gameDevSim_v5_save';
-const BUY_INTERVAL_SEC = 100;
-const PRIME_DURATION_MS = 24 * 60 * 60 * 1000;
-const RESET_CONFIRM_WORD = 'УДАЛИТЬ';
+// ============ МАТЕМАТИЧЕСКИЙ ИИ ============
 
-// ==================== СОСТОЯНИЕ ====================
-const state = {
-  money: 0, clicks: 0, botBuys: 0, myGames: [], prime: false, primeExpiresAt: null,
-};
+const chat = document.getElementById('chat');
+const input = document.getElementById('userInput');
 
-const BLOCKS = [
-  { id: 'grass', emoji: '🟩', name: 'Трава', cat: 'Природа' },
-  { id: 'tree', emoji: '🌳', name: 'Дерево', cat: 'Природа' },
-  { id: 'flower', emoji: '🌸', name: 'Цветок', cat: 'Природа' },
-  { id: 'rock', emoji: '🪨', name: 'Камень', cat: 'Природа' },
-  { id: 'water', emoji: '💧', name: 'Вода', cat: 'Природа' },
-  { id: 'fire', emoji: '🔥', name: 'Огонь', cat: 'Природа' },
-  { id: 'house', emoji: '🏠', name: 'Дом', cat: 'Строения' },
-  { id: 'castle', emoji: '🏰', name: 'Замок', cat: 'Строения' },
-  { id: 'tower', emoji: '🗼', name: 'Башня', cat: 'Строения' },
-  { id: 'bridge', emoji: '🌉', name: 'Мост', cat: 'Строения' },
-  { id: 'door', emoji: '🚪', name: 'Дверь', cat: 'Строения' },
-  { id: 'sword', emoji: '⚔️', name: 'Меч', cat: 'Предметы' },
-  { id: 'shield', emoji: '🛡️', name: 'Щит', cat: 'Предметы' },
-  { id: 'potion', emoji: '🧪', name: 'Зелье', cat: 'Предметы' },
-  { id: 'key', emoji: '🔑', name: 'Ключ', cat: 'Предметы' },
-  { id: 'gem', emoji: '💎', name: 'Кристалл', cat: 'Предметы' },
-  { id: 'coin', emoji: '🪙', name: 'Монета', cat: 'Предметы' },
-  { id: 'chest', emoji: '📦', name: 'Сундук', cat: 'Предметы' },
-  { id: 'car', emoji: '🚗', name: 'Машина', cat: 'Транспорт' },
-  { id: 'rocket', emoji: '🚀', name: 'Ракета', cat: 'Транспорт' },
-  { id: 'ufo', emoji: '🛸', name: 'НЛО', cat: 'Транспорт' },
-  { id: 'boat', emoji: '⛵', name: 'Лодка', cat: 'Транспорт' },
-  { id: 'monster', emoji: '👾', name: 'Монстр', cat: 'Персонажи' },
-  { id: 'robot', emoji: '🤖', name: 'Робот', cat: 'Персонажи' },
-  { id: 'ninja', emoji: '🥷', name: 'Ниндзя', cat: 'Персонажи' },
-  { id: 'dragon', emoji: '🐉', name: 'Дракон', cat: 'Персонажи' },
-  { id: 'star', emoji: '⭐', name: 'Звезда', cat: 'Декор' },
-  { id: 'rainbow', emoji: '🌈', name: 'Радуга', cat: 'Декор' },
-  { id: 'flag', emoji: '🚩', name: 'Флаг', cat: 'Декор' },
-  { id: 'lantern', emoji: '🏮', name: 'Фонарь', cat: 'Декор' },
-];
+// Ввод по Enter
+input.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') sendMessage();
+});
 
-const COLORS = ['#e94560','#ff9f1c','#ffd166','#4ecca3','#3a86ff','#8338ec','#ff006e','#00b4d8','#95d5b2','#ffffff'];
-
-const botGamesData = [
-  { name: "Космический Рейд", genre: "Экшен", desc: "Летай и стреляй по астероидам", emoji: '🚀', price: 50, items: ["Бластер", "Щит", "Ускоритель", "Бомба", "Аптечка"], bg: 'linear-gradient(135deg, #0f2027, #203a43, #2c5364)', accent: '#00b4d8', rating: 4.5 },
-  { name: "Драконьи Земли", genre: "RPG", desc: "Сражайся с драконами", emoji: '🐉', price: 80, items: ["Меч", "Зелье", "Броня", "Лук", "Свиток"], bg: 'linear-gradient(135deg, #3a0d0d, #7b1a1a, #c0392b)', accent: '#ff6b6b', rating: 4.8 },
-  { name: "Империя", genre: "Стратегия", desc: "Строй великую империю", emoji: '🏰', price: 100, items: ["Ферма", "Казарма", "Башня", "Шахта", "Стены"], bg: 'linear-gradient(135deg, #2c1810, #5d4037, #8d6e63)', accent: '#ffb347', rating: 4.3 },
-  { name: "Прыг-Скок", genre: "Платформер", desc: "Прыгай по платформам", emoji: '🦘', price: 30, items: ["Пружина", "Крылья", "Бонус", "Монета", "Звезда"], bg: 'linear-gradient(135deg, #ffeaa7, #fdcb6e, #e17055)', accent: '#ffd166', rating: 4.1 },
-  { name: "Тёмный Дом", genre: "Хоррор", desc: "Выживи в проклятом доме", emoji: '👻', price: 70, items: ["Фонарь", "Ключ", "Дверь", "Записка", "Свеча"], bg: 'linear-gradient(135deg, #1a1a1a, #2d1b3d, #4a1942)', accent: '#a29bfe', rating: 4.7 },
-  { name: "Ферма Жизни", genre: "Симулятор", desc: "Выращивай урожай", emoji: '🚜', price: 40, items: ["Семена", "Лейка", "Трактор", "Курица", "Забор"], bg: 'linear-gradient(135deg, #a8e063, #56ab2f, #3a7d1c)', accent: '#95d5b2', rating: 4.0 },
-  { name: "Гонки Турбо", genre: "Экшен", desc: "Мчись быстрее всех", emoji: '🏎️', price: 60, items: ["Турбо", "Шины", "Нитро", "Ключ", "Бензин"], bg: 'linear-gradient(135deg, #ff416c, #ff4b2b, #c0392b)', accent: '#ff9f1c', rating: 4.4 },
-  { name: "Магическая Башня", genre: "RPG", desc: "Поднимайся по башне магов", emoji: '🗼', price: 90, items: ["Посох", "Мантия", "Зелье", "Руна", "Амулет"], bg: 'linear-gradient(135deg, #4a148c, #7b1fa2, #ba68c8)', accent: '#e1bee7', rating: 4.6 },
-  { name: "Война Кланов", genre: "Стратегия", desc: "Захвати мир", emoji: '⚔️', price: 110, items: ["Воин", "Лучник", "Маг", "Требушет", "Знамя"], bg: 'linear-gradient(135deg, #2b2d42, #8d99ae, #ef233c)', accent: '#ef233c', rating: 4.5 },
-  { name: "Пузырьки", genre: "Платформер", desc: "Лопай пузыри", emoji: '🫧', price: 25, items: ["Игла", "Бонус", "Молот", "Сеть", "Кристалл"], bg: 'linear-gradient(135deg, #89f7fe, #66a6ff, #4a90e2)', accent: '#89f7fe', rating: 3.9 },
-  { name: "Зомби Апокалипсис", genre: "Хоррор", desc: "Выживи среди зомби", emoji: '🧟', price: 85, items: ["Пистолет", "Дробовик", "Аптечка", "Баррикада", "Фонарь"], bg: 'linear-gradient(135deg, #1a1a1a, #3d0c0c, #6b1e1e)', accent: '#a8e063', rating: 4.9 },
-  { name: "Город Мечты", genre: "Симулятор", desc: "Построй идеальный город", emoji: '🏙️', price: 75, items: ["Дом", "Завод", "Парк", "Школа", "Больница"], bg: 'linear-gradient(135deg, #667eea, #764ba2, #5b3a8e)', accent: '#c4b5fd', rating: 4.2 },
-  { name: "Ниндзя Код", genre: "Экшен", desc: "Скрывайся в тенях", emoji: '🥷', price: 65, items: ["Катана", "Сюрикен", "Дымовая бомба", "Крюк", "Маска"], bg: 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)', accent: '#f093fb', rating: 4.6 },
-  { name: "Подземелье", genre: "RPG", desc: "Исследуй древнее подземелье", emoji: '🕳️', price: 55, items: ["Факел", "Меч", "Щит", "Золото", "Ловушка"], bg: 'linear-gradient(135deg, #232526, #414345, #6b6b6b)', accent: '#ffd166', rating: 4.3 },
-  { name: "Космостратегия", genre: "Стратегия", desc: "Захвати галактику", emoji: '🌌', price: 120, items: ["Крейсер", "Лазер", "Щит", "Дрон", "Планета"], bg: 'linear-gradient(135deg, #000000, #1a1a3e, #3d1a6e)', accent: '#c4b5fd', rating: 4.8 },
-  { name: "Птичий Полёт", genre: "Платформер", desc: "Летай между труб", emoji: '🐦', price: 20, items: ["Перо", "Ветер", "Облако", "Гнездо", "Черв"], bg: 'linear-gradient(135deg, #56ccf2, #2f80ed, #1e5bb8)', accent: '#ffeb3b', rating: 3.8 },
-  { name: "Проклятый Лес", genre: "Хоррор", desc: "Найди выход из леса", emoji: '🌲', price: 90, items: ["Компас", "Спички", "Карта", "Топор", "Амулет"], bg: 'linear-gradient(135deg, #1a2a1a, #2d4a2d, #0f1f0f)', accent: '#a8e063', rating: 4.7 },
-  { name: "Ресторан", genre: "Симулятор", desc: "Управляй рестораном мечты", emoji: '🍔', price: 45, items: ["Плита", "Стол", "Повар", "Меню", "Касса"], bg: 'linear-gradient(135deg, #f2994a, #f2c94c, #d35400)', accent: '#ffeb3b', rating: 4.1 },
-  { name: "Кибер Панк", genre: "Экшен", desc: "Беги по неоновым улицам", emoji: '🌃', price: 95, items: ["Имплант", "Пистолет", "Дрон", "Взлом", "Чип"], bg: 'linear-gradient(135deg, #0a0a1a, #1a0a2e, #2d1b4e)', accent: '#ff006e', rating: 4.9 },
-  { name: "Легенды Меча", genre: "RPG", desc: "Стань легендой", emoji: '🗡️', price: 130, items: ["Клинок", "Броня", "Эликсир", "Артефакт", "Свиток"], bg: 'linear-gradient(135deg, #1e3c72, #2a5298, #1e3c72)', accent: '#ffd700', rating: 4.9 }
-];
-
-let shopGames = [];
-let studio = { selectedBlock: null, selectedColor: COLORS[3], blocks: [], landscape: 'grass', price: null };
-let currentShopFilter = 'Все';
-
-const $ = id => document.getElementById(id);
-
-// ==================== PRIME ====================
-function isPrimeActive() {
-  return state.prime && state.primeExpiresAt && Date.now() < state.primeExpiresAt;
+function quick(expr) {
+  input.value = expr;
+  sendMessage();
 }
 
-function checkPrimeExpiry() {
-  if (state.prime && state.primeExpiresAt && Date.now() >= state.primeExpiresAt) {
-    state.prime = false;
-    state.primeExpiresAt = null;
-    state.myGames.forEach(g => { if (g.status === 'shop') g.buyReadyAt = null; });
-    notify('⏳ PRIME истекла! Всё заблокировано, включая купленные игры.', '#e94560');
-    updateUI();
-    saveGame();
-    return true;
-  }
-  return false;
+function addMessage(text, sender, type = '') {
+  const msg = document.createElement('div');
+  msg.className = 'message ' + sender;
+  msg.innerHTML = `<div class="bubble ${type}">${text}</div>`;
+  chat.appendChild(msg);
+  chat.scrollTop = chat.scrollHeight;
 }
 
-// ==================== СОХРАНЕНИЕ ====================
-function saveGame() {
+// ============ ФАКТОРИАЛ ============
+function factorial(n) {
+  if (n < 0) return NaN;
+  if (n > 170) return Infinity;
+  let r = 1;
+  for (let i = 2; i <= n; i++) r *= i;
+  return r;
+}
+
+// ============ БЕЗОПАСНЫЙ ПАРСЕР ВЫРАЖЕНИЙ ============
+// Заменяем ^ на **, ! на factorial, функции на Math.*
+function prepareExpression(expr) {
+  let e = expr.trim();
+  
+  // Убираем пробелы для парсинга
+  e = e.replace(/\s+/g, '');
+  
+  // Факториалы: 5! -> factorial(5)
+  e = e.replace(/(\d+)!/g, 'factorial($1)');
+  
+  // Степени: 2^10 -> 2**10
+  e = e.replace(/\^/g, '**');
+  
+  // Математические константы
+  e = e.replace(/\bpi\b/g, 'Math.PI');
+  e = e.replace(/\be\b/g, 'Math.E');
+  
+  // Функции
+  const funcs = ['sqrt', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan',
+                 'log', 'log10', 'log2', 'abs', 'exp', 'floor', 'ceil', 'round'];
+  funcs.forEach(f => {
+    e = e.replace(new RegExp('\\b' + f + '\\b', 'g'), 'Math.' + f);
+  });
+  
+  return e;
+}
+
+// ============ РЕШЕНИЕ ВЫРАЖЕНИЯ ============
+function solveExpression(expr) {
   try {
-    const data = {
-      money: state.money, clicks: state.clicks, botBuys: state.botBuys,
-      prime: state.prime, primeExpiresAt: state.primeExpiresAt,
-      myGames: state.myGames,
-      shopGames: shopGames.map(g => ({
-        id: g.id, purchased: g.purchased, downloading: g.downloading,
-        downloadProgress: g.downloadProgress,
-        downloadStart: g.downloadStart, downloadEnd: g.downloadEnd,
-      })),
-      savedAt: Date.now(),
-    };
-    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-    const ind = $('saveIndicator');
-    if (ind) { ind.textContent = '💾 Сохранено'; setTimeout(() => { ind.textContent = ''; }, 1500); }
-  } catch (e) { console.warn('Save failed', e); }
+    const prepared = prepareExpression(expr);
+    
+    // Проверка на недопустимые символы
+    if (/[^0-9+\-*/().,%MathsqrtincosabexpflorudPIE]/.test(prepared)) {
+      return { ok: false, text: '❌ Недопустимые символы в выражении' };
+    }
+    
+    // Вычисляем
+    const result = Function('"use strict"; return (' + prepared + ')')();
+    
+    if (typeof result !== 'number' || isNaN(result)) {
+      return { ok: false, text: '❌ Не число или ошибка' };
+    }
+    
+    // Красивый вывод
+    const rounded = Math.abs(result) < 1e-10 ? 0 : 
+                    Math.round(result * 1e10) / 1e10;
+    
+    return { ok: true, text: `✅ ${expr} = <b>${rounded}</b>`, value: rounded };
+  } catch (err) {
+    if (expr.includes('/0')) return { ok: false, text: '❌ Деление на ноль!' };
+    return { ok: false, text: '❌ Ошибка: ' + err.message };
+  }
 }
 
-function loadGame() {
+// ============ РЕШЕНИЕ КВАДРАТНЫХ УРАВНЕНИЙ ============
+function solveQuadratic(a, b, c) {
+  const D = b*b - 4*a*c;
+  
+  if (Math.abs(D) < 1e-10) {
+    const x = -b / (2*a);
+    return `✅ D = 0<br>Один корень:<br><b>x = ${round(x)}</b>`;
+  }
+  
+  if (D > 0) {
+    const x1 = (-b + Math.sqrt(D)) / (2*a);
+    const x2 = (-b - Math.sqrt(D)) / (2*a);
+    return `✅ D = b² - 4ac = ${round(D)} > 0<br>
+            Два корня:<br><b>x₁ = ${round(x1)}</b><br><b>x₂ = ${round(x2)}</b>`;
+  }
+  
+  const re = -b / (2*a);
+  const im = Math.sqrt(-D) / (2*a);
+  return `✅ D = ${round(D)} < 0<br>Комплексные корни:<br>
+          <b>x₁ = ${round(re)} + ${round(im)}i</b><br>
+          <b>x₂ = ${round(re)} - ${round(im)}i</b>`;
+}
+
+function round(n) {
+  return Math.round(n * 1e6) / 1e6;
+}
+
+// Разбор уравнения вида "ax^2 + bx + c = 0"
+function parseQuadratic(equation) {
   try {
-    const raw = localStorage.getItem(SAVE_KEY);
-    if (!raw) return false;
-    const data = JSON.parse(raw);
-    if (typeof data.money === 'number') state.money = data.money;
-    if (typeof data.clicks === 'number') state.clicks = data.clicks;
-    if (typeof data.botBuys === 'number') state.botBuys = data.botBuys;
-    state.prime = !!data.prime;
-    state.primeExpiresAt = data.primeExpiresAt || null;
-    state.myGames = Array.isArray(data.myGames) ? data.myGames : [];
-    shopGames.forEach((g) => {
-      const saved = (data.shopGames || []).find(x => x.id === g.id);
-      if (saved) {
-        g.purchased = !!saved.purchased;
-        g.downloading = !!saved.downloading;
-        g.downloadProgress = saved.downloadProgress || 0;
-        g.downloadStart = saved.downloadStart || null;
-        g.downloadEnd = saved.downloadEnd || null;
-      }
-    });
-    checkPrimeExpiry();
-    return true;
-  } catch (e) { console.warn('Load failed', e); return false; }
-}
-
-setInterval(saveGame, 3000);
-window.addEventListener('beforeunload', saveGame);
-
-// ==================== UI ====================
-function formatTimeLeft(ms) {
-  if (ms <= 0) return '0:00';
-  const totalSec = Math.floor(ms / 1000);
-  const h = Math.floor(totalSec / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
-  const s = totalSec % 60;
-  if (h > 0) return `${h}ч ${m}м`;
-  return `${m}:${s.toString().padStart(2, '0')}`;
-}
-
-function updateUI() {
-  $('moneyDisplay').textContent = state.money;
-  $('clickCount').textContent = state.clicks;
-  $('myGamesCount').textContent = state.myGames.filter(g => g.status === 'shop' || g.status === 'uploading').length;
-  $('botBuys').textContent = state.botBuys;
-
-  const primeActive = isPrimeActive();
-  const badge = $('primeBadge');
-  badge.className = primeActive ? 'prime-badge' : 'prime-badge inactive';
-  badge.textContent = primeActive ? '👑 PRIME: АКТИВНА' : 'PRIME: НЕТ';
-
-  const timerWrap = $('primeTimerWrap');
-  if (primeActive) {
-    const left = state.primeExpiresAt - Date.now();
-    timerWrap.innerHTML = `<span class="prime-timer">⏳ ${formatTimeLeft(left)}</span>`;
-  } else {
-    timerWrap.innerHTML = '';
-  }
-
-  const buyBtn = $('buyPrimeBtn'), cancelBtn = $('cancelPrimeBtn'), statusText = $('primeStatusText');
-  if (primeActive) {
-    buyBtn.style.display = 'none';
-    cancelBtn.style.display = 'inline-block';
-    const left = state.primeExpiresAt - Date.now();
-    statusText.innerHTML = `<b style="color:#ffd700;">👑 PRIME активна!</b> Осталось: ${formatTimeLeft(left)}`;
-  } else {
-    buyBtn.style.display = 'inline-block';
-    cancelBtn.style.display = 'none';
-    if (state.prime && state.primeExpiresAt) {
-      statusText.innerHTML = 'Статус: <b style="color:#e94560;">истекла</b> — купи снова за 1000 💰 (купленные игры разблокируются!)';
-    } else {
-      statusText.innerHTML = 'Статус: <b style="color:#e94560;">не активна</b> — купи на 24 часа за 1000 💰';
+    let eq = equation.replace(/\s+/g, '').replace(/\*/g, '');
+    
+    // Приводим к виду = 0
+    let left = eq, right = '0';
+    if (eq.includes('=')) {
+      [left, right] = eq.split('=');
     }
-  }
-
-  const myGamesPanel = $('myGamesPanel');
-  const myGamesBanner = $('myGamesLockBanner');
-  const createBtn = $('createGameBtn');
-  if (!primeActive) {
-    myGamesPanel.classList.add('locked');
-    myGamesBanner.innerHTML = `<div class="lock-banner"><span class="icon">🔒</span>Без PRIME нельзя создавать и выкладывать игры!</div>`;
-    createBtn.disabled = true;
-    createBtn.textContent = '🔒 Нужна PRIME (1000 💰)';
-  } else {
-    myGamesPanel.classList.remove('locked');
-    myGamesBanner.innerHTML = '';
-    createBtn.disabled = false;
-    createBtn.textContent = '🎨 Открыть Roblox Studio (100 💰)';
-  }
-
-  const shopPanel = $('shopPanel');
-  const shopBanner = $('shopLockBanner');
-  if (!primeActive) {
-    shopPanel.classList.add('locked');
-    shopBanner.innerHTML = `<div class="lock-banner"><span class="icon">🔒</span>Без PRIME нельзя покупать игры ботов и играть в купленные!</div>`;
-  } else {
-    shopPanel.classList.remove('locked');
-    shopBanner.innerHTML = '';
-  }
-
-  renderShop();
-  renderMyGames();
-}
-
-function notify(msg, color = '#4ecca3') {
-  const n = document.createElement('div');
-  n.className = 'notif'; n.style.background = color; n.textContent = msg;
-  document.body.appendChild(n);
-  setTimeout(() => n.remove(), 2800);
-}
-
-// ==================== СБРОС ====================
-$('resetBtn').addEventListener('click', () => {
-  $('resetConfirmInput').value = '';
-  $('confirmResetBtn').disabled = true;
-  $('confirmResetBtn').style.opacity = '0.5';
-  $('resetModal').classList.add('active');
-  setTimeout(() => $('resetConfirmInput').focus(), 100);
-});
-
-$('cancelResetBtn').addEventListener('click', () => {
-  $('resetModal').classList.remove('active');
-});
-
-$('resetConfirmInput').addEventListener('input', (e) => {
-  const val = e.target.value.trim().toUpperCase();
-  const ok = val === RESET_CONFIRM_WORD;
-  const btn = $('confirmResetBtn');
-  btn.disabled = !ok;
-  btn.style.opacity = ok ? '1' : '0.5';
-});
-
-$('confirmResetBtn').addEventListener('click', () => {
-  const val = $('resetConfirmInput').value.trim().toUpperCase();
-  if (val !== RESET_CONFIRM_WORD) {
-    notify('❌ Введи слово правильно!', '#e94560');
-    return;
-  }
-  localStorage.removeItem(SAVE_KEY);
-  state.money = 0;
-  state.clicks = 0;
-  state.botBuys = 0;
-  state.myGames = [];
-  state.prime = false;
-  state.primeExpiresAt = null;
-  shopGames.forEach(g => {
-    g.purchased = false;
-    g.downloading = false;
-    g.downloadProgress = 0;
-    g.downloadStart = null;
-    g.downloadEnd = null;
-  });
-  $('resetModal').classList.remove('active');
-  $('studioModal').classList.remove('active');
-  $('playModal').classList.remove('active');
-  studio = { selectedBlock: null, selectedColor: COLORS[3], blocks: [], landscape: 'grass', price: null };
-  updateUI();
-  notify('💀 Аккаунт полностью сброшен! Начинаем с нуля...', '#dc2626');
-  setTimeout(() => { location.reload(); }, 1200);
-});
-
-// ==================== PRIME ====================
-$('buyPrimeBtn').addEventListener('click', () => {
-  if (isPrimeActive()) { notify('👑 PRIME уже активна!', '#ffd700'); return; }
-  if (state.money < 1000) { notify(`❌ Нужно 1000 💰 для PRIME! У тебя: ${state.money} 💰`, '#e94560'); return; }
-  state.money -= 1000;
-  state.prime = true;
-  state.primeExpiresAt = Date.now() + PRIME_DURATION_MS;
-  state.myGames.forEach(g => {
-    if (g.status === 'shop' && !g.buyReadyAt) {
-      g.buyReadyAt = Date.now() + BUY_INTERVAL_SEC * 1000;
+    
+    // Переносим всё влево: left - (right)
+    const full = `(${left})-(${right})`;
+    
+    // Ищем коэффициенты a, b, c для x^2
+    // Упрощённый подход — работает для стандартных случаев
+    let a = 0, b = 0, c = 0;
+    
+    // Извлекаем x^2
+    let m = full.match(/([+-]?\d*\.?\d*)x\^2/);
+    if (m) {
+      a = m[1] === '' || m[1] === '+' ? 1 : 
+          m[1] === '-' ? -1 : parseFloat(m[1]);
     }
-  });
-
-  // Считаем сколько купленных игр разблокировалось
-  const unlockedCount = shopGames.filter(g => g.purchased).length;
-  if (unlockedCount > 0) {
-    notify(`👑 PRIME активирована! Разблокировано купленных игр: ${unlockedCount} 🎮`, '#ffd700');
-  } else {
-    notify('👑 PRIME активирована на 24 часа! Всё разблокировано!', '#ffd700');
-  }
-  updateUI(); saveGame();
-});
-
-$('cancelPrimeBtn').addEventListener('click', () => {
-  if (!state.prime) return;
-  if (!confirm('Отменить PRIME? Деньги НЕ вернутся! Всё заблокируется, включая купленные игры.')) return;
-  state.prime = false;
-  state.primeExpiresAt = null;
-  state.myGames.forEach(g => { if (g.status === 'shop') g.buyReadyAt = null; });
-  notify('❌ PRIME отменена. Всё заблокировано.', '#e94560');
-  updateUI(); saveGame();
-});
-
-// ==================== КЛИКЕР ====================
-$('bigClicker').addEventListener('click', () => {
-  state.money += 1; state.clicks++; updateUI();
-});
-
-// ==================== ФИЛЬТРЫ ====================
-function renderFilters() {
-  const filters = ['Все', 'Экшен', 'RPG', 'Стратегия', 'Платформер', 'Хоррор', 'Симулятор'];
-  const wrap = $('shopFilters');
-  wrap.innerHTML = '';
-  filters.forEach(f => {
-    const chip = document.createElement('button');
-    chip.className = 'filter-chip' + (f === currentShopFilter ? ' active' : '');
-    chip.textContent = f;
-    chip.addEventListener('click', () => {
-      currentShopFilter = f;
-      renderFilters();
-      renderShop();
-    });
-    wrap.appendChild(chip);
-  });
-}
-
-// ==================== МАГАЗИН ====================
-function renderShop() {
-  const grid = $('shopGrid');
-  grid.innerHTML = '';
-  const primeActive = isPrimeActive();
-  const filtered = currentShopFilter === 'Все'
-    ? shopGames
-    : shopGames.filter(g => g.genre === currentShopFilter);
-
-  if (filtered.length === 0) {
-    grid.innerHTML = '<p class="hint">Нет игр в этой категории.</p>';
-    return;
-  }
-
-  filtered.forEach(g => {
-    const card = document.createElement('div');
-    card.className = 'bot-game-card';
-    card.style.setProperty('--bg', g.bg);
-    card.style.setProperty('--accent', g.accent);
-
-    // 🆕 Если игра куплена, но PRIME нет — визуальная блокировка
-    if (g.purchased && !primeActive) {
-      card.classList.add('locked-by-prime');
+    
+    // Извлекаем x (не x^2)
+    let temp = full.replace(/[+-]?\d*\.?\d*x\^2/, '');
+    m = temp.match(/([+-]?\d*\.?\d*)x(?!\^)/);
+    if (m) {
+      b = m[1] === '' || m[1] === '+' ? 1 : 
+          m[1] === '-' ? -1 : parseFloat(m[1]);
     }
-
-    const fullStars = Math.floor(g.rating);
-    const halfStar = g.rating % 1 >= 0.5;
-    const stars = '★'.repeat(fullStars) + (halfStar ? '⯨' : '') + '☆'.repeat(5 - fullStars - (halfStar ? 1 : 0));
-
-    let html = `
-      <div class="card-emoji">${g.emoji}</div>
-      <div class="card-name">${g.name}</div>
-      <div class="card-genre">${g.genre}</div>
-      <div class="card-desc">${g.desc}</div>
-      <div class="card-rating" style="color:${g.accent};">${stars} ${g.rating}</div>
-      <div class="card-price">💵 ${g.price} 💰</div>
-    `;
-
-    if (!g.purchased) {
-      // Не куплена
-      if (!primeActive) {
-        html += `<div class="prime-lock">🔒 Нужна PRIME<br><small>купи в панели выше</small></div>`;
-      } else if (!g.downloading) {
-        html += `<button class="btn btn-orange" data-buy="${g.id}" style="width:100%;">💰 Купить</button>`;
-      } else {
-        const pct = g.downloadProgress;
-        html += `<div class="hint" style="color:#fff;text-align:center;">Скачивание: ${Math.floor(pct)}%</div>
-          <div class="progress"><div style="width:${pct}%"></div></div>`;
-      }
-    } else {
-      // ✅ Куплена
-      if (!primeActive) {
-        // 🆕 Куплена, но PRIME закончилась — блокируем игру
-        html += `<div class="prime-lock">🔒 Куплена, но нужна PRIME<br><small>купи PRIME чтобы играть</small></div>`;
-      } else {
-        // Куплена + PRIME активна — можно играть
-        html += `<button class="btn btn-green" data-play="${g.id}" style="width:100%;">▶️ Играть</button>`;
+    
+    // Свободный член — вычисляем остаток численно
+    if (a !== 0) {
+      // Подставляем x=0, x=1, x=2 для проверки, но проще — решить численно
+      const f = (x) => a*x*x + b*x;
+      // Свободный член = значение при x=0
+      // Заменяем переменные для вычисления
+      const evalAt = (xVal) => {
+        let e = full.replace(/x\^2/g, `(${xVal}*${xVal})`)
+                      .replace(/x/g, `(${xVal})`);
+        e = prepareExpression(e);
+        return Function('"use strict"; return (' + e + ')')();
+      };
+      c = evalAt(0);
+      
+      // Проверяем что это квадратное уравнение
+      const check = evalAt(1) - (a + b + c);
+      if (Math.abs(check) > 1e-6) {
+        return null; // не квадратное
       }
     }
-    card.innerHTML = html;
-    grid.appendChild(card);
-  });
-
-  grid.querySelectorAll('[data-buy]').forEach(b => {
-    b.addEventListener('click', () => {
-      if (!isPrimeActive()) { notify('🔒 Нужна PRIME!', '#e94560'); return; }
-      const g = shopGames.find(x => x.id === b.dataset.buy);
-      if (!g) return;
-      if (state.money < g.price) { notify(`❌ Нужно ${g.price} 💰!`, '#e94560'); return; }
-      state.money -= g.price;
-      g.downloading = true;
-      g.downloadStart = Date.now();
-      g.downloadEnd = Date.now() + 100000;
-      g.downloadProgress = 0;
-      notify(`💰 Куплено "${g.name}"! Скачивается 100 сек...`, '#ff9f1c');
-      updateUI(); saveGame();
-    });
-  });
-
-  grid.querySelectorAll('[data-play]').forEach(b => {
-    b.addEventListener('click', () => {
-      if (!isPrimeActive()) { notify('🔒 Нужна PRIME чтобы играть!', '#e94560'); return; }
-      const g = shopGames.find(x => x.id === b.dataset.play);
-      if (g && g.purchased) openPlayModal(g);
-    });
-  });
+    
+    return { a, b, c };
+  } catch {
+    return null;
+  }
 }
 
-// ==================== МОИ ИГРЫ ====================
-function renderMyGames() {
-  const grid = $('myGamesGrid');
-  grid.innerHTML = '';
-  if (state.myGames.length === 0) {
-    grid.innerHTML = '<p class="hint">У тебя пока нет игр. Открой Roblox Studio и создай первую!</p>';
-    return;
-  }
-  const primeActive = isPrimeActive();
-  state.myGames.forEach(g => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    const preview = (g.blocks || []).slice(0, 8).map(b => b.emoji).join('');
-    let html = `<div class="title">🎮 ${g.name}</div>
-      <div class="desc">${g.genre} | ${(g.blocks||[]).length} блоков | ${(g.items||[]).length} предметов</div>
-      <div style="font-size:22px;margin:5px 0;letter-spacing:2px;">${preview}${(g.blocks||[]).length > 8 ? '...' : ''}</div>
-      <div class="price">💵 Цена: ${g.price} 💰</div>`;
+// ============ ОБЪЯСНЕНИЕ ШАГОВ ============
+function explain(expr) {
+  const steps = [];
+  if (expr.includes('(')) steps.push('1️⃣ Скобки — вычисляем в первую очередь');
+  if (expr.includes('^') || expr.includes('**')) steps.push('2️⃣ Степени — затем возведение в степень');
+  if (/\*|\//.test(expr) && !expr.includes('sqrt')) steps.push('3️⃣ Умножение и деление — слева направо');
+  if (expr.includes('!')) steps.push('⭐ Факториал — произведение чисел от 1 до n');
+  if (/(sqrt|sin|cos|tan|log)/.test(expr)) steps.push('📐 Функции — сначала аргумент функции');
+  if (/\+|\-/.test(expr.replace(/^\-/, ''))) steps.push('4️⃣ Сложение и вычитание — в последнюю очередь');
+  return steps.length ? steps.join('<br>') : 'Это простое выражение — вычисляю напрямую';
+}
 
-    if (g.status === 'draft') {
-      if (!primeActive) {
-        html += `<div class="lock-overlay" style="margin-top:6px;">🔒 Без PRIME нельзя выложить</div>
-          <div class="card-actions">
-            <button class="btn btn-red" data-delete="${g.id}">🗑️ Удалить</button>
-          </div>`;
-      } else {
-        html += `<div class="card-actions">
-          <button class="btn btn-blue" data-upload="${g.id}">📤 Выложить</button>
-          <button class="btn btn-red" data-delete="${g.id}">🗑️ Удалить</button>
-        </div>`;
-      }
-    } else if (g.status === 'uploading') {
-      const pct = g.uploadProgress;
-      html += `<div class="hint">Загрузка: ${Math.floor(pct)}%</div>
-        <div class="progress"><div style="width:${pct}%"></div></div>
-        <div class="card-actions">
-          <button class="btn btn-red" data-delete="${g.id}" style="width:100%;">🗑️ Отменить и удалить</button>
-        </div>`;
-    } else if (g.status === 'shop') {
-      const now = Date.now();
-      html += `<div class="hint">✅ В магазине | Продано: ${g.timesSold || 0}</div>`;
-      if (!primeActive) {
-        html += `<div class="lock-overlay" style="margin-top:6px;">🔒 Без PRIME боты не покупают</div>`;
-      } else if (g.buyReadyAt && g.buyReadyAt > now) {
-        const sec = Math.ceil((g.buyReadyAt - now) / 1000);
-        html += `<div class="hint">Следующий покупатель через ${sec} сек</div>`;
-      } else {
-        html += `<div class="hint">Ждём покупателя...</div>`;
-      }
-      const priceBtn = primeActive
-        ? `<button class="btn btn-blue" data-editprice="${g.id}">✏️ Цена</button>`
-        : '';
-      html += `<div class="card-actions">
-        ${priceBtn}
-        <button class="btn btn-red" data-delete="${g.id}">🗑️ Удалить</button>
-      </div>`;
+// ============ ГЛАВНЫЙ ОБРАБОТЧИК ============
+function processInput(text) {
+  const t = text.trim();
+  const lower = t.toLowerCase();
+  
+  // Объяснение
+  if (lower.startsWith('объясни')) {
+    const expr = t.slice(7).trim();
+    return `📚 <b>Порядок действий:</b><br>${explain(expr)}<br><br>${solveExpression(expr).text}`;
+  }
+  
+  // Уравнение
+  if (t.includes('=') && /x/i.test(t)) {
+    const q = parseQuadratic(t);
+    if (q && q.a !== 0) {
+      return `<b>Квадратное уравнение:</b> ${q.a}x² + ${q.b}x + ${q.c} = 0<br><br>` +
+             solveQuadratic(q.a, q.b, q.c);
     }
-    card.innerHTML = html;
-    grid.appendChild(card);
-  });
-
-  grid.querySelectorAll('[data-upload]').forEach(b => {
-    b.addEventListener('click', () => {
-      if (!isPrimeActive()) { notify('🔒 Нужна PRIME для выкладывания игр!', '#e94560'); return; }
-      const g = state.myGames.find(x => x.id === b.dataset.upload);
-      if (g && g.status === 'draft') {
-        g.status = 'uploading';
-        g.uploadStart = Date.now();
-        g.uploadEnd = Date.now() + 100000;
-        g.uploadProgress = 0;
-        notify(`📤 Загружаем "${g.name}" в магазин...`);
-        updateUI(); saveGame();
-      }
-    });
-  });
-
-  grid.querySelectorAll('[data-editprice]').forEach(b => {
-    b.addEventListener('click', () => {
-      if (!isPrimeActive()) { notify('🔒 Нужна PRIME для изменения цены!', '#e94560'); return; }
-      const g = state.myGames.find(x => x.id === b.dataset.editprice);
-      if (!g) return;
-      const val = prompt(`Новая цена для "${g.name}" (10-500 💰):`, g.price);
-      if (val === null) return;
-      const p = parseInt(val);
-      if (isNaN(p) || p < 10 || p > 500) { notify('❌ Цена от 10 до 500 💰', '#e94560'); return; }
-      g.price = p;
-      const f = getPriceForecast(p);
-      g.minIncome = f.minIncome;
-      g.maxIncome = f.maxIncome;
-      notify(`✅ Цена изменена на ${p} 💰`);
-      updateUI(); saveGame();
-    });
-  });
-
-  grid.querySelectorAll('[data-delete]').forEach(b => {
-    b.addEventListener('click', () => {
-      const g = state.myGames.find(x => x.id === b.dataset.delete);
-      if (!g) return;
-      let msg = `🗑️ Удалить игру "${g.name}"?`;
-      if (g.status === 'shop') {
-        msg += `\n\n⚠️ Она уже в магазине (продано ${g.timesSold || 0} раз).`;
-      } else if (g.status === 'uploading') {
-        msg += `\n\n⚠️ Игра ещё загружается — загрузка будет отменена.`;
-      }
-      msg += `\n\nДействие нельзя отменить.`;
-      if (!confirm(msg)) return;
-      const idx = state.myGames.indexOf(g);
-      if (idx !== -1) state.myGames.splice(idx, 1);
-      notify(`🗑️ Игра "${g.name}" удалена.`, '#ff9f1c');
-      updateUI(); saveGame();
-    });
-  });
-}
-
-// ==================== ПРОГНОЗ ЦЕНЫ ====================
-function getPriceForecast(price) {
-  return {
-    minIncome: Math.round(price * 0.85),
-    maxIncome: Math.round(price * 1.15),
-    intervalMin: BUY_INTERVAL_SEC,
-    intervalMax: BUY_INTERVAL_SEC,
-  };
-}
-
-function updatePriceUI() {
-  const price = studio.price;
-  const priceWrap = $('priceValueWrap');
-  const priceVal = $('priceValue');
-  const priceSection = $('priceSection');
-  const confirmBtn = $('confirmCreateBtn');
-  const errMsg = $('priceErrorMsg');
-
-  if (price === null || price === undefined) {
-    priceWrap.classList.add('unset');
-    priceVal.textContent = 'не выбрана';
-    priceSection.classList.add('invalid');
-    errMsg.style.display = 'block';
-    $('forecastIncome').textContent = '—';
-    $('forecastInterval').textContent = '—';
-    confirmBtn.disabled = true;
-    confirmBtn.style.opacity = '0.5';
-    confirmBtn.textContent = '⚠️ Сначала выбери цену';
-  } else {
-    priceWrap.classList.remove('unset');
-    priceVal.textContent = price + ' 💰';
-    priceSection.classList.remove('invalid');
-    errMsg.style.display = 'none';
-    const f = getPriceForecast(price);
-    $('forecastIncome').textContent = `${f.minIncome}-${f.maxIncome} 💰`;
-    $('forecastInterval').textContent = `ровно ${BUY_INTERVAL_SEC} сек`;
-    confirmBtn.disabled = false;
-    confirmBtn.style.opacity = '1';
-    confirmBtn.textContent = '✅ Создать игру (100 💰)';
+    return '❌ Пока решаю только квадратные уравнения вида ax² + bx + c = 0<br>Например: x^2-5*x+6=0';
   }
-
-  document.querySelectorAll('.price-preset').forEach(p => {
-    p.classList.toggle('selected', parseInt(p.dataset.price) === price);
-  });
+  
+  // Обычное выражение
+  const res = solveExpression(t);
+  return res.text;
 }
 
-// ==================== ROBLOX STUDIO ====================
-function initStudio() {
-  const toolList = $('toolList');
-  toolList.innerHTML = '';
-  const cats = {};
-  BLOCKS.forEach(b => { if (!cats[b.cat]) cats[b.cat] = []; cats[b.cat].push(b); });
-  Object.keys(cats).forEach(cat => {
-    const h = document.createElement('div');
-    h.style.cssText = 'font-size:11px;color:#888;margin:8px 0 4px;text-transform:uppercase;';
-    h.textContent = cat;
-    toolList.appendChild(h);
-    cats[cat].forEach(b => {
-      const btn = document.createElement('button');
-      btn.className = 'block-btn';
-      btn.dataset.blockId = b.id;
-      btn.innerHTML = `<span class="block-emoji">${b.emoji}</span> ${b.name}`;
-      btn.addEventListener('click', () => {
-        studio.selectedBlock = b;
-        document.querySelectorAll('.block-btn').forEach(x => x.classList.remove('selected'));
-        btn.classList.add('selected');
-      });
-      toolList.appendChild(btn);
-    });
-  });
-
-  const colorRow = $('colorRow');
-  colorRow.innerHTML = '';
-  COLORS.forEach(c => {
-    const d = document.createElement('div');
-    d.className = 'color-dot' + (c === studio.selectedColor ? ' selected' : '');
-    d.style.background = c;
-    d.addEventListener('click', () => {
-      studio.selectedColor = c;
-      document.querySelectorAll('.color-dot').forEach(x => x.classList.remove('selected'));
-      d.classList.add('selected');
-    });
-    colorRow.appendChild(d);
-  });
-
-  $('landscapeSelect').addEventListener('change', e => {
-    studio.landscape = e.target.value;
-    $('canvas3d').className = studio.landscape;
-  });
-
-  const canvas = $('canvas3d');
-  canvas.addEventListener('click', e => {
-    if (e.target.classList.contains('placed-block')) return;
-    if (!studio.selectedBlock) { notify('⚠️ Сначала выбери блок слева!', '#ff9f1c'); return; }
-    const rect = canvas.getBoundingClientRect();
-    placeBlock(e.clientX - rect.left, e.clientY - rect.top);
-  });
-
-  $('priceSlider').addEventListener('input', e => {
-    studio.price = parseInt(e.target.value);
-    updatePriceUI();
-  });
-  document.querySelectorAll('.price-preset').forEach(p => {
-    p.addEventListener('click', () => {
-      studio.price = parseInt(p.dataset.price);
-      $('priceSlider').value = studio.price;
-      updatePriceUI();
-    });
-  });
+// ============ ОТПРАВКА СООБЩЕНИЯ ============
+function sendMessage() {
+  const text = input.value.trim();
+  if (!text) return;
+  
+  addMessage(text, 'user');
+  input.value = '';
+  
+  // Небольшая задержка для эффекта "думает"
+  setTimeout(() => {
+    const response = processInput(text);
+    const isError = response.startsWith('❌');
+    addMessage(response, 'bot', isError ? 'error' : 'success');
+  }, 300);
 }
 
-function placeBlock(x, y) {
-  studio.blocks.push({
-    blockId: studio.selectedBlock.id,
-    emoji: studio.selectedBlock.emoji,
-    name: studio.selectedBlock.name,
-    color: studio.selectedColor,
-    x, y,
-  });
-  renderCanvasBlocks();
-  updateStudioStats();
-}
-
-function renderCanvasBlocks() {
-  const canvas = $('canvas3d');
-  canvas.querySelectorAll('.placed-block').forEach(el => el.remove());
-  $('canvasHint').style.display = studio.blocks.length > 0 ? 'none' : 'block';
-  studio.blocks.forEach((b, idx) => {
-    const el = document.createElement('div');
-    el.className = 'placed-block';
-    el.textContent = b.emoji;
-    el.style.left = (b.x - 20) + 'px';
-    el.style.top = (b.y - 20) + 'px';
-    el.style.color = b.color;
-    el.title = b.name + ' (клик — удалить)';
-    el.addEventListener('click', e => {
-      e.stopPropagation();
-      studio.blocks.splice(idx, 1);
-      renderCanvasBlocks();
-      updateStudioStats();
-    });
-    canvas.appendChild(el);
-  });
-}
-
-function getStudioStats() {
-  const blocks = studio.blocks;
-  const variety = new Set(blocks.map(b => b.blockId)).size;
-  const colors = new Set(blocks.map(b => b.color)).size;
-  let difficulty = '—';
-  if (blocks.length >= 5) difficulty = 'Легко';
-  if (blocks.length >= 10) difficulty = 'Средне';
-  if (blocks.length >= 20) difficulty = 'Сложно';
-  if (blocks.length >= 30) difficulty = 'Хардкор';
-  const score = Math.min(100, variety * 8 + colors * 5 + Math.min(blocks.length, 20) * 2);
-  return { variety, colors, difficulty, score };
-}
-
-function updateStudioStats() {
-  const s = getStudioStats();
-  $('statBlocks').textContent = studio.blocks.length;
-  $('statVariety').textContent = s.variety;
-  $('statColors').textContent = s.colors;
-  $('statDifficulty').textContent = s.difficulty;
-  $('statScore').textContent = s.score;
-
-  const preview = $('itemsPreview');
-  preview.innerHTML = '';
-  const unique = [...new Set(studio.blocks.map(b => b.name))];
-  if (unique.length === 0) {
-    preview.innerHTML = '<span class="hint">Размести блоки на сцене</span>';
-  } else {
-    unique.forEach(n => {
-      const tag = document.createElement('span');
-      tag.className = 'item-tag'; tag.textContent = n;
-      preview.appendChild(tag);
-    });
-  }
-}
-
-$('clearCanvasBtn').addEventListener('click', () => {
-  studio.blocks = [];
-  renderCanvasBlocks();
-  updateStudioStats();
-});
-
-$('cancelStudioBtn').addEventListener('click', () => {
-  $('studioModal').classList.remove('active');
-});
-
-$('createGameBtn').addEventListener('click', () => {
-  if (!isPrimeActive()) { notify('🔒 Для создания игры нужна PRIME подписка!', '#e94560'); return; }
-  if (state.money < 100) { notify('❌ Нужно 100 💰 для создания игры!', '#e94560'); return; }
-  studio = { selectedBlock: null, selectedColor: COLORS[3], blocks: [], landscape: 'grass', price: null };
-  $('gameName').value = '';
-  $('canvas3d').className = 'grass';
-  $('landscapeSelect').value = 'grass';
-  $('priceSlider').value = 100;
-  renderCanvasBlocks();
-  updateStudioStats();
-  updatePriceUI();
-  document.querySelectorAll('.color-dot').forEach((d, i) => {
-    d.classList.toggle('selected', COLORS[i] === COLORS[3]);
-  });
-  document.querySelectorAll('.block-btn').forEach(b => b.classList.remove('selected'));
-  $('studioModal').classList.add('active');
-});
-
-$('confirmCreateBtn').addEventListener('click', () => {
-  if (!isPrimeActive()) { notify('🔒 Нужна PRIME для создания игры!', '#e94560'); $('studioModal').classList.remove('active'); return; }
-  const name = $('gameName').value.trim();
-  if (!name) { notify('❌ Введи название игры!', '#e94560'); return; }
-  if (studio.blocks.length < 3) { notify('❌ Размести минимум 3 блока!', '#e94560'); return; }
-  if (studio.price === null || studio.price === undefined) {
-    notify('❌ Сначала выбери цену игры!', '#e94560');
-    $('priceSection').classList.add('invalid');
-    $('priceErrorMsg').style.display = 'block';
-    return;
-  }
-  if (state.money < 100) { notify('❌ Не хватает денег!', '#e94560'); return; }
-
-  const s = getStudioStats();
-  const f = getPriceForecast(studio.price);
-  const uniqueItems = [...new Set(studio.blocks.map(b => b.name))];
-
-  state.money -= 100;
-  state.myGames.push({
-    id: 'my_' + Date.now(),
-    name, genre: 'Собственная',
-    blocks: [...studio.blocks], items: uniqueItems,
-    price: studio.price,
-    minIncome: f.minIncome, maxIncome: f.maxIncome,
-    intervalMin: BUY_INTERVAL_SEC, intervalMax: BUY_INTERVAL_SEC,
-    score: s.score, status: 'draft',
-    uploadEnd: null, uploadProgress: 0,
-    buyReadyAt: null, timesSold: 0,
-  });
-  $('studioModal').classList.remove('active');
-  notify(`🎉 Игра "${name}" создана за ${studio.price} 💰!`);
-  updateUI(); saveGame();
-});
-
-// ==================== ИГРА ====================
-let playState = null;
-
-function openPlayModal(g) {
-  if (!isPrimeActive()) { notify('🔒 Нужна PRIME чтобы играть!', '#e94560'); return; }
-  $('playTitle').textContent = `${g.emoji || '🎮'} ${g.name}`;
-  $('playDesc').textContent = `${g.genre} — ${g.desc}`;
-  $('playArea').innerHTML = `<div class="score">Счёт: <span id="playScore">0</span> | Время: <span id="playTime">20</span>с</div>`;
-  playState = { score: 0, timeLeft: 20, game: g, timer: null, spawnTimer: null };
-  $('playModal').classList.add('active');
-  playState.timer = setInterval(() => {
-    playState.timeLeft--;
-    const t = document.getElementById('playTime');
-    if (t) t.textContent = playState.timeLeft;
-    if (playState.timeLeft <= 0) endGame();
-  }, 1000);
-  playState.spawnTimer = setInterval(() => spawnTarget(g), 600);
-  spawnTarget(g);
-}
-
-function spawnTarget(g) {
-  if (!playState || playState.timeLeft <= 0) return;
-  const area = $('playArea'); if (!area) return;
-  const target = document.createElement('div');
-  target.className = 'click-target';
-  const emojis = g.items.map(() => '🎯').concat([g.emoji || '🎯', '⭐', '💎', '🪙']);
-  target.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-  const rect = area.getBoundingClientRect();
-  target.style.left = (Math.random() * (rect.width - 60) + 10) + 'px';
-  target.style.top = (Math.random() * (rect.height - 80) + 50) + 'px';
-  target.addEventListener('click', e => {
-    e.stopPropagation();
-    playState.score += Math.floor(Math.random() * 10) + 5;
-    const s = document.getElementById('playScore');
-    if (s) s.textContent = playState.score;
-    target.remove();
-  });
-  area.appendChild(target);
-  setTimeout(() => { if (target.parentNode) target.remove(); }, 1500);
-}
-
-function endGame() {
-  if (!playState) return;
-  clearInterval(playState.timer);
-  clearInterval(playState.spawnTimer);
-  const score = playState.score;
-  const reward = Math.floor(score / 10);
-  if (reward > 0) {
-    state.money += reward;
-    notify(`🎮 Игра окончена! Счёт: ${score}. Награда: +${reward} 💰`, '#ffd166');
-  } else {
-    notify(`🎮 Игра окончена! Счёт: ${score}`, '#ffd166');
-  }
-  playState = null;
-  $('playArea').innerHTML = `<div class="score">Игра окончена! Молодец!</div>`;
-  updateUI(); saveGame();
-}
-
-$('closePlayBtn').addEventListener('click', () => {
-  if (playState) {
-    clearInterval(playState.timer);
-    clearInterval(playState.spawnTimer);
-    playState = null;
-  }
-  $('playModal').classList.remove('active');
-});
-
-// ==================== ИГРОВОЙ ЦИКЛ ====================
-setInterval(() => {
-  const now = Date.now();
-  let changed = false;
-
-  // Если PRIME истекла прямо сейчас — принудительно закрываем открытую игру
-  if (checkPrimeExpiry()) {
-    if (playState) {
-      clearInterval(playState.timer);
-      clearInterval(playState.spawnTimer);
-      playState = null;
-      $('playModal').classList.remove('active');
-      notify('⏳ PRIME закончилась — игра закрыта!', '#e94560');
-    }
-    return;
-  }
-
-  if (isPrimeActive()) {
-    const left = state.primeExpiresAt - Date.now();
-    const timerWrap = $('primeTimerWrap');
-    if (timerWrap) timerWrap.innerHTML = `<span class="prime-timer">⏳ ${formatTimeLeft(left)}</span>`;
-    const st = $('primeStatusText');
-    if (st) st.innerHTML = `<b style="color:#ffd700;">👑 PRIME активна!</b> Осталось: ${formatTimeLeft(left)}`;
-  }
-
-  shopGames.forEach(g => {
-    if (g.downloading && !g.purchased) {
-      const elapsed = now - g.downloadStart;
-      g.downloadProgress = Math.min(100, (elapsed / 100000) * 100);
-      if (now >= g.downloadEnd) {
-        g.purchased = true; g.downloading = false; g.downloadProgress = 100;
-        notify(`✅ "${g.name}" скачана! Можно играть.`);
-      }
-      changed = true;
-    }
-  });
-
-  state.myGames.forEach(g => {
-    if (g.status === 'uploading') {
-      const elapsed = now - g.uploadStart;
-      g.uploadProgress = Math.min(100, (elapsed / 100000) * 100);
-      if (now >= g.uploadEnd) {
-        g.status = 'shop';
-        g.uploadProgress = 100;
-        if (isPrimeActive()) {
-          g.buyReadyAt = now + BUY_INTERVAL_SEC * 1000;
-        }
-        notify(`📤 "${g.name}" выложена в магазин!`);
-      }
-      changed = true;
-    }
-  });
-
-  if (isPrimeActive()) {
-    state.myGames.forEach(g => {
-      if (g.status === 'shop' && g.buyReadyAt && now >= g.buyReadyAt) {
-        const income = g.minIncome + Math.floor(Math.random() * (g.maxIncome - g.minIncome + 1));
-        state.money += income;
-        state.botBuys++;
-        g.timesSold = (g.timesSold || 0) + 1;
-        g.buyReadyAt = now + BUY_INTERVAL_SEC * 1000;
-        notify(`💰 Бот купил "${g.name}" за ${g.price} 💰! +${income} 💰`);
-        changed = true;
-      }
-    });
-  }
-
-  if (changed) updateUI();
-  else if (state.myGames.some(g => g.status === 'shop')) renderMyGames();
-}, 1000);
-
-// ==================== СТАРТ ====================
-function init() {
-  shopGames = botGamesData.map((g, i) => ({
-    ...g, id: 'bot_' + i,
-    purchased: false, downloading: false,
-    downloadProgress: 0, downloadStart: null, downloadEnd: null,
-  }));
-
-  const loaded = loadGame();
-  initStudio();
-  updatePriceUI();
-  renderFilters();
-  updateUI();
-
-  if (loaded) notify('💾 Прогресс загружен!', '#4ecca3');
-  else notify('👋 Купи PRIME чтобы разблокировать всё!');
-}
-
-init();
+// Фокус на поле ввода
+input.focus();
 </script>
+
 </body>
-</html> 
+</html>
