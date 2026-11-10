@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LAN Мессенджер (Мультичат)</title>
+<title>Мультичат</title>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -64,7 +64,13 @@
     border: none; border-radius: 8px; font-size: 16px; cursor: pointer;
     margin-bottom: 10px;
   }
+  #login-box button:disabled { background: #999; cursor: wait; }
   .hint { font-size: 12px; color: #666; margin-top: 12px; line-height: 1.4; }
+  .error-box {
+    background: #ffebee; color: #c62828; padding: 10px;
+    border-radius: 8px; font-size: 13px; margin-top: 10px;
+    display: none;
+  }
 </style>
 </head>
 <body>
@@ -74,13 +80,12 @@
     <h2>💬 Мультичат</h2>
     <input id="nick-input" placeholder="Ваше имя" maxlength="20">
     <input id="room-input" placeholder="Комната (например: dom123)" value="dom123" maxlength="20">
-    <button onclick="joinRoom()">🚀 Войти</button>
+    <button id="join-btn" onclick="joinRoom()">🚀 Войти</button>
+    <div id="error-box" class="error-box"></div>
     <div class="hint">
       <b>Как подключиться:</b><br>
       Все устройства (телефоны, ПК) вводят <b>одно и то же название комнаты</b>.<br><br>
-      👉 Телефон ↔ Телефон ↔ Компьютер — все в одном чате.<br>
-      👉 Первый вошедший становится хостом и пересылает сообщения остальным.<br><br>
-      <b>Важно:</b> если хост выйдет — чат закроется (нужно будет заново создать комнату).
+      👉 Телефон ↔ Телефон ↔ Компьютер — все в одном чате.
     </div>
   </div>
 </div>
@@ -104,72 +109,138 @@ let isHost = false;
 let myNick = "";
 let myRoom = "";
 let myPeerId = "";
-
-// Для хоста: список всех подключённых клиентов (соединений)
-// { connId: { conn: DataConnection, nick: string } }
 let hostConnections = {};
-
-// Для клиента: соединение с хостом
 let hostConn = null;
+let reconnectAttempts = 0;
+const MAX_RECONNECT = 5;
 
-// ==================== ВХОД В КОМНАТУ ====================
+// ==================== ВХОД ====================
 function joinRoom() {
   myNick = document.getElementById('nick-input').value.trim();
   myRoom = document.getElementById('room-input').value.trim();
 
-  if (!myNick) return alert("Введите имя");
-  if (!myRoom) return alert("Введите комнату");
+  if (!myNick) { showError("Введите имя"); return; }
+  if (!myRoom) { showError("Введите название комнаты"); return; }
+  if (myRoom.length < 2) { showError("Название комнаты слишком короткое"); return; }
 
-  document.getElementById('login').style.display = 'none';
+  hideError();
+  document.getElementById('join-btn').disabled = true;
+  document.getElementById('join-btn').textContent = '⏳ Подключение...';
   document.getElementById('room-name').textContent = myRoom;
 
   const roomId = 'lanchat-' + myRoom.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-  // Пытаемся стать хостом (занять ID комнаты)
-  peer = new Peer(roomId, { debug: 1 });
+  // Пробуем стать хостом
+  tryCreateHost(roomId, 0);
+}
+
+// ==================== ПОПЫТКА СТАТЬ ХОСТОМ ====================
+function tryCreateHost(roomId, attempt) {
+  if (attempt > 3) {
+    // Не смогли стать хостом — пробуем как клиент
+    connectAsClient(roomId, 0);
+    return;
+  }
+
+  peer = new Peer(roomId, {
+    debug: 0,
+    config: {
+      'iceServers': [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+      ]
+    }
+  });
+
+  let resolved = false;
+
+  const timeout = setTimeout(() => {
+    if (resolved) return;
+    resolved = true;
+    peer.destroy();
+    tryCreateHost(roomId, attempt + 1);
+  }, 4000);
 
   peer.on('open', (id) => {
-    // Успех! Мы стали хостом
+    if (resolved) return;
+    resolved = true;
+    clearTimeout(timeout);
     isHost = true;
     myPeerId = id;
-    setStatus('🟢 Хост комнаты');
-    enableInput();
+    onConnected('🟢 Хост комнаты');
     addSystem('Вы создали комнату. Ждём участников...');
 
-    // Слушаем подключения от клиентов
     peer.on('connection', (conn) => {
       handleIncomingConnection(conn);
     });
   });
 
   peer.on('error', (err) => {
+    if (resolved) return;
+    resolved = true;
+    clearTimeout(timeout);
+    peer.destroy();
+
     if (err.type === 'unavailable-id') {
-      // Комната уже существует — подключаемся как клиент
-      peer.destroy();
-      connectAsClient(roomId);
+      // Комната существует — подключаемся как клиент
+      connectAsClient(roomId, 0);
+    } else if (err.type === 'network' || err.type === 'server-error') {
+      // Проблема с сервером — пробуем ещё
+      setTimeout(() => tryCreateHost(roomId, attempt + 1), 1000);
     } else {
-      setStatus('❌ Ошибка: ' + err.type);
-      console.error(err);
+      showError('Ошибка: ' + err.type);
+      resetLoginBtn();
     }
   });
 }
 
-// ==================== ПОДКЛЮЧЕНИЕ К ХОСТУ (КЛИЕНТ) ====================
-function connectAsClient(roomId) {
-  peer = new Peer({ debug: 1 });
+// ==================== ПОДКЛЮЧЕНИЕ К ХОСТУ ====================
+function connectAsClient(roomId, attempt) {
+  if (attempt > MAX_RECONNECT) {
+    showError("Не удалось подключиться. Проверьте интернет.");
+    resetLoginBtn();
+    return;
+  }
+
+  peer = new Peer({
+    debug: 0,
+    config: {
+      'iceServers': [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+      ]
+    }
+  });
+
+  let opened = false;
+  const timeout = setTimeout(() => {
+    if (opened) return;
+    opened = true;
+    peer.destroy();
+    setTimeout(() => connectAsClient(roomId, attempt + 1), 1500);
+  }, 5000);
 
   peer.on('open', (id) => {
+    if (opened) return;
     myPeerId = id;
     isHost = false;
-    setStatus('🔗 Подключение к хосту...');
 
-    hostConn = peer.connect(roomId);
+    hostConn = peer.connect(roomId, { reliable: true });
+
+    const connTimeout = setTimeout(() => {
+      if (hostConn && hostConn.open) return;
+      try { hostConn.close(); } catch(e){}
+      setTimeout(() => connectAsClient(roomId, attempt + 1), 1500);
+    }, 5000);
 
     hostConn.on('open', () => {
-      setStatus('🟢 Онлайн');
-      enableInput();
+      if (opened) return;
+      opened = true;
+      clearTimeout(timeout);
+      clearTimeout(connTimeout);
+      reconnectAttempts = 0;
+      onConnected('🟢 Онлайн');
       addSystem('Вы подключены к чату');
-      // Сообщаем хосту своё имя
       hostConn.send({ type: 'join', nick: myNick });
     });
 
@@ -182,54 +253,43 @@ function connectAsClient(roomId) {
     });
 
     hostConn.on('close', () => {
+      if (!opened) return;
       setStatus('🔴 Хост отключился');
-      addSystem('Хост покинул чат. Перезагрузите страницу, чтобы создать новую комнату.');
+      addSystem('Хост покинул чат. Перезагрузите страницу.');
       disableInput();
     });
 
     hostConn.on('error', (err) => {
       console.error(err);
-      setStatus('❌ Ошибка связи');
     });
   });
 
   peer.on('error', (err) => {
-    setStatus('❌ ' + err.type);
-    console.error(err);
+    if (opened) return;
+    opened = true;
+    clearTimeout(timeout);
+    try { peer.destroy(); } catch(e){}
+    setTimeout(() => connectAsClient(roomId, attempt + 1), 1500);
   });
 }
 
 // ==================== ОБРАБОТКА КЛИЕНТА (ХОСТ) ====================
 function handleIncomingConnection(conn) {
-  // Сохраняем соединение
   hostConnections[conn.peer] = { conn: conn, nick: '...' };
-
-  conn.on('open', () => {
-    // Ждём сообщение 'join' с именем
-  });
 
   conn.on('data', (data) => {
     if (data.type === 'join') {
-      // Клиент представился
       hostConnections[conn.peer].nick = data.nick;
-
-      // Сообщаем всем, что новый участник
-      const sysMsg = data.nick + ' вошёл в чат';
-      broadcastToAll({ type: 'system', text: sysMsg }, conn.peer);
-
-      // Отправляем новичку приветствие
+      broadcastToAll({ type: 'system', text: data.nick + ' вошёл в чат' }, conn.peer);
       conn.send({ type: 'system', text: 'Добро пожаловать в чат!' });
-
     } else if (data.type === 'message') {
-      // Клиент прислал сообщение — рассылаем всем, кроме отправителя
       const nick = hostConnections[conn.peer] ? hostConnections[conn.peer].nick : '???';
-      const msg = {
+      broadcastToAll({
         type: 'message',
         nick: nick,
         text: data.text,
         time: data.time
-      };
-      broadcastToAll(msg, conn.peer);
+      }, conn.peer);
     }
   });
 
@@ -242,42 +302,28 @@ function handleIncomingConnection(conn) {
   conn.on('error', (err) => console.error(err));
 }
 
-// ==================== РАССЫЛКА (ХОСТ) ====================
+// ==================== РАССЫЛКА ====================
 function broadcastToAll(data, excludePeerId = null) {
   for (const peerId in hostConnections) {
     if (peerId === excludePeerId) continue;
     const entry = hostConnections[peerId];
     if (entry.conn && entry.conn.open) {
-      try {
-        entry.conn.send(data);
-      } catch (e) {
-        console.error(e);
-      }
+      try { entry.conn.send(data); } catch (e) { console.error(e); }
     }
   }
 }
 
-// ==================== ОТПРАВКА СООБЩЕНИЯ ====================
+// ==================== ОТПРАВКА ====================
 function sendMsg() {
   const text = document.getElementById('msg-input').value.trim();
   if (!text) return;
 
   const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-  const msgData = {
-    type: 'message',
-    nick: myNick,
-    text: text,
-    time: time
-  };
-
-  // Показываем у себя
   addMessage(myNick, text, true, time);
 
   if (isHost) {
-    // Хост рассылает всем клиентам
-    broadcastToAll(msgData);
+    broadcastToAll({ type: 'message', nick: myNick, text: text, time: time });
   } else {
-    // Клиент отправляет хосту
     if (hostConn && hostConn.open) {
       hostConn.send({ type: 'message', text: text, time: time });
     }
@@ -288,6 +334,12 @@ function sendMsg() {
 }
 
 // ==================== UI ====================
+function onConnected(statusText) {
+  document.getElementById('login').style.display = 'none';
+  setStatus(statusText);
+  enableInput();
+}
+
 function addMessage(nick, text, mine, time) {
   const chat = document.getElementById('chat');
   const div = document.createElement('div');
@@ -311,7 +363,7 @@ function addSystem(text) {
 }
 
 function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, c => ({
+  return String(s).replace(/[&<>"']/g, c => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[c]));
 }
@@ -331,7 +383,22 @@ function setStatus(text) {
   document.getElementById('status').textContent = text;
 }
 
-// Enter для отправки
+function showError(msg) {
+  const box = document.getElementById('error-box');
+  box.textContent = '⚠️ ' + msg;
+  box.style.display = 'block';
+}
+
+function hideError() {
+  document.getElementById('error-box').style.display = 'none';
+}
+
+function resetLoginBtn() {
+  document.getElementById('join-btn').disabled = false;
+  document.getElementById('join-btn').textContent = '🚀 Войти';
+  document.getElementById('login').style.display = 'flex';
+}
+
 document.getElementById('msg-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') sendMsg();
 });
