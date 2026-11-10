@@ -2,315 +2,339 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>P2P игра-чат (без сервера)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAN Мессенджер (Мультичат)</title>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
-  body { margin:0; font-family: Arial; background:#111; color:#fff; overflow:hidden; }
-  #game { width:100vw; height:65vh; background:#222; position:relative; border-bottom:2px solid #444; overflow:hidden; }
-  .player { position:absolute; width:44px; height:44px; border-radius:50%;
-            display:flex; align-items:center; justify-content:center;
-            font-size:11px; font-weight:bold; transition: all 0.06s linear; }
-  .me { background:#4CAF50; box-shadow:0 0 20px #4CAF50; }
-  .other { background:#2196F3; }
-  #chat { height:35vh; display:flex; flex-direction:column; background:#1a1a1a; }
-  #messages { flex:1; overflow-y:auto; padding:8px 12px; }
-  #messages div { margin:2px 0; }
-  #msgInput { display:flex; border-top:1px solid #333; }
-  #msgInput input { flex:1; padding:12px; border:none; background:#222; color:#fff; font-size:15px; outline:none; }
-  #msgInput button { padding:12px 24px; background:#4CAF50; color:#fff; border:none; cursor:pointer; }
-  #setup { position:fixed; inset:0; background:#000e; display:flex; align-items:center; justify-content:center; z-index:10; overflow:auto; padding:20px; }
-  #setup .box { background:#222; padding:30px; border-radius:14px; max-width:600px; width:100%; }
-  #setup h2 { margin-top:0; }
-  #setup input, #setup textarea { width:100%; box-sizing:border-box; padding:10px; font-size:14px;
-      border-radius:6px; border:1px solid #444; background:#111; color:#fff; margin-bottom:10px; font-family:monospace; }
-  #setup textarea { height:120px; resize:vertical; }
-  #setup button { padding:12px 24px; font-size:15px; background:#4CAF50; color:#fff;
-      border:none; border-radius:6px; cursor:pointer; margin:4px 4px 4px 0; }
-  #setup button.sec { background:#555; }
-  #setup .step { background:#1a1a1a; padding:14px; border-radius:8px; margin:10px 0; border-left:3px solid #4CAF50; }
-  #status { position:absolute; top:10px; left:10px; background:#000a; padding:6px 12px; border-radius:6px; font-size:13px; }
-  #offerOut { color:#4CAF50; word-break:break-all; font-size:11px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    height: 100vh; display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  header {
+    background: rgba(0,0,0,0.3); color: white; padding: 12px 16px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-shrink: 0;
+  }
+  header b { font-size: 17px; }
+  #status { font-size: 12px; }
+  #chat {
+    flex: 1; overflow-y: auto; padding: 12px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .msg {
+    max-width: 80%; padding: 8px 12px; border-radius: 14px;
+    word-wrap: break-word; font-size: 15px;
+  }
+  .mine { align-self: flex-end; background: #dcf8c6; border-bottom-right-radius: 4px; }
+  .other { align-self: flex-start; background: white; border-bottom-left-radius: 4px; }
+  .system { align-self: center; background: rgba(0,0,0,0.4); color: white; font-size: 12px; padding: 4px 10px; border-radius: 10px; text-align: center; }
+  .author { font-size: 11px; font-weight: bold; color: #667eea; }
+  .time { font-size: 10px; color: #888; margin-left: 6px; }
+  #input-area {
+    display: flex; padding: 8px; background: rgba(255,255,255,0.9); gap: 8px;
+    flex-shrink: 0;
+  }
+  #msg-input {
+    flex: 1; padding: 10px 14px; border: 1px solid #ccc;
+    border-radius: 20px; font-size: 15px; outline: none;
+  }
+  #send-btn {
+    background: #667eea; color: white; border: none; padding: 0 20px;
+    border-radius: 20px; font-size: 15px; cursor: pointer;
+  }
+  #login {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    display: flex; justify-content: center; align-items: center; z-index: 10;
+    padding: 20px;
+  }
+  #login-box {
+    background: white; padding: 24px; border-radius: 16px;
+    width: 100%; max-width: 360px;
+  }
+  #login-box h2 { margin-bottom: 16px; color: #333; text-align: center; }
+  #login-box input {
+    width: 100%; padding: 12px; border: 1px solid #ccc;
+    border-radius: 8px; font-size: 16px; margin-bottom: 12px;
+  }
+  #login-box button {
+    width: 100%; padding: 12px; background: #667eea; color: white;
+    border: none; border-radius: 8px; font-size: 16px; cursor: pointer;
+    margin-bottom: 10px;
+  }
+  .hint { font-size: 12px; color: #666; margin-top: 12px; line-height: 1.4; }
 </style>
 </head>
 <body>
 
-<div id="setup">
-  <div class="box">
-    <h2>🎮 P2P Игра-чат (без сервера)</h2>
-
-    <div class="step">
-      <b>Шаг 1.</b> Введи своё имя:<br><br>
-      <input id="nameInput" placeholder="Ник" maxlength="12">
-    </div>
-
-    <div class="step">
-      <b>Шаг 2.</b> Один игрок — <b>Хост</b>, остальные — <b>Гости</b>.<br><br>
-      <button onclick="startHost()">👑 Я Хост (создать игру)</button>
-      <button class="sec" onclick="startGuest()">👤 Я Гость (подключиться)</button>
-    </div>
-
-    <div id="hostPanel" style="display:none" class="step">
-      <b>Шаг 3 (Хост).</b> Скопируй этот код и отправь Гостю (через мессенджер):<br><br>
-      <textarea id="offerOut" readonly placeholder="Код появится здесь..."></textarea>
-      <button onclick="copyOffer()">📋 Копировать код</button>
-      <br><br>
-      <b>Шаг 4 (Хост).</b> Вставь код-ответ от Гостя сюда и нажми кнопку:<br><br>
-      <textarea id="answerIn" placeholder="Вставь код-ответ от гостя..."></textarea>
-      <button onclick="acceptAnswer()">✅ Подключить гостя</button>
-      <div id="hostStatus" style="color:#888;font-size:13px;margin-top:8px"></div>
-    </div>
-
-    <div id="guestPanel" style="display:none" class="step">
-      <b>Шаг 3 (Гость).</b> Вставь код от Хоста сюда:<br><br>
-      <textarea id="offerIn" placeholder="Вставь код от хоста..."></textarea>
-      <button onclick="makeAnswer()">🔗 Сгенерировать ответ</button>
-      <br><br>
-      <b>Шаг 4 (Гость).</b> Скопируй ответ и отправь Хосту:<br><br>
-      <textarea id="answerOut" readonly placeholder="Код-ответ появится здесь..."></textarea>
-      <button onclick="copyAnswer()">📋 Копировать ответ</button>
-      <div id="guestStatus" style="color:#888;font-size:13px;margin-top:8px"></div>
+<div id="login">
+  <div id="login-box">
+    <h2>💬 Мультичат</h2>
+    <input id="nick-input" placeholder="Ваше имя" maxlength="20">
+    <input id="room-input" placeholder="Комната (например: dom123)" value="dom123" maxlength="20">
+    <button onclick="joinRoom()">🚀 Войти</button>
+    <div class="hint">
+      <b>Как подключиться:</b><br>
+      Все устройства (телефоны, ПК) вводят <b>одно и то же название комнаты</b>.<br><br>
+      👉 Телефон ↔ Телефон ↔ Компьютер — все в одном чате.<br>
+      👉 Первый вошедший становится хостом и пересылает сообщения остальным.<br><br>
+      <b>Важно:</b> если хост выйдет — чат закроется (нужно будет заново создать комнату).
     </div>
   </div>
 </div>
 
-<div id="game">
-  <div id="status">Ожидание подключения...</div>
-</div>
+<header>
+  <b>💬 <span id="room-name"></span></b>
+  <span id="status">Не подключено</span>
+</header>
 
-<div id="chat">
-  <div id="messages"></div>
-  <div id="msgInput">
-    <input id="chatInput" placeholder="Сообщение... (Enter — отправить)" autocomplete="off">
-    <button onclick="sendMsg()">➤</button>
-  </div>
+<div id="chat"></div>
+
+<div id="input-area">
+  <input id="msg-input" placeholder="Сообщение..." disabled autocomplete="off">
+  <button id="send-btn" onclick="sendMsg()" disabled>➤</button>
 </div>
 
 <script>
-// ============ ПЕРЕМЕННЫЕ ============
-const myId = Math.random().toString(36).slice(2, 10);
-let myName = '';
+// ==================== ПЕРЕМЕННЫЕ ====================
+let peer = null;
 let isHost = false;
-let pc = null;                  // RTCPeerConnection
-const peers = {};               // id -> { dc, name, x, y, el }
-const players = {};             // все игроки (включая меня)
-const game = document.getElementById('game');
-const speed = 8;
-const statusEl = document.getElementById('status');
+let myNick = "";
+let myRoom = "";
+let myPeerId = "";
 
-// ICE-серверы (публичные, без регистрации)
-const ICE = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+// Для хоста: список всех подключённых клиентов (соединений)
+// { connId: { conn: DataConnection, nick: string } }
+let hostConnections = {};
 
-// ============ УТИЛИТЫ ============
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function copyTo(el) {
-  el.select();
-  document.execCommand('copy');
-  alert('Скопировано!');
-}
-function copyOffer() { copyTo(document.getElementById('offerOut')); }
-function copyAnswer() { copyTo(document.getElementById('answerOut')); }
+// Для клиента: соединение с хостом
+let hostConn = null;
 
-// ============ ИНТЕРФЕЙС ============
-function startHost() {
-  myName = document.getElementById('nameInput').value.trim();
-  if (!myName) { alert('Введи имя!'); return; }
-  isHost = true;
-  document.getElementById('hostPanel').style.display = 'block';
-  document.getElementById('guestPanel').style.display = 'none';
+// ==================== ВХОД В КОМНАТУ ====================
+function joinRoom() {
+  myNick = document.getElementById('nick-input').value.trim();
+  myRoom = document.getElementById('room-input').value.trim();
 
-  // Создаём игрока-себя
-  createPlayer(myId, myName, 400, 300, true);
+  if (!myNick) return alert("Введите имя");
+  if (!myRoom) return alert("Введите комнату");
 
-  // Создаём оффер
-  pc = new RTCPeerConnection(ICE);
-  setupConnection(pc);
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('room-name').textContent = myRoom;
 
-  const dc = pc.createDataChannel('game');
-  setupDataChannel(dc);
+  const roomId = 'lanchat-' + myRoom.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-  pc.createOffer().then(offer => {
-    pc.setLocalDescription(offer);
-    return waitIce(pc);
-  }).then(() => {
-    const code = btoa(JSON.stringify(pc.localDescription));
-    document.getElementById('offerOut').value = code;
-    document.getElementById('hostStatus').textContent = '✅ Код готов. Отправь его Гостю.';
+  // Пытаемся стать хостом (занять ID комнаты)
+  peer = new Peer(roomId, { debug: 1 });
+
+  peer.on('open', (id) => {
+    // Успех! Мы стали хостом
+    isHost = true;
+    myPeerId = id;
+    setStatus('🟢 Хост комнаты');
+    enableInput();
+    addSystem('Вы создали комнату. Ждём участников...');
+
+    // Слушаем подключения от клиентов
+    peer.on('connection', (conn) => {
+      handleIncomingConnection(conn);
+    });
+  });
+
+  peer.on('error', (err) => {
+    if (err.type === 'unavailable-id') {
+      // Комната уже существует — подключаемся как клиент
+      peer.destroy();
+      connectAsClient(roomId);
+    } else {
+      setStatus('❌ Ошибка: ' + err.type);
+      console.error(err);
+    }
   });
 }
 
-async function acceptAnswer() {
-  const code = document.getElementById('answerIn').value.trim();
-  if (!code) return;
-  try {
-    const answer = JSON.parse(atob(code));
-    await pc.setRemoteDescription(answer);
-    document.getElementById('hostStatus').textContent = '⏳ Подключаемся...';
-  } catch(e) {
-    alert('Неверный код ответа: ' + e.message);
-  }
-}
+// ==================== ПОДКЛЮЧЕНИЕ К ХОСТУ (КЛИЕНТ) ====================
+function connectAsClient(roomId) {
+  peer = new Peer({ debug: 1 });
 
-async function startGuest() {
-  myName = document.getElementById('nameInput').value.trim();
-  if (!myName) { alert('Введи имя!'); return; }
-  isHost = false;
-  document.getElementById('guestPanel').style.display = 'block';
-  document.getElementById('hostPanel').style.display = 'none';
+  peer.on('open', (id) => {
+    myPeerId = id;
+    isHost = false;
+    setStatus('🔗 Подключение к хосту...');
 
-  createPlayer(myId, myName, 400, 300, true);
+    hostConn = peer.connect(roomId);
 
-  pc = new RTCPeerConnection(ICE);
-  setupConnection(pc);
+    hostConn.on('open', () => {
+      setStatus('🟢 Онлайн');
+      enableInput();
+      addSystem('Вы подключены к чату');
+      // Сообщаем хосту своё имя
+      hostConn.send({ type: 'join', nick: myNick });
+    });
 
-  pc.ondatachannel = (event) => setupDataChannel(event.channel);
-
-  document.getElementById('guestStatus').textContent = '⏳ Ждём, когда ты вставишь код Хоста...';
-}
-
-async function makeAnswer() {
-  const code = document.getElementById('offerIn').value.trim();
-  if (!code) return;
-  try {
-    const offer = JSON.parse(atob(code));
-    await pc.setRemoteDescription(offer);
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-    await waitIce(pc);
-    const out = btoa(JSON.stringify(pc.localDescription));
-    document.getElementById('answerOut').value = out;
-    document.getElementById('guestStatus').textContent = '✅ Отправь этот код Хосту.';
-  } catch(e) {
-    alert('Неверный код: ' + e.message);
-  }
-}
-
-// ============ WebRTC ============
-function waitIce(pc) {
-  return new Promise(resolve => {
-    if (pc.iceGatheringState === 'complete') return resolve();
-    const check = () => {
-      if (pc.iceGatheringState === 'complete') {
-        pc.removeEventListener('icegatheringstatechange', check);
-        resolve();
+    hostConn.on('data', (data) => {
+      if (data.type === 'message') {
+        addMessage(data.nick, data.text, data.nick === myNick, data.time);
+      } else if (data.type === 'system') {
+        addSystem(data.text);
       }
-    };
-    pc.addEventListener('icegatheringstatechange', check);
-    // на всякий случай — таймаут 3 сек
-    setTimeout(resolve, 3000);
+    });
+
+    hostConn.on('close', () => {
+      setStatus('🔴 Хост отключился');
+      addSystem('Хост покинул чат. Перезагрузите страницу, чтобы создать новую комнату.');
+      disableInput();
+    });
+
+    hostConn.on('error', (err) => {
+      console.error(err);
+      setStatus('❌ Ошибка связи');
+    });
+  });
+
+  peer.on('error', (err) => {
+    setStatus('❌ ' + err.type);
+    console.error(err);
   });
 }
 
-function setupConnection(pc) {
-  pc.onconnectionstatechange = () => {
-    console.log('Состояние:', pc.connectionState);
-    if (pc.connectionState === 'connected') {
-      document.getElementById('setup').style.display = 'none';
-      statusEl.textContent = '🟢 Подключено';
-      // Отправляем всем своё имя
-      broadcast({ type: 'hello', id: myId, name: myName, x: players[myId].x, y: players[myId].y });
+// ==================== ОБРАБОТКА КЛИЕНТА (ХОСТ) ====================
+function handleIncomingConnection(conn) {
+  // Сохраняем соединение
+  hostConnections[conn.peer] = { conn: conn, nick: '...' };
+
+  conn.on('open', () => {
+    // Ждём сообщение 'join' с именем
+  });
+
+  conn.on('data', (data) => {
+    if (data.type === 'join') {
+      // Клиент представился
+      hostConnections[conn.peer].nick = data.nick;
+
+      // Сообщаем всем, что новый участник
+      const sysMsg = data.nick + ' вошёл в чат';
+      broadcastToAll({ type: 'system', text: sysMsg }, conn.peer);
+
+      // Отправляем новичку приветствие
+      conn.send({ type: 'system', text: 'Добро пожаловать в чат!' });
+
+    } else if (data.type === 'message') {
+      // Клиент прислал сообщение — рассылаем всем, кроме отправителя
+      const nick = hostConnections[conn.peer] ? hostConnections[conn.peer].nick : '???';
+      const msg = {
+        type: 'message',
+        nick: nick,
+        text: data.text,
+        time: data.time
+      };
+      broadcastToAll(msg, conn.peer);
     }
-  };
+  });
+
+  conn.on('close', () => {
+    const nick = hostConnections[conn.peer] ? hostConnections[conn.peer].nick : '???';
+    delete hostConnections[conn.peer];
+    broadcastToAll({ type: 'system', text: nick + ' вышел из чата' });
+  });
+
+  conn.on('error', (err) => console.error(err));
 }
 
-function setupDataChannel(dc) {
-  dc.onopen = () => {
-    console.log('DataChannel открыт');
-    document.getElementById('setup').style.display = 'none';
-    statusEl.textContent = '🟢 Подключено';
-    broadcast({ type: 'hello', id: myId, name: myName, x: players[myId].x, y: players[myId].y });
-  };
-
-  dc.onmessage = (e) => {
-    let data;
-    try { data = JSON.parse(e.data); } catch(err) { return; }
-    if (data.id === myId) return;
-
-    if (data.type === 'hello') {
-      // запоминаем соединение
-      peers[data.id] = { dc, name: data.name };
-      if (!players[data.id]) createPlayer(data.id, data.name, data.x, data.y, false);
-      // отвечаем своим приветствием
-      dc.send(JSON.stringify({ type: 'hello', id: myId, name: myName,
-        x: players[myId].x, y: players[myId].y }));
+// ==================== РАССЫЛКА (ХОСТ) ====================
+function broadcastToAll(data, excludePeerId = null) {
+  for (const peerId in hostConnections) {
+    if (peerId === excludePeerId) continue;
+    const entry = hostConnections[peerId];
+    if (entry.conn && entry.conn.open) {
+      try {
+        entry.conn.send(data);
+      } catch (e) {
+        console.error(e);
+      }
     }
-    if (data.type === 'move' && players[data.id]) {
-      const p = players[data.id];
-      p.x = data.x; p.y = data.y;
-      p.el.style.left = data.x + 'px';
-      p.el.style.top = data.y + 'px';
-    }
-    if (data.type === 'chat') {
-      addMessage(data.name, data.msg);
-    }
-  };
-
-  dc.onclose = () => console.log('DataChannel закрыт');
-}
-
-// ============ ИГРОВАЯ ЛОГИКА ============
-function createPlayer(id, name, x, y, isMe) {
-  if (players[id]) return;
-  const el = document.createElement('div');
-  el.className = 'player ' + (isMe ? 'me' : 'other');
-  el.textContent = name;
-  el.style.left = x + 'px';
-  el.style.top = y + 'px';
-  game.appendChild(el);
-  players[id] = { el, x, y, name };
-}
-
-function broadcast(obj) {
-  const json = JSON.stringify(obj);
-  for (const id in peers) {
-    try { peers[id].dc.send(json); } catch(e) {}
   }
 }
 
-function addMessage(name, msg) {
-  const div = document.createElement('div');
-  div.innerHTML = `<b style="color:#4CAF50">${escapeHtml(name)}:</b> ${escapeHtml(msg)}`;
-  const msgs = document.getElementById('messages');
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-const keys = {};
-document.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
-document.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
-
-setInterval(() => {
-  if (!players[myId]) return;
-  let dx = 0, dy = 0;
-  if (keys['w'] || keys['arrowup']) dy -= speed;
-  if (keys['s'] || keys['arrowdown']) dy += speed;
-  if (keys['a'] || keys['arrowleft']) dx -= speed;
-  if (keys['d'] || keys['arrowright']) dx += speed;
-  if (dx || dy) {
-    const p = players[myId];
-    p.x = Math.max(0, Math.min(game.clientWidth - 44, p.x + dx));
-    p.y = Math.max(0, Math.min(game.clientHeight - 44, p.y + dy));
-    p.el.style.left = p.x + 'px';
-    p.el.style.top = p.y + 'px';
-    broadcast({ type: 'move', id: myId, x: p.x, y: p.y });
-  }
-}, 30);
-
+// ==================== ОТПРАВКА СООБЩЕНИЯ ====================
 function sendMsg() {
-  const input = document.getElementById('chatInput');
-  const msg = input.value.trim();
-  if (!msg) return;
-  addMessage(myName, msg);
-  broadcast({ type: 'chat', id: myId, name: myName, msg: msg });
-  input.value = '';
+  const text = document.getElementById('msg-input').value.trim();
+  if (!text) return;
+
+  const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  const msgData = {
+    type: 'message',
+    nick: myNick,
+    text: text,
+    time: time
+  };
+
+  // Показываем у себя
+  addMessage(myNick, text, true, time);
+
+  if (isHost) {
+    // Хост рассылает всем клиентам
+    broadcastToAll(msgData);
+  } else {
+    // Клиент отправляет хосту
+    if (hostConn && hostConn.open) {
+      hostConn.send({ type: 'message', text: text, time: time });
+    }
+  }
+
+  document.getElementById('msg-input').value = '';
+  document.getElementById('msg-input').focus();
 }
 
-document.getElementById('chatInput').addEventListener('keypress', e => {
+// ==================== UI ====================
+function addMessage(nick, text, mine, time) {
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = 'msg ' + (mine ? 'mine' : 'other');
+  const t = time || new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  div.innerHTML =
+    (mine ? '' : '<div class="author">' + escapeHtml(nick) + '</div>') +
+    escapeHtml(text) +
+    '<span class="time">' + t + '</span>';
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function addSystem(text) {
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = 'system';
+  div.textContent = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+function enableInput() {
+  document.getElementById('msg-input').disabled = false;
+  document.getElementById('send-btn').disabled = false;
+  document.getElementById('msg-input').focus();
+}
+
+function disableInput() {
+  document.getElementById('msg-input').disabled = true;
+  document.getElementById('send-btn').disabled = true;
+}
+
+function setStatus(text) {
+  document.getElementById('status').textContent = text;
+}
+
+// Enter для отправки
+document.getElementById('msg-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') sendMsg();
 });
-
-// Фокус на ввод
-document.getElementById('nameInput').focus();
 </script>
 </body>
 </html>
