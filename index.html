@@ -3,405 +3,314 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Мультичат</title>
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<title>ФИТС — ИИ по математике</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: -apple-system, Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    height: 100vh; display: flex; flex-direction: column;
-    overflow: hidden;
-  }
-  header {
-    background: rgba(0,0,0,0.3); color: white; padding: 12px 16px;
-    display: flex; justify-content: space-between; align-items: center;
-    flex-shrink: 0;
-  }
-  header b { font-size: 17px; }
-  #status { font-size: 12px; }
-  #chat {
-    flex: 1; overflow-y: auto; padding: 12px;
-    display: flex; flex-direction: column; gap: 6px;
-  }
-  .msg {
-    max-width: 80%; padding: 8px 12px; border-radius: 14px;
-    word-wrap: break-word; font-size: 15px;
-  }
-  .mine { align-self: flex-end; background: #dcf8c6; border-bottom-right-radius: 4px; }
-  .other { align-self: flex-start; background: white; border-bottom-left-radius: 4px; }
-  .system { align-self: center; background: rgba(0,0,0,0.4); color: white; font-size: 12px; padding: 4px 10px; border-radius: 10px; text-align: center; }
-  .author { font-size: 11px; font-weight: bold; color: #667eea; }
-  .time { font-size: 10px; color: #888; margin-left: 6px; }
-  #input-area {
-    display: flex; padding: 8px; background: rgba(255,255,255,0.9); gap: 8px;
-    flex-shrink: 0;
-  }
-  #msg-input {
-    flex: 1; padding: 10px 14px; border: 1px solid #ccc;
-    border-radius: 20px; font-size: 15px; outline: none;
-  }
-  #send-btn {
-    background: #667eea; color: white; border: none; padding: 0 20px;
-    border-radius: 20px; font-size: 15px; cursor: pointer;
-  }
-  #login {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-    display: flex; justify-content: center; align-items: center; z-index: 10;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 20px;
   }
-  #login-box {
-    background: white; padding: 24px; border-radius: 16px;
-    width: 100%; max-width: 360px;
+  .chat {
+    width: 100%;
+    max-width: 600px;
+    height: 85vh;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
-  #login-box h2 { margin-bottom: 16px; color: #333; text-align: center; }
-  #login-box input {
-    width: 100%; padding: 12px; border: 1px solid #ccc;
-    border-radius: 8px; font-size: 16px; margin-bottom: 12px;
+  .header {
+    background: linear-gradient(135deg, #2a5298, #1e3c72);
+    color: #fff;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
-  #login-box button {
-    width: 100%; padding: 12px; background: #667eea; color: white;
-    border: none; border-radius: 8px; font-size: 16px; cursor: pointer;
-    margin-bottom: 10px;
+  .avatar {
+    width: 46px; height: 46px;
+    background: #fff;
+    color: #2a5298;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 18px;
   }
-  #login-box button:disabled { background: #999; cursor: wait; }
-  .hint { font-size: 12px; color: #666; margin-top: 12px; line-height: 1.4; }
-  .error-box {
-    background: #ffebee; color: #c62828; padding: 10px;
-    border-radius: 8px; font-size: 13px; margin-top: 10px;
-    display: none;
+  .header h1 { font-size: 20px; }
+  .header p { font-size: 12px; opacity: .8; }
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background: #f4f7fb;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: opacity .35s ease;
+  }
+  .messages.clearing {
+    opacity: 0;
+  }
+  .msg {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    animation: fade .3s ease;
+  }
+  @keyframes fade { from {opacity:0; transform: translateY(8px);} to {opacity:1; transform:none;} }
+  .bot {
+    background: #fff;
+    color: #1e3c72;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .user {
+    background: #2a5298;
+    color: #fff;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+  .input-area {
+    display: flex;
+    padding: 14px;
+    background: #fff;
+    border-top: 1px solid #e0e6ef;
+    gap: 10px;
+  }
+  .input-area input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #e0e6ef;
+    border-radius: 30px;
+    font-size: 15px;
+    outline: none;
+    transition: border .2s;
+  }
+  .input-area input:focus { border-color: #2a5298; }
+  .input-area button {
+    background: #2a5298;
+    color: #fff;
+    border: none;
+    padding: 0 22px;
+    border-radius: 30px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .input-area button:hover { background: #1e3c72; }
+  .messages::-webkit-scrollbar { width: 8px; }
+  .messages::-webkit-scrollbar-thumb { background: #c4d0e3; border-radius: 8px; }
+
+  /* Анимация "веника" при очистке */
+  .broom-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 120px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .3s ease;
+  }
+  .broom-overlay.show {
+    opacity: 1;
+    animation: sweep 0.9s ease;
+  }
+  @keyframes sweep {
+    0%   { transform: translateX(-200px) rotate(-20deg); opacity: 0; }
+    40%  { transform: translateX(0) rotate(10deg); opacity: 1; }
+    100% { transform: translateX(200px) rotate(20deg); opacity: 0; }
   }
 </style>
 </head>
 <body>
 
-<div id="login">
-  <div id="login-box">
-    <h2>💬 Мультичат</h2>
-    <input id="nick-input" placeholder="Ваше имя" maxlength="20">
-    <input id="room-input" placeholder="Комната (например: dom123)" value="dom123" maxlength="20">
-    <button id="join-btn" onclick="joinRoom()">🚀 Войти</button>
-    <div id="error-box" class="error-box"></div>
-    <div class="hint">
-      <b>Как подключиться:</b><br>
-      Все устройства (телефоны, ПК) вводят <b>одно и то же название комнаты</b>.<br><br>
-      👉 Телефон ↔ Телефон ↔ Компьютер — все в одном чате.
+<div class="broom-overlay" id="broom">🧹</div>
+
+<div class="chat">
+  <div class="header">
+    <div class="avatar">Ф</div>
+    <div>
+      <h1>ФИТС</h1>
+      <p>ИИ по математике • онлайн</p>
     </div>
+  </div>
+
+  <div class="messages" id="messages"></div>
+
+  <div class="input-area">
+    <input id="input" type="text" placeholder="Напиши пример, уравнение или 'помощь'..." autocomplete="off">
+    <button onclick="send()">➤</button>
   </div>
 </div>
 
-<header>
-  <b>💬 <span id="room-name"></span></b>
-  <span id="status">Не подключено</span>
-</header>
-
-<div id="chat"></div>
-
-<div id="input-area">
-  <input id="msg-input" placeholder="Сообщение..." disabled autocomplete="off">
-  <button id="send-btn" onclick="sendMsg()" disabled>➤</button>
-</div>
-
 <script>
-// ==================== ПЕРЕМЕННЫЕ ====================
-let peer = null;
-let isHost = false;
-let myNick = "";
-let myRoom = "";
-let myPeerId = "";
-let hostConnections = {};
-let hostConn = null;
-let reconnectAttempts = 0;
-const MAX_RECONNECT = 5;
+/* ============ МОЗГ ФИТС ============ */
+const FITS = {
+  name: "ФИТС",
+  version: "1.0",
 
-// ==================== ВХОД ====================
-function joinRoom() {
-  myNick = document.getElementById('nick-input').value.trim();
-  myRoom = document.getElementById('room-input').value.trim();
+  help() {
+    return `📚 Что я умею:
+• Считать: 2+2*3, (5+5)/2, 2^10
+• Уравнения: x+5=12, 2*x=10
+• Корни: sqrt(16), степени: 5^2
+• Тригонометрия: sin(0), cos(0), tan(0)
+• Факториал: 5!
+• Площадь круга: круг 5
+• Очистить чат: очистить
+• Помощь: помощь`;
+  },
 
-  if (!myNick) { showError("Введите имя"); return; }
-  if (!myRoom) { showError("Введите название комнаты"); return; }
-  if (myRoom.length < 2) { showError("Название комнаты слишком короткое"); return; }
+  calc(expr) {
+    try {
+      let e = expr
+        .replace(/\^/g, "**")
+        .replace(/,/g, ".")
+        .replace(/pi/g, "Math.PI")
+        .replace(/\be\b/g, "Math.E")
+        .replace(/sqrt\(/g, "Math.sqrt(")
+        .replace(/sin\(/g, "Math.sin(")
+        .replace(/cos\(/g, "Math.cos(")
+        .replace(/tan\(/g, "Math.tan(")
+        .replace(/log\(/g, "Math.log(")
+        .replace(/abs\(/g, "Math.abs(");
 
-  hideError();
-  document.getElementById('join-btn').disabled = true;
-  document.getElementById('join-btn').textContent = '⏳ Подключение...';
-  document.getElementById('room-name').textContent = myRoom;
-
-  const roomId = 'lanchat-' + myRoom.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-  // Пробуем стать хостом
-  tryCreateHost(roomId, 0);
-}
-
-// ==================== ПОПЫТКА СТАТЬ ХОСТОМ ====================
-function tryCreateHost(roomId, attempt) {
-  if (attempt > 3) {
-    // Не смогли стать хостом — пробуем как клиент
-    connectAsClient(roomId, 0);
-    return;
-  }
-
-  peer = new Peer(roomId, {
-    debug: 0,
-    config: {
-      'iceServers': [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' }
-      ]
-    }
-  });
-
-  let resolved = false;
-
-  const timeout = setTimeout(() => {
-    if (resolved) return;
-    resolved = true;
-    peer.destroy();
-    tryCreateHost(roomId, attempt + 1);
-  }, 4000);
-
-  peer.on('open', (id) => {
-    if (resolved) return;
-    resolved = true;
-    clearTimeout(timeout);
-    isHost = true;
-    myPeerId = id;
-    onConnected('🟢 Хост комнаты');
-    addSystem('Вы создали комнату. Ждём участников...');
-
-    peer.on('connection', (conn) => {
-      handleIncomingConnection(conn);
-    });
-  });
-
-  peer.on('error', (err) => {
-    if (resolved) return;
-    resolved = true;
-    clearTimeout(timeout);
-    peer.destroy();
-
-    if (err.type === 'unavailable-id') {
-      // Комната существует — подключаемся как клиент
-      connectAsClient(roomId, 0);
-    } else if (err.type === 'network' || err.type === 'server-error') {
-      // Проблема с сервером — пробуем ещё
-      setTimeout(() => tryCreateHost(roomId, attempt + 1), 1000);
-    } else {
-      showError('Ошибка: ' + err.type);
-      resetLoginBtn();
-    }
-  });
-}
-
-// ==================== ПОДКЛЮЧЕНИЕ К ХОСТУ ====================
-function connectAsClient(roomId, attempt) {
-  if (attempt > MAX_RECONNECT) {
-    showError("Не удалось подключиться. Проверьте интернет.");
-    resetLoginBtn();
-    return;
-  }
-
-  peer = new Peer({
-    debug: 0,
-    config: {
-      'iceServers': [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' }
-      ]
-    }
-  });
-
-  let opened = false;
-  const timeout = setTimeout(() => {
-    if (opened) return;
-    opened = true;
-    peer.destroy();
-    setTimeout(() => connectAsClient(roomId, attempt + 1), 1500);
-  }, 5000);
-
-  peer.on('open', (id) => {
-    if (opened) return;
-    myPeerId = id;
-    isHost = false;
-
-    hostConn = peer.connect(roomId, { reliable: true });
-
-    const connTimeout = setTimeout(() => {
-      if (hostConn && hostConn.open) return;
-      try { hostConn.close(); } catch(e){}
-      setTimeout(() => connectAsClient(roomId, attempt + 1), 1500);
-    }, 5000);
-
-    hostConn.on('open', () => {
-      if (opened) return;
-      opened = true;
-      clearTimeout(timeout);
-      clearTimeout(connTimeout);
-      reconnectAttempts = 0;
-      onConnected('🟢 Онлайн');
-      addSystem('Вы подключены к чату');
-      hostConn.send({ type: 'join', nick: myNick });
-    });
-
-    hostConn.on('data', (data) => {
-      if (data.type === 'message') {
-        addMessage(data.nick, data.text, data.nick === myNick, data.time);
-      } else if (data.type === 'system') {
-        addSystem(data.text);
+      if (!/^[0-9+\-*/().\sMathPIEsqrtincolgb]+$/.test(e)) {
+        return "❌ Недопустимые символы в выражении.";
       }
-    });
 
-    hostConn.on('close', () => {
-      if (!opened) return;
-      setStatus('🔴 Хост отключился');
-      addSystem('Хост покинул чат. Перезагрузите страницу.');
-      disableInput();
-    });
-
-    hostConn.on('error', (err) => {
-      console.error(err);
-    });
-  });
-
-  peer.on('error', (err) => {
-    if (opened) return;
-    opened = true;
-    clearTimeout(timeout);
-    try { peer.destroy(); } catch(e){}
-    setTimeout(() => connectAsClient(roomId, attempt + 1), 1500);
-  });
-}
-
-// ==================== ОБРАБОТКА КЛИЕНТА (ХОСТ) ====================
-function handleIncomingConnection(conn) {
-  hostConnections[conn.peer] = { conn: conn, nick: '...' };
-
-  conn.on('data', (data) => {
-    if (data.type === 'join') {
-      hostConnections[conn.peer].nick = data.nick;
-      broadcastToAll({ type: 'system', text: data.nick + ' вошёл в чат' }, conn.peer);
-      conn.send({ type: 'system', text: 'Добро пожаловать в чат!' });
-    } else if (data.type === 'message') {
-      const nick = hostConnections[conn.peer] ? hostConnections[conn.peer].nick : '???';
-      broadcastToAll({
-        type: 'message',
-        nick: nick,
-        text: data.text,
-        time: data.time
-      }, conn.peer);
+      const result = Function('"use strict"; return (' + e + ')')();
+      const clean = Number.isInteger(result) ? result : Math.round(result * 1e10) / 1e10;
+      return `✅ ${expr} = ${clean}`;
+    } catch (err) {
+      return "❌ Не могу посчитать: " + err.message;
     }
-  });
+  },
 
-  conn.on('close', () => {
-    const nick = hostConnections[conn.peer] ? hostConnections[conn.peer].nick : '???';
-    delete hostConnections[conn.peer];
-    broadcastToAll({ type: 'system', text: nick + ' вышел из чата' });
-  });
-
-  conn.on('error', (err) => console.error(err));
-}
-
-// ==================== РАССЫЛКА ====================
-function broadcastToAll(data, excludePeerId = null) {
-  for (const peerId in hostConnections) {
-    if (peerId === excludePeerId) continue;
-    const entry = hostConnections[peerId];
-    if (entry.conn && entry.conn.open) {
-      try { entry.conn.send(data); } catch (e) { console.error(e); }
+  equation(eq) {
+    try {
+      const [left, right] = eq.split("=");
+      if (!left || !right) return "❌ Пример: 2*x+5=11";
+      const m = left.replace(/\s/g, "").match(/^([\d.]*)\*?x([+\-][\d.]+)?$/i);
+      if (!m) return "❌ Пока решаю только ax+b=c. Пример: 2*x+5=11";
+      const a = parseFloat(m[1] || "1");
+      const b = m[2] ? parseFloat(m[2]) : 0;
+      const c = Function('"use strict"; return (' + right + ')')();
+      const x = (c - b) / a;
+      const clean = Number.isInteger(x) ? x : Math.round(x * 1e6) / 1e6;
+      return `✅ x = ${clean}`;
+    } catch (err) {
+      return "❌ Ошибка в уравнении: " + err.message;
     }
+  },
+
+  factorial(n) {
+    n = parseInt(n);
+    if (isNaN(n) || n < 0) return "❌ Факториал только для целых ≥ 0";
+    let r = 1;
+    for (let i = 2; i <= n; i++) r *= i;
+    return `✅ ${n}! = ${r}`;
+  },
+
+  circle(r) {
+    r = parseFloat(r);
+    if (isNaN(r)) return "❌ Пример: круг 5";
+    const s = Math.PI * r * r;
+    return `✅ Площадь круга с радиусом ${r}:\nS = π·r² = ${Math.round(s * 10000) / 10000}`;
+  },
+
+  respond(msg) {
+    const text = msg.trim().toLowerCase();
+    if (!text) return "Напиши что-нибудь 🙂";
+    if (["помощь", "help", "?"].includes(text)) return this.help();
+    if (text === "привет" || text === "здравствуй") return "Привет! Я ФИТС 🤖 Что посчитаем?";
+    if (text.startsWith("круг")) return this.circle(text.replace("круг", "").trim());
+    if (/^[\d\s!]+$/.test(text)) return this.factorial(text.replace(/\s/g, ""));
+    if (text.includes("=") && text.includes("x")) return this.equation(text);
+    return this.calc(msg);
   }
+};
+
+/* ============ ИНТЕРФЕЙС ============ */
+const messagesEl = document.getElementById("messages");
+const inputEl = document.getElementById("input");
+const broomEl = document.getElementById("broom");
+
+function addMsg(text, who) {
+  const div = document.createElement("div");
+  div.className = "msg " + who;
+  div.textContent = text;
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-// ==================== ОТПРАВКА ====================
-function sendMsg() {
-  const text = document.getElementById('msg-input').value.trim();
+/* 🧹 ПАСХАЛКА: очистка чата */
+function clearChat() {
+  // Показываем веник
+  broomEl.classList.add("show");
+
+  // Плавно гасим сообщения
+  messagesEl.classList.add("clearing");
+
+  setTimeout(() => {
+    messagesEl.innerHTML = "";
+    messagesEl.classList.remove("clearing");
+    broomEl.classList.remove("show");
+
+    // Приветствие после очистки
+    addMsg(
+      "🧹 Чат очищен! Я снова как новенький.\n" +
+      "Чем помочь? Напиши «помощь» для списка команд.",
+      "bot"
+    );
+  }, 400);
+}
+
+function send() {
+  const text = inputEl.value.trim();
   if (!text) return;
 
-  const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-  addMessage(myNick, text, true, time);
-
-  if (isHost) {
-    broadcastToAll({ type: 'message', nick: myNick, text: text, time: time });
-  } else {
-    if (hostConn && hostConn.open) {
-      hostConn.send({ type: 'message', text: text, time: time });
-    }
+  // 🪄 Пасхалка срабатывает на "очистить" (и пару вариантов)
+  const low = text.toLowerCase();
+  if (["очистить", "очисть", "очисти", "clear", "clean"].includes(low)) {
+    addMsg(text, "user");
+    inputEl.value = "";
+    setTimeout(clearChat, 250);
+    return;
   }
 
-  document.getElementById('msg-input').value = '';
-  document.getElementById('msg-input').focus();
+  addMsg(text, "user");
+  inputEl.value = "";
+
+  setTimeout(() => {
+    addMsg(FITS.respond(text), "bot");
+  }, 250);
 }
 
-// ==================== UI ====================
-function onConnected(statusText) {
-  document.getElementById('login').style.display = 'none';
-  setStatus(statusText);
-  enableInput();
-}
-
-function addMessage(nick, text, mine, time) {
-  const chat = document.getElementById('chat');
-  const div = document.createElement('div');
-  div.className = 'msg ' + (mine ? 'mine' : 'other');
-  const t = time || new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-  div.innerHTML =
-    (mine ? '' : '<div class="author">' + escapeHtml(nick) + '</div>') +
-    escapeHtml(text) +
-    '<span class="time">' + t + '</span>';
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function addSystem(text) {
-  const chat = document.getElementById('chat');
-  const div = document.createElement('div');
-  div.className = 'system';
-  div.textContent = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  }[c]));
-}
-
-function enableInput() {
-  document.getElementById('msg-input').disabled = false;
-  document.getElementById('send-btn').disabled = false;
-  document.getElementById('msg-input').focus();
-}
-
-function disableInput() {
-  document.getElementById('msg-input').disabled = true;
-  document.getElementById('send-btn').disabled = true;
-}
-
-function setStatus(text) {
-  document.getElementById('status').textContent = text;
-}
-
-function showError(msg) {
-  const box = document.getElementById('error-box');
-  box.textContent = '⚠️ ' + msg;
-  box.style.display = 'block';
-}
-
-function hideError() {
-  document.getElementById('error-box').style.display = 'none';
-}
-
-function resetLoginBtn() {
-  document.getElementById('join-btn').disabled = false;
-  document.getElementById('join-btn').textContent = '🚀 Войти';
-  document.getElementById('login').style.display = 'flex';
-}
-
-document.getElementById('msg-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') sendMsg();
+inputEl.addEventListener("keydown", e => {
+  if (e.key === "Enter") send();
 });
+
+// Приветствие
+addMsg(
+  "👋 Привет! Я ФИТС — твой ИИ-помощник по математике (v" + FITS.version + ").\n" +
+  "Могу считать примеры, решать уравнения, строить площади.\n" +
+  "Напиши «помощь», чтобы увидеть все команды.\n" +
+  "💡 Подсказка: попробуй написать «очистить» 🧹",
+  "bot"
+);
 </script>
 </body>
 </html>
